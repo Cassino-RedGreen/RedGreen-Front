@@ -27,11 +27,17 @@ export default defineConfig({
     },
   ],
   webServer: {
+    // O build de producao exige VITE_API_BASE_URL (src/config.ts lanca sem ela),
+    // entao o bundle da suite e gerado aqui, com a variavel definida.
     command: IsCi
-      ? 'npm run preview -- --port 5173'
+      ? 'npm run build && npm run preview -- --port 5173'
       : 'npm run dev -- --port 5173',
     url: BaseUrl,
     reuseExistingServer: !IsCi,
     timeout: 120_000,
+    env: {
+      VITE_API_BASE_URL:
+        process.env.VITE_API_BASE_URL ?? 'http://localhost:3000',
+    },
   },
 });
