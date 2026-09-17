@@ -27,7 +27,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev -- --port 5173',
+    command: IsCi
+      ? 'npm run preview -- --port 5173'
+      : 'npm run dev -- --port 5173',
     url: BaseUrl,
     reuseExistingServer: !IsCi,
     timeout: 120_000,
