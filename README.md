@@ -4,7 +4,7 @@ Frontend do projeto **RedGreen**, desenvolvido para a disciplina **C14 - Engenha
 
 Este documento foi elaborado a partir da analise do codigo-fonte existente neste repositorio. Funcionalidades, rotas, endpoints e testes descritos aqui correspondem ao que foi identificado no projeto.
 
-# Integrantes 
+# Integrantes
 
 Pedro Armengol de Oliveira - 2093
 Pedro Ribeiro Nogueira - 629
@@ -190,14 +190,14 @@ npm run format
 
 Variavel identificada no codigo:
 
-| Variavel | Obrigatoria | Padrao | Uso |
-|---|---:|---|---|
-| `VITE_API_BASE_URL` | Nao | `http://localhost:3000` | Define a URL base usada pelo Axios em `apiClient`. |
+| Variavel            | Obrigatoria | Padrao                  | Uso                                                |
+| ------------------- | ----------: | ----------------------- | -------------------------------------------------- |
+| `VITE_API_BASE_URL` |         Nao | `http://localhost:3000` | Define a URL base usada pelo Axios em `apiClient`. |
 
 A configuracao esta em `src/config.ts`:
 
 ```ts
-apiBaseUrl: import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3000'
+apiBaseUrl: import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3000';
 ```
 
 O arquivo `src/infrastructure/env.ts` tambem permite registrar e ler variaveis de ambiente em runtime por meio de `globalThis.__REDGREEN_VITE_ENV__`, mas o uso direto identificado ocorre em `src/main.tsx` com `setRuntimeEnv(import.meta.env)`.
@@ -212,17 +212,17 @@ VITE_API_BASE_URL=http://localhost:3000
 
 Rotas centralizadas em `src/paths.ts` e renderizadas em `src/routes.tsx`:
 
-| Rota | Componente | Status identificado |
-|---|---|---|
-| `/` | `Home` | Implementada |
-| `/login` | `Login` dentro de `GuestRoute` | Implementada |
-| `/register` | `Register` dentro de `GuestRoute` | Placeholder |
-| `/dashboard` | `Dashboard` | Placeholder |
-| `/slot-machine-room` | `SlotMachineRoom` | Implementada |
-| `/slotmachine-tables` | `SlotMachineTablesRoom` | Implementada |
-| `/gambit-room` | `GambitRoom` | Implementada |
-| `/gambit-tables` | `GambitTablesRoom` | Implementada |
-| `/roulette-room` | `RouletteRoom` | Placeholder |
+| Rota                  | Componente                        | Status identificado |
+| --------------------- | --------------------------------- | ------------------- |
+| `/`                   | `Home`                            | Implementada        |
+| `/login`              | `Login` dentro de `GuestRoute`    | Implementada        |
+| `/register`           | `Register` dentro de `GuestRoute` | Placeholder         |
+| `/dashboard`          | `Dashboard`                       | Placeholder         |
+| `/slot-machine-room`  | `SlotMachineRoom`                 | Implementada        |
+| `/slotmachine-tables` | `SlotMachineTablesRoom`           | Implementada        |
+| `/gambit-room`        | `GambitRoom`                      | Implementada        |
+| `/gambit-tables`      | `GambitTablesRoom`                | Implementada        |
+| `/roulette-room`      | `RouletteRoom`                    | Placeholder         |
 
 Protecoes de rota identificadas:
 
@@ -242,49 +242,49 @@ Endpoints identificados no codigo:
 
 ### Autenticacao e usuario
 
-| Metodo | Endpoint | Uso no frontend |
-|---|---|---|
-| `GET` | `/auth/check-email` | Verifica se o e-mail ja existe para decidir entre login e cadastro. |
-| `POST` | `/auth/login` | Autentica usuario e valida senha atual na edicao de perfil. |
-| `POST` | `/auth/register` | Cadastra novo usuario. |
-| `GET` | `/auth/rank` | Consulta ranking de jogadores. |
-| `GET` | `/user/profile` | Consulta dados do perfil e estado do bonus diario. |
-| `GET` | `/user/chips` | Consulta saldo de fichas. |
-| `PATCH` | `/user` | Atualiza nome, data de nascimento e senha. |
-| `DELETE` | `/user` | Exclui conta do usuario. |
-| `POST` | `/user/daily-login` | Resgata bonus diario. |
+| Metodo   | Endpoint            | Uso no frontend                                                     |
+| -------- | ------------------- | ------------------------------------------------------------------- |
+| `GET`    | `/auth/check-email` | Verifica se o e-mail ja existe para decidir entre login e cadastro. |
+| `POST`   | `/auth/login`       | Autentica usuario e valida senha atual na edicao de perfil.         |
+| `POST`   | `/auth/register`    | Cadastra novo usuario.                                              |
+| `GET`    | `/auth/rank`        | Consulta ranking de jogadores.                                      |
+| `GET`    | `/user/profile`     | Consulta dados do perfil e estado do bonus diario.                  |
+| `GET`    | `/user/chips`       | Consulta saldo de fichas.                                           |
+| `PATCH`  | `/user`             | Atualiza nome, data de nascimento e senha.                          |
+| `DELETE` | `/user`             | Exclui conta do usuario.                                            |
+| `POST`   | `/user/daily-login` | Resgata bonus diario.                                               |
 
 ### Slot Machine
 
-| Metodo | Endpoint | Uso no frontend |
-|---|---|---|
-| `GET` | `/slot/machine` | Lista mesas de Slot Machine. |
-| `POST` | `/slot/machine` | Cria mesa de Slot Machine. |
-| `PUT` | `/slot/machine/:id` | Atualiza mesa de Slot Machine. |
-| `PATCH` | `/slot/machine/:id/deactivate` | Alterna status ativo/inativo da mesa. |
-| `DELETE` | `/slot/machine/:id` | Remove mesa inativa. |
-| `GET` | `/slot-machines/:id/sessions` | Consulta sessoes da mesa antes de desativar. |
-| `POST` | `/slot-machines/:id/sessions` | Cria sessao de Slot Machine. |
-| `POST` | `/slot-machines/:id/sessions/:sessionId/cash-out` | Encerra sessoes ativas antes da desativacao da mesa. |
-| `GET` | `/sessions/active` | Consulta sessao ativa de Slot Machine. |
-| `POST` | `/sessions/active/reroll/:reelIndex` | Executa reroll em um reel. |
-| `POST` | `/sessions/active/cash-out` | Encerra a sessao ativa da Slot Machine. |
+| Metodo   | Endpoint                                          | Uso no frontend                                      |
+| -------- | ------------------------------------------------- | ---------------------------------------------------- |
+| `GET`    | `/slot/machine`                                   | Lista mesas de Slot Machine.                         |
+| `POST`   | `/slot/machine`                                   | Cria mesa de Slot Machine.                           |
+| `PUT`    | `/slot/machine/:id`                               | Atualiza mesa de Slot Machine.                       |
+| `PATCH`  | `/slot/machine/:id/deactivate`                    | Alterna status ativo/inativo da mesa.                |
+| `DELETE` | `/slot/machine/:id`                               | Remove mesa inativa.                                 |
+| `GET`    | `/slot-machines/:id/sessions`                     | Consulta sessoes da mesa antes de desativar.         |
+| `POST`   | `/slot-machines/:id/sessions`                     | Cria sessao de Slot Machine.                         |
+| `POST`   | `/slot-machines/:id/sessions/:sessionId/cash-out` | Encerra sessoes ativas antes da desativacao da mesa. |
+| `GET`    | `/sessions/active`                                | Consulta sessao ativa de Slot Machine.               |
+| `POST`   | `/sessions/active/reroll/:reelIndex`              | Executa reroll em um reel.                           |
+| `POST`   | `/sessions/active/cash-out`                       | Encerra a sessao ativa da Slot Machine.              |
 
 ### Gambit
 
-| Metodo | Endpoint | Uso no frontend |
-|---|---|---|
-| `GET` | `/gambit-table` | Lista mesas de Gambit. |
-| `GET` | `/gambit-table/:id` | Busca mesa de Gambit por id. |
-| `POST` | `/gambit-table` | Cria mesa de Gambit. |
-| `PATCH` | `/gambit-table/:id` | Atualiza mesa de Gambit. |
-| `DELETE` | `/gambit-table/:id` | Remove mesa de Gambit. |
-| `GET` | `/gambit/sessions/active` | Consulta sessao ativa de Gambit. |
-| `POST` | `/gambit-tables/:id/sessions` | Cria sessao de Gambit com quantidade de cartas compradas. |
-| `POST` | `/gambit/sessions/active/burn/:position` | Queima carta na posicao informada. |
-| `POST` | `/gambit/sessions/active/resolve-event` | Resolve evento pendente com `GoodIndex` e `BadIndex`. |
-| `POST` | `/gambit/sessions/active/resolve-effect` | Resolve efeito pendente com lista de `Positions`. |
-| `POST` | `/gambit/sessions/active/cash-out` | Encerra sessao ativa de Gambit. |
+| Metodo   | Endpoint                                 | Uso no frontend                                           |
+| -------- | ---------------------------------------- | --------------------------------------------------------- |
+| `GET`    | `/gambit-table`                          | Lista mesas de Gambit.                                    |
+| `GET`    | `/gambit-table/:id`                      | Busca mesa de Gambit por id.                              |
+| `POST`   | `/gambit-table`                          | Cria mesa de Gambit.                                      |
+| `PATCH`  | `/gambit-table/:id`                      | Atualiza mesa de Gambit.                                  |
+| `DELETE` | `/gambit-table/:id`                      | Remove mesa de Gambit.                                    |
+| `GET`    | `/gambit/sessions/active`                | Consulta sessao ativa de Gambit.                          |
+| `POST`   | `/gambit-tables/:id/sessions`            | Cria sessao de Gambit com quantidade de cartas compradas. |
+| `POST`   | `/gambit/sessions/active/burn/:position` | Queima carta na posicao informada.                        |
+| `POST`   | `/gambit/sessions/active/resolve-event`  | Resolve evento pendente com `GoodIndex` e `BadIndex`.     |
+| `POST`   | `/gambit/sessions/active/resolve-effect` | Resolve efeito pendente com lista de `Positions`.         |
+| `POST`   | `/gambit/sessions/active/cash-out`       | Encerra sessao ativa de Gambit.                           |
 
 ## 10. Gerenciamento de Estado
 
@@ -551,43 +551,39 @@ Apoio em refatorações e organização dos componentes da aplicação
 
 Exemplos reais de prompts usados
 Claude
+
 1. Refatoração do sistema de mesas
 
 "Ok claude eu preciso fazer um refactor, pois o arquivo está muito grande. Eu queria separar em arquivos para depois fazer imports. Me ajude a fazer, fazendo passo a passo, a parte do arquivo que eu vou retirar e colocar no novo."
 
-O Claude orientou a extração dos componentes um a um, indicando o que remover do arquivo original e o que adicionar ao novo, mantendo os imports e props corretos.
-2. Implementação da sessão expirada
+O Claude orientou a extração dos componentes um a um, indicando o que remover do arquivo original e o que adicionar ao novo, mantendo os imports e props corretos. 2. Implementação da sessão expirada
 
 "Eu preciso mudar isso. O usuário possui um timer de quanto tempo o token dele não expira, e quando expira é necessário um aviso de que a sessão dele expirou e é preciso relogar."
 
-O Claude sugeriu adicionar um interceptor de resposta no apiClient para capturar erros 401, disparar um evento customizado e criar um componente listener que exibe o modal e redireciona para o login.
-3. Sistema de mesas do Gambit
+O Claude sugeriu adicionar um interceptor de resposta no apiClient para capturar erros 401, disparar um evento customizado e criar um componente listener que exibe o modal e redireciona para o login. 3. Sistema de mesas do Gambit
 
 "Ok, claude chegou as apis que eu estava precisando. Por onde podemos começar?"
 
 A partir dos endpoints e campos retornados pelo Swagger, o Claude orientou a criação dos modais de criação e edição, do card da mesa e da página de listagem, seguindo o padrão já existente no projeto.
 ChatGPT
+
 1. Explicação dos testes unitários
 
 "Eu vou mandar todos os testes que eu fiz, depois preciso que me explica cada teste e o que está testando."
 
-O ChatGPT analisou os testes unitários criados para os componentes do sistema de mesas e explicou individualmente o objetivo de cada caso de teste, quais comportamentos estavam sendo validados e quais cenários de sucesso e erro estavam sendo cobertos.
-2. Migração da autenticação para Cookies
+O ChatGPT analisou os testes unitários criados para os componentes do sistema de mesas e explicou individualmente o objetivo de cada caso de teste, quais comportamentos estavam sendo validados e quais cenários de sucesso e erro estavam sendo cobertos. 2. Migração da autenticação para Cookies
 
 "Uma coisa que estávamos fazendo é salvar o token no localStorage, isso tem que ser salvo no cookie."
 
-O ChatGPT auxiliou na migração do mecanismo de autenticação, sugerindo uma estrutura para armazenamento, leitura e remoção de cookies e identificando pontos do projeto que precisariam ser atualizados.
-3. Tradução das mensagens do Backend
+O ChatGPT auxiliou na migração do mecanismo de autenticação, sugerindo uma estrutura para armazenamento, leitura e remoção de cookies e identificando pontos do projeto que precisariam ser atualizados. 3. Tradução das mensagens do Backend
 
 "Possui mensagens que ainda vêm do backend, que precisam ser em português."
 
-O ChatGPT auxiliou na criação de uma estratégia para mapear mensagens retornadas pela API e exibi-las em português para o usuário final sem necessidade de alterações no backend.
-4. Documentação da Pull Request
+O ChatGPT auxiliou na criação de uma estratégia para mapear mensagens retornadas pela API e exibi-las em português para o usuário final sem necessidade de alterações no backend. 4. Documentação da Pull Request
 
 "Como posso explicar a mudança que eu fiz no SlotMachine?"
 
-O ChatGPT auxiliou na elaboração da descrição das alterações realizadas, ajudando a documentar as funcionalidades implementadas e o impacto das mudanças no projeto.
-5. Correção de erros de tipagem
+O ChatGPT auxiliou na elaboração da descrição das alterações realizadas, ajudando a documentar as funcionalidades implementadas e o impacto das mudanças no projeto. 5. Correção de erros de tipagem
 
 "A propriedade 'userType' não existe no tipo..."
 
@@ -615,7 +611,7 @@ O maior desafio da dinâmica de desenvolvimento veio da criação do Gambit, um 
 Esses ajustes também geraram bloqueios pontuais entre as duplas, já que mudanças na lógica do Gambit no backend impactavam diretamente o trabalho das duplas de front, que dependiam dessas definições para avançar. Nesses casos, nos reorganizamos priorizando as implementações que destravavam o trabalho das outras duplas.
 A principal lição aprendida foi sobre a importância de definir melhor o escopo e as regras de uma funcionalidade original antes de começar a implementá-la. Boa parte dos refactors do Gambit poderia ter sido evitada com um planejamento inicial mais detalhado das mecânicas do jogo. Também percebemos que a ausência de uma Definição de Pronto (DoD) clara deixou alguns critérios de "terminado" subjetivos, e que adotá-la desde o início teria tornado as entregas mais previsíveis. Em um próximo projeto, investiríamos mais tempo no alinhamento de escopo logo no começo e formalizaríamos esses combinados que, neste projeto, ficaram apenas implícitos.
 
-## 22. Historias de usuario 
+## 22. Historias de usuario
 
 História 1 — Cadastro de usuário · Prioridade: Alta
 Como visitante, eu quero criar uma conta com e-mail e senha para que eu possa acessar o cassino e receber meu saldo inicial de fichas.
@@ -625,8 +621,8 @@ Dado que estou na tela de cadastro, quando preencho e-mail válido e senha forte
 Dado que informo um e-mail já cadastrado, quando submeto, então recebo mensagem de erro e o cadastro não é concluído.
 Dado que a senha não atende às regras de validação, quando submeto, então o Zod bloqueia o envio e exibe o erro antes de chamar a API.
 
-Rastreabilidade: 
-PR Back: #2 Feat/create user entity and #3 Feat/auth user routes 
+Rastreabilidade:
+PR Back: #2 Feat/create user entity and #3 Feat/auth user routes
 PR Front: #4 Feat loginpage creation
 
 História 2 — Reroll de slot · Prioridade: Alta
@@ -674,10 +670,10 @@ Dado que uma mesa está ativa, quando tento excluí-la, então a exclusão fica 
 Dado que uma mesa possui sessões ativas, quando tento desativá-la, então o sistema exibe um aviso antes de concluir a operação.
 
 Rastreabilidade:
-PR Back: #6 feat/create-SlotMachine-entity, #8 feat/admin-guard,  #15 fix/Slot-game-logic
-PR Front: #26 feat-table-system 
+PR Back: #6 feat/create-SlotMachine-entity, #8 feat/admin-guard, #15 fix/Slot-game-logic
+PR Front: #26 feat-table-system
 
-## 23. Refactor 
+## 23. Refactor
 
 Refactor: changing token storage to cookie#35
 Refactor Movimentação de Método

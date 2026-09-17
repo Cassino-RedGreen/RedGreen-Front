@@ -196,9 +196,7 @@ export const EditTableModal = ({
     }
 
     if (!TableActive) {
-      ExecuteToggle().catch(() =>
-        OnError('Erro ao alterar status da mesa.')
-      );
+      ExecuteToggle().catch(() => OnError('Erro ao alterar status da mesa.'));
       return;
     }
 
@@ -242,7 +240,9 @@ export const EditTableModal = ({
         TableColor: SelectedColor,
       });
       OnSuccess(
-        TableActive ? 'Mesa desativada com sucesso!' : 'Mesa ativada com sucesso!'
+        TableActive
+          ? 'Mesa desativada com sucesso!'
+          : 'Mesa ativada com sucesso!'
       );
       OnClose();
     } catch (err) {
@@ -494,9 +494,7 @@ export const EditTableModal = ({
             ActiveSessions={ActiveSessions}
             OnConfirm={() => {
               SetShowDeactivateConfirm(false);
-              ExecuteToggle().catch(() =>
-                OnError('Erro ao desativar a mesa.')
-              );
+              ExecuteToggle().catch(() => OnError('Erro ao desativar a mesa.'));
             }}
             OnCancel={() => SetShowDeactivateConfirm(false)}
           />
