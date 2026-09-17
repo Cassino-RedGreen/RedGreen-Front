@@ -1,7 +1,9 @@
 const TOKEN_KEY = 'token';
 const SESSION_KEY = 'session_active';
 
-const COOKIE_OPTIONS = 'path=/; SameSite=Strict; Secure';
+const COOKIE_OPTIONS = `path=/; SameSite=Strict${
+  window.location.protocol === 'https:' ? '; Secure' : ''
+}`;
 
 function setCookie(name: string, value: string) {
   document.cookie = `${name}=${value}; ${COOKIE_OPTIONS}`;
