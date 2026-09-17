@@ -49,14 +49,14 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Run ESLint
-        run: npm run lint
+        run: npm run lint:check
 
       - name: Check formatting
         run: npm run format:check
 
   test:
     name: Unit Tests
-    needs: [install]
+    needs: [lint]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -79,7 +79,7 @@ jobs:
 
   build:
     name: Build Package
-    needs: [install]
+    needs: [test]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -128,11 +128,8 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Download dist artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: application-dist
-          path: dist
+      - name: Build production bundle
+        run: npm run build
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
