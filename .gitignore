@@ -12,7 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Playwright
 /playwright-report/
 /test-results/
 /blob-report/

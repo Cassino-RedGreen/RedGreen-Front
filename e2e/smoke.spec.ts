@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-// Erros do browser nao aparecem na saida do Playwright por padrao. Sem isso,
-// uma pagina que falha ao montar vira apenas "element not found".
 test.beforeEach(async ({ page }) => {
   page.on('pageerror', (PageError) => {
     console.log(`[pageerror] ${PageError.message}`);
@@ -20,7 +18,6 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-// Em uma falha, mostra onde a pagina parou e o que havia renderizado.
 test.afterEach(async ({ page }, TestInfo) => {
   if (TestInfo.status === TestInfo.expectedStatus) {
     return;
