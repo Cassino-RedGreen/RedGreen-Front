@@ -2,6 +2,7 @@ export default {
   preset: 'ts-jest/presets/js-with-ts',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/e2e/'],
   transform: {
     '^.+\\.[tj]sx?$': [
       'ts-jest',

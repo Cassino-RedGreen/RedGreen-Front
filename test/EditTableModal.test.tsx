@@ -10,6 +10,7 @@ type MockFn = ReturnType<typeof jest.fn> & {
 const MockApiDelete = jest.fn() as unknown as MockFn;
 const MockApiPut = jest.fn() as unknown as MockFn;
 const MockApiPatch = jest.fn() as unknown as MockFn;
+const MockApiPost = jest.fn() as unknown as MockFn;
 const MockApiGet = jest.fn() as unknown as MockFn;
 
 jest.mock('@infrastructure/http/client', () => ({
@@ -17,6 +18,7 @@ jest.mock('@infrastructure/http/client', () => ({
     delete: (Url: string) => MockApiDelete(Url),
     put: (Url: string, Body: unknown) => MockApiPut(Url, Body),
     patch: (Url: string) => MockApiPatch(Url),
+    post: (Url: string) => MockApiPost(Url),
     get: (Url: string) => MockApiGet(Url),
   },
 }));
@@ -108,13 +110,15 @@ describe('EditTableModal', () => {
 
   it('calls OnSuccess when deactivating table without active sessions', async () => {
     MockApiGet.mockResolvedValueOnce({ data: [] } as unknown);
-    MockApiPatch.mockResolvedValueOnce({} as unknown);
+    MockApiPost.mockResolvedValueOnce({} as unknown);
 
     render(<EditTableModal {...DefaultProps} TableActive={true} />);
     fireEvent.click(screen.getByText('Desativar'));
 
     await waitFor(() => {
-      expect(MockApiPatch).toHaveBeenCalledWith('/slot/machine/1/deactivate');
+      expect(MockApiPost).toHaveBeenCalledWith(
+        '/admin/slot-machines/1/deactivate'
+      );
       expect(DefaultProps.OnSuccess).toHaveBeenCalledWith(
         'Mesa desativada com sucesso!'
       );
