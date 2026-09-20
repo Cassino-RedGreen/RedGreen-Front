@@ -7,14 +7,17 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@domain': path.resolve(__dirname, './src/domain'),
-      '@application': path.resolve(__dirname, './src/application'),
-      '@infrastructure': path.resolve(__dirname, './src/infrastructure'),
-      '@presentation': path.resolve(__dirname, './src/presentation'),
-      '@ui': path.resolve(__dirname, './src/presentation/ui'),
-      '@games': path.resolve(__dirname, './src/presentation/games'),
-      '@assets': path.resolve(__dirname, './public/assets'),
+      '@': path.resolve(import.meta.dirname, './src'),
+      '@domain': path.resolve(import.meta.dirname, './src/domain'),
+      '@application': path.resolve(import.meta.dirname, './src/application'),
+      '@infrastructure': path.resolve(
+        import.meta.dirname,
+        './src/infrastructure'
+      ),
+      '@presentation': path.resolve(import.meta.dirname, './src/presentation'),
+      '@ui': path.resolve(import.meta.dirname, './src/presentation/ui'),
+      '@games': path.resolve(import.meta.dirname, './src/presentation/games'),
+      '@assets': path.resolve(import.meta.dirname, './public/assets'),
     },
   },
 });
