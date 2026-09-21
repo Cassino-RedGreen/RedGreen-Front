@@ -4,16 +4,14 @@ export type Account = {
   Email: string;
   Password: string;
   Nickname: string;
-  BirthDate: string;
 };
 
 export const CreateAccount = async (Page: Page): Promise<Account> => {
-  const Unique = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const Timestamp = Date.now();
   const Account: Account = {
-    Email: `e2e-${Unique}@example.com`,
+    Email: `e2e-${Timestamp}@example.com`,
     Password: 'e2e-password-123',
-    Nickname: `e2e-${Unique}`,
-    BirthDate: '01/01/2001',
+    Nickname: `e2e-${Timestamp}`,
   };
 
   await Page.goto('/login');
@@ -25,7 +23,7 @@ export const CreateAccount = async (Page: Page): Promise<Account> => {
 
   await Page.getByPlaceholder('Nome').fill('E2E User');
   await Page.getByPlaceholder('Nickname').fill(Account.Nickname);
-  await Page.getByPlaceholder('DD/MM/AAAA').fill(Account.BirthDate);
+  await Page.getByPlaceholder('DD/MM/AAAA').fill('01/01/2001');
   await Page.getByPlaceholder('E-mail').fill(Account.Email);
   await Page.getByPlaceholder('Senha', { exact: true }).fill(Account.Password);
   await Page.getByPlaceholder('Confirmar senha').fill(Account.Password);
