@@ -119,22 +119,58 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Checkout backend
+        uses: actions/checkout@v7
+        with:
+          repository: Cassino-RedGreen/RedGreen-Back
+          ref: main
+          path: backend
+
       - name: Set up Node 22
         uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
 
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Start Postgres
+        working-directory: backend
+        run: docker compose up -d --wait postgres
+
+      - name: Start backend API
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/redgreen
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: redgreen
+          POSTGRES_PORT: '5433'
+          POSTGRES_SSL: 'false'
+          JWT_SECRET: replace-with-a-strong-secret
+          PORT: '3000'
+        run: nohup npm run start:dev > ../backend.log 2>&1 &
+
+      - name: Wait for backend API
+        run: |
+          if ! npx wait-on tcp:3000 --timeout 60000; then
+            echo "::error::Backend API did not start within 60s"
+            cat backend.log
+            exit 1
+          fi
+
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
-      - name: Build production bundle
-        run: npm run build
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
       - name: Run E2E tests
+        env:
+          VITE_API_BASE_URL: http://localhost:3000
         run: npm run test:e2e
 
       - name: Upload E2E report
@@ -145,3 +181,26 @@ jobs:
           path: playwright-report/
           if-no-files-found: warn
           retention-days: 7
+
+      - name: Upload E2E test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-test-results
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload backend log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-log
+          path: backend.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Stop Postgres
+        if: always()
+        working-directory: backend
+        run: docker compose down -v
