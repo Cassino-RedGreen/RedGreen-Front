@@ -13,6 +13,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
+    "report:site": "node scripts/BuildReportSite.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "postinstall": "node -e \"if(!process.env.CI)require('child_process').execSync('npx playwright install',{stdio:'inherit'})\"",

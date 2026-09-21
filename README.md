@@ -436,6 +436,28 @@ npm test
 
 Observacao: o Jenkinsfile atual nao executa `npm test` no pipeline.
 
+### Testes E2E e relatorio publicado
+
+Os testes end-to-end usam **Playwright**, ficam em `e2e/` (`TC-001` a `TC-010`) e rodam nos navegadores Chromium, Firefox e WebKit.
+
+Comandos:
+
+```bash
+npm run test:e2e
+npm run test:e2e:report
+npm run report:site
+```
+
+`npm run report:site` gera a pasta `_site/` a partir de `playwright-report/results.json` e das evidencias em `test-results/`:
+
+- `index.html`: resumo com totais e uma linha por cenario.
+- `report-TC-XXX.html`: uma pagina por caso de teste, com indicadores, informacoes do arquivo, tempos, resumo por navegador, falhas e as evidencias da execucao (video gravado pelo Playwright e os screenshots capturados em cada etapa).
+- `report/`: o relatorio completo do Playwright, com passos, traces e videos.
+
+No pipeline, o job `Publish E2E Report` publica essa pasta no GitHub Pages a cada push na branch `main`:
+
+https://cassino-redgreen.github.io/RedGreen-Front/
+
 ## 15. Qualidade de Codigo
 
 Ferramentas configuradas:
