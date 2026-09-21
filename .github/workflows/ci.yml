@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, ci/e2e-report-github-pages]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 concurrency:
@@ -161,7 +161,7 @@ jobs:
     needs: [e2e]
     if: |
       always() &&
-      github.event_name != 'pull_request' &&
+      github.ref == 'refs/heads/main' &&
       needs.e2e.result != 'cancelled' &&
       needs.e2e.result != 'skipped'
     runs-on: ubuntu-latest
