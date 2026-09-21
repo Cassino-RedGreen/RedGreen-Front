@@ -1,5 +1,7 @@
 # RedGreen Frontend
 
+[![CI/CD](https://github.com/Cassino-RedGreen/RedGreen-Front/actions/workflows/ci.yml/badge.svg)](https://github.com/Cassino-RedGreen/RedGreen-Front/actions/workflows/ci.yml)
+
 Frontend do projeto **RedGreen**, desenvolvido para a disciplina **C14 - Engenharia de Software**. A aplicacao implementa a interface web de um cassino com autenticação, carteira de fichas, ranking, bonus diario, administracao de mesas e dois jogos principais: **Slot Machine** e **Gambit**.
 
 Este documento foi elaborado a partir da analise do codigo-fonte existente neste repositorio. Funcionalidades, rotas, endpoints e testes descritos aqui correspondem ao que foi identificado no projeto.
@@ -41,7 +43,7 @@ Funcionalidades identificadas no codigo:
 - Listagem de mesas de Slot Machine.
 - Criacao, edicao, ativacao/desativacao e exclusao de mesas de Slot Machine para usuario administrador.
 - Listagem de mesas de Gambit.
-- Criacao, edicao e exclusao de mesas de Gambit para usuario administrador.
+- Criacao, edicao, ativacao/desativacao e exclusao de mesas de Gambit para usuario administrador.
 - Bloqueio visual de mesas quando o usuario nao esta logado, nao possui fichas suficientes ou a mesa esta inativa.
 - Aviso quando existe sessao ativa em outra mesa antes de iniciar uma nova partida.
 - Jogo Slot Machine com giro, animacao de rolos, reroll por reel, contador de rerolls, cash-out e restauracao de sessao ativa.
@@ -70,6 +72,7 @@ Dependencias principais identificadas em `package.json`:
 - **lucide-react** para icones.
 - **Zod** e **React Hook Form** como dependencias de formularios e validacao.
 - **Jest**, **ts-jest**, **jsdom** e **React Testing Library** para testes automatizados.
+- **Playwright** para testes de fluxos no navegador, com Chromium, Firefox e WebKit.
 - **ESLint**, **Prettier**, **Husky**, **Commitlint** e **lint-staged** para qualidade de codigo.
 
 Observacao: embora `react-hook-form`, `@hookform/resolvers` e `zod` estejam instalados, os formularios atualmente implementados usam majoritariamente `useState` e validacoes manuais. Os schemas Zod existentes em `src/domain/schemas.ts` nao aparecem integrados aos formularios analisados.
@@ -123,10 +126,17 @@ RedGreen-Front/
 |   |-- setupTests.ts
 |   `-- validators.ts
 |-- test/
+|-- e2e/
+|   |-- helpers/
+|   `-- TC-001.spec.ts ... TC-010.spec.ts
+|-- .github/
+|   `-- workflows/
+|       `-- ci.yml
 |-- .husky/
+|-- .env.example
 |-- eslint.config.js
 |-- jest.config.js
-|-- Jenkinsfile
+|-- playwright.config.ts
 |-- package.json
 |-- tailwind.config.js
 |-- tsconfig.json
@@ -141,14 +151,17 @@ Observacao tecnica: `src/App.tsx` e `src/App.css` mantem codigo residual do temp
 
 Pre-requisitos:
 
-- Node.js compativel com o projeto. O Jenkinsfile usa `node-22`.
+- Node.js 22 atualizado, conforme a versao principal utilizada no GitHub Actions.
 - npm.
+- Backend em execucao para os fluxos que consomem a API real.
 
 Instalacao:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
+
+O comando segue a instalacao usada no CI para compatibilidade entre dependencias. Fora de CI, o script `postinstall` executa `npx playwright install` para instalar os navegadores dos testes. Copie `.env.example` para `.env` e ajuste a URL da API antes de iniciar a aplicacao.
 
 Execucao em desenvolvimento:
 
@@ -188,17 +201,17 @@ npm run format
 
 ## 7. Variaveis de Ambiente
 
-Variavel identificada no codigo:
+Variaveis identificadas no codigo e na configuracao dos testes:
 
-| Variavel            | Obrigatoria | Padrao                  | Uso                                                |
-| ------------------- | ----------: | ----------------------- | -------------------------------------------------- |
-| `VITE_API_BASE_URL` |         Nao | `http://localhost:3000` | Define a URL base usada pelo Axios em `apiClient`. |
+| Variavel             |                     Obrigatoria | Padrao                                     | Uso                                                                                                   |
+| -------------------- | ------------------------------: | ------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`  |                     Em producao | `http://localhost:3000` em desenvolvimento | Define a URL base usada pelo Axios em `apiClient`.                                                    |
+| `E2E_BASE_URL`       |                             Nao | `http://localhost:5173`                    | Endereco do frontend acessado pelo Playwright.                                                        |
+| `E2E_ADMIN_EMAIL`    | Para cenarios com administrador | Sem padrao                                 | E-mail de uma conta administradora existente na API.                                                  |
+| `E2E_ADMIN_PASSWORD` | Para cenarios com administrador | Sem padrao                                 | Senha da conta administradora usada nos testes.                                                       |
+| `CI`                 |                     No pipeline | Definida pelo GitHub Actions               | Ativa as configuracoes de CI do Playwright e desabilita a instalacao de navegadores no `postinstall`. |
 
-A configuracao esta em `src/config.ts`:
-
-```ts
-apiBaseUrl: import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3000';
-```
+A configuracao esta em `src/config.ts`, que remove espacos da URL e usa o fallback local em desenvolvimento. Em producao, a ausencia de `VITE_API_BASE_URL` provoca um erro ao carregar a aplicacao; configure a variavel antes do build.
 
 O arquivo `src/infrastructure/env.ts` tambem permite registrar e ler variaveis de ambiente em runtime por meio de `globalThis.__REDGREEN_VITE_ENV__`, mas o uso direto identificado ocorre em `src/main.tsx` com `setRuntimeEnv(import.meta.env)`.
 
@@ -206,7 +219,11 @@ Exemplo de `.env`:
 
 ```env
 VITE_API_BASE_URL=http://localhost:3000
+E2E_ADMIN_EMAIL=
+E2E_ADMIN_PASSWORD=
 ```
+
+O exemplo corresponde a `.env.example`. O Playwright carrega `.env` e `.env.local` com `loadEnv` do Vite e preserva variaveis ja definidas no processo. `E2E_BASE_URL` pode ser adicionada se necessario; ela nao altera a porta `5173` dos comandos de inicializacao configurados. As credenciais de teste nao devem receber o prefixo `VITE_`, usado para expor variaveis ao frontend. O arquivo `.env` esta ignorado pelo Git.
 
 ## 8. Rotas da Aplicacao
 
@@ -271,6 +288,8 @@ Endpoints identificados no codigo:
 | `POST`   | `/sessions/active/cash-out`                       | Encerra a sessao ativa da Slot Machine.              |
 
 ### Gambit
+
+O gerenciamento administrativo tambem usa `POST /admin/gambit-tables/:id/deactivate` para desativar mesas e `PATCH /admin/gambit-tables/:id/activate` para reativa-las.
 
 | Metodo   | Endpoint                                 | Uso no frontend                                           |
 | -------- | ---------------------------------------- | --------------------------------------------------------- |
@@ -400,6 +419,10 @@ Caracteristicas visuais identificadas:
 
 ## 14. Testes Automatizados
 
+O projeto possui duas suites independentes: Jest para testes unitarios e de integracao de componentes, e Playwright para fluxos executados em navegadores. `npm test` executa apenas Jest; `e2e/` esta excluido em `jest.config.js`.
+
+### Testes com Jest
+
 Configuracao:
 
 - Framework: Jest.
@@ -434,7 +457,96 @@ Comando:
 npm test
 ```
 
-Observacao: o Jenkinsfile atual nao executa `npm test` no pipeline.
+Para executar com relatorio de cobertura:
+
+```bash
+npm test -- --coverage
+```
+
+### Testes de navegador com Playwright
+
+A configuracao esta em `playwright.config.ts`, e os cenarios ficam em `e2e/`. A tabela abaixo documenta os casos **TC-001 a TC-020**, abrangendo fluxos de sucesso (Happy Path) e de erro (Unhappy Path). O TC-006 possui dois testes. Casos sem as credenciais exigidas aparecem como ignorados (`skipped`).
+
+| Arquivo          | Fluxo validado                                                                 | Dependencias e simulacoes                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `TC-001.spec.ts` | Cadastro e login com a mesma conta.                                            | API real; cria usuario com e-mail e nickname baseados no horario.                                                                  |
+| `TC-002.spec.ts` | Rejeicao de senha curta e confirmacao divergente.                              | Simula a consulta de e-mail e verifica validacoes da interface.                                                                    |
+| `TC-003.spec.ts` | Exibicao de erro para senha incorreta apos cadastro.                           | Cadastro real; consulta de e-mail e resposta de login `401` simuladas.                                                             |
+| `TC-004.spec.ts` | Criacao e edicao de mesa de Slot Machine, seguida de desativacao e exclusao.   | API real e conta administradora.                                                                                                   |
+| `TC-005.spec.ts` | Criacao e edicao de mesa de Gambit, seguida de desativacao e exclusao.         | API real e conta administradora.                                                                                                   |
+| `TC-006.spec.ts` | Bloqueio de troca de mesa com sessao ativa, em Gambit e Slot Machine.          | Login real de administrador; saldo, mesas e sessoes simulados.                                                                     |
+| `TC-007.spec.ts` | Modal de sessao expirada, bloqueio de interacao e retorno ao login.            | Login real de administrador; dispara o evento `session-expired` no navegador.                                                      |
+| `TC-008.spec.ts` | Mensagem de conta inativa e permanencia no login.                              | Consulta de e-mail e rejeicao do login simuladas.                                                                                  |
+| `TC-009.spec.ts` | Mesa de Slot Machine deixa de aparecer ao jogador apos desativacao.            | API real, administrador e novo jogador; ajusta a resposta real do perfil para evitar o modal de bonus.                             |
+| `TC-010.spec.ts` | Edicao de nome e nascimento com senha atual, conferida ao reabrir o perfil.    | API real e novo usuario; ajusta a resposta real do perfil para evitar o modal de bonus.                                            |
+| `TC-011.spec.ts` | Sessao de Slot Machine com bonus diario, giro, rerolls e cash-out.             | API real, novo usuario, bonus disponivel e mesa Slot 1.                                                                            |
+| `TC-012.spec.ts` | Revelacao de carta de efeito no Gambit e exibicao do efeito atual.             | API real, novo usuario e mesa High Stakes Gambit; interacao com cartas no canvas.                                                  |
+| `TC-013.spec.ts` | Escolha de cartas nas etapas de um evento especial do Gambit.                  | API real e novo usuario; depende de encontrar um evento durante a partida.                                                         |
+| `TC-014.spec.ts` | Restauracao da sessao de Slot Machine ao sair e retornar, seguida de cash-out. | API real e novo usuario; desabilita cache HTTP para conferir a sessao persistida.                                                  |
+| `TC-015.spec.ts` | Restauracao da sessao de Gambit e continuidade ate o cash-out.                 | API real e novo usuario; desabilita cache HTTP e confere cartas, pontos e efeitos persistidos.                                     |
+| `TC-016.spec.ts` | Rejeicao de data de nascimento impossivel na edicao de perfil.                 | Cadastro e login reais; verifica validacao local e ausencia de requisicoes de gravacao.                                            |
+| `TC-017.spec.ts` | Rejeicao de cadastro com nickname ja utilizado.                                | API real; cria uma conta e tenta cadastrar outra com o mesmo nickname.                                                             |
+| `TC-018.spec.ts` | Bloqueio dos controles da Slot Machine para visitante nao autenticado.         | API real, sem login; confere resposta 401 e ausencia de requisicoes de jogo.                                                       |
+| `TC-019.spec.ts` | Troca de senha, rejeicao da senha antiga e login com a nova.                   | API real e novo usuario; atualizacao de perfil e autenticacao sem respostas simuladas.                                             |
+| `TC-020.spec.ts` | Bloqueio de mesas e rejeicao de giro por saldo insuficiente.                   | API real; solicita cadastro com 5 fichas e usa mesas Slot 0 a Slot 3. A mesa de entrada pode ser definida por E2E_FREE_SLOT_TABLE. |
+
+Os testes combinam integracao real e interceptacoes com `page.route`. As simulacoes verificam a resposta da interface a estados controlados, sem comprovar a regra correspondente no backend. No TC-007, por exemplo, o evento e disparado diretamente, sem provocar um `401` real.
+
+### Preparacao e execucao
+
+1. Instale as dependencias conforme a secao 6 e configure `.env`.
+2. Inicie o backend e seu banco de dados conforme as instrucoes do repositorio da API. O Playwright deste projeto inicia somente o frontend.
+3. Para TC-004, TC-005, TC-006, TC-007 e TC-009, configure `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD` com uma conta administradora previamente cadastrada. Sem essas variaveis, esses casos sao ignorados.
+4. Execute a suite ou selecione um arquivo e navegador pelos comandos abaixo.
+
+```bash
+# Todos os cenarios nos tres navegadores
+npm run test:e2e
+
+# Apenas Chromium
+npm run test:e2e -- --project=chromium
+
+# Um cenario especifico
+npm run test:e2e -- e2e/TC-001.spec.ts --project=chromium
+
+# Navegador visivel ou depuracao passo a passo
+npm run test:e2e -- e2e/TC-001.spec.ts --project=chromium --headed
+npm run test:e2e -- e2e/TC-001.spec.ts --project=chromium --debug
+
+# Interface interativa e relatorio da execucao
+npm run test:e2e:ui
+npm run test:e2e:report
+
+# Listar os casos sem executar os fluxos
+npm run test:e2e -- --list
+```
+
+Se os navegadores ainda nao estiverem instalados, execute `npx playwright install`. No Linux/CI, o pipeline usa `npx playwright install --with-deps` para instalar tambem as dependencias do sistema.
+
+Configuracoes de execucao:
+
+- Projetos `chromium`, `firefox` e `webkit`, com perfis desktop.
+- Um worker (`workers: 1`), mesmo com `fullyParallel: true` habilitado.
+- Sem repeticao automatica local; uma nova tentativa em caso de falha no CI.
+- `test.only` proibido no CI por `forbidOnly`.
+- Localmente, inicia `npm run dev -- --port 5173` ou reutiliza um servidor existente no endereco configurado.
+- No CI, executa `npm run build && npm run preview -- --port 5173`, sem reutilizar servidor existente.
+- Tempo limite de 120 segundos para o servidor ficar disponivel.
+
+O helper `e2e/helpers/CreateAccount.ts` cadastra e autentica novos jogadores pela interface. Os testes criam dados reais na API: as contas nao possuem limpeza automatica; TC-004, TC-005 e TC-009 removem as mesas no final do fluxo, mas uma falha anterior pode deixar registros. Use uma base destinada a testes.
+
+### Relatorios e evidencias
+
+- Resultado textual no terminal com o reporter `list`.
+- Relatorio HTML em `playwright-report/`, aberto com `npm run test:e2e:report`.
+- Resultado estruturado em `playwright-report/results.json`.
+- Videos habilitados para todas as execucoes e screenshots automaticos em falhas.
+- Trace na primeira repeticao (`on-first-retry`). Como localmente nao ha retries, use `--retries=1` para obter esse trace se o teste falhar e for repetido.
+- Screenshots das etapas capturados por `e2e/helpers/CaptureScreenshot.ts`, salvos no diretorio de saida do teste e anexados ao relatorio, inclusive em cenarios aprovados.
+
+Os arquivos de execucao ficam em `test-results/`. Esse diretorio e `playwright-report/` estao ignorados pelo Git. As capturas sao evidencias dos passos; a suite nao configura comparacao visual de screenshots com imagens de referencia.
+
+Se um caso aparecer como `skipped`, confira as credenciais exigidas. Para erros de conexao, verifique separadamente a URL do frontend (`E2E_BASE_URL`) e a URL da API (`VITE_API_BASE_URL`). Para falhas de uma etapa, consulte a mensagem de assercao e os anexos no relatorio HTML.
 
 ## 15. Qualidade de Codigo
 
@@ -445,6 +557,8 @@ Ferramentas configuradas:
 - **Husky:** hook `commit-msg`.
 - **Commitlint:** configurado com `@commitlint/config-conventional`.
 - **lint-staged:** executa `eslint --fix` e `prettier --write` em arquivos `ts` e `tsx`.
+
+Observacao: a configuracao de `lint-staged` existe em `package.json`, mas nao ha hook `pre-commit` versionado que a execute automaticamente. O hook identificado e `commit-msg`.
 
 Tipos de commit aceitos pelo Commitlint:
 
@@ -464,31 +578,39 @@ Scripts relevantes:
 
 ```bash
 npm run lint
+npm run lint:check
 npm run format
+npm run format:check
 npm run build
 npm test
+npm run test:e2e
 ```
+
+Os comandos `lint` e `format` alteram arquivos; `lint:check` e `format:check` apenas verificam e sao usados no CI.
 
 ## 16. Pipeline CI/CD
 
-O arquivo `Jenkinsfile` define um pipeline Jenkins com:
+O arquivo `.github/workflows/ci.yml` define o pipeline no **GitHub Actions**, disparado em pushes para `main` e em pull requests. Execucoes anteriores do mesmo workflow e referencia sao canceladas quando uma nova execucao comeca.
 
-1. Checkout do repositorio.
-2. Instalacao de dependencias com `npm install --legacy-peer-deps`.
-3. Execucao de lint com `npm run lint`.
-4. Execucao de formatacao com `npm run format`.
-5. Build com `npm run build`.
-6. Deploy na Vercel via `curl -X POST $VERCEL_DEPLOY_HOOK_URL`.
-7. Limpeza do workspace com `cleanWs()`.
+1. `install`: instala dependencias com `npm install --legacy-peer-deps`.
+2. `lint`: executa `npm run lint:check` e `npm run format:check`.
+3. `test`: executa a suite Jest com `npm run test`.
+4. `build`: gera o bundle e publica `dist/` como artefato `application-dist`.
+5. `e2e`: instala os navegadores e dependencias do Playwright, faz build e executa `npm run test:e2e`.
 
 Configuracoes identificadas:
 
-- Node configurado como `node-22`.
-- Variavel segura `VERCEL_DEPLOY_HOOK_URL` carregada via credentials do Jenkins.
+- Jobs sequenciais por `needs`, em `ubuntu-latest`, com Node.js 22, cache do npm e limite de 15 minutos por job.
+- Cada job faz checkout e instala suas dependencias novamente.
+- Artefatos `application-dist` e `playwright-report` mantidos por 7 dias.
+- Upload de `playwright-report/` com `if: always()`, inclusive quando os testes falham, se houver relatorio gerado.
+- Nao ha etapa de deploy no workflow atual nem `Jenkinsfile` no repositorio.
 
-Lacuna identificada:
+Lacunas identificadas:
 
-- Nao ha stage de testes automatizados no Jenkinsfile, apesar de existir `npm test` e uma suite de testes no repositorio.
+- O workflow ainda nao inicia backend/banco nem injeta `VITE_API_BASE_URL`, `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD`. Os casos que usam API real dependem dessa preparacao; os que exigem administrador sao ignorados sem credenciais.
+- O preview usado no CI e um build de producao e exige a URL da API configurada antes do build. A URL passada ao servidor de preview nao substitui a configuracao incorporada no bundle.
+- Existe upload do relatorio HTML, mas nao um artefato separado de `test-results/`.
 
 ## 17. Refatoracoes Identificadas
 
@@ -499,8 +621,8 @@ Possiveis refatoracoes observadas a partir do codigo atual:
 - Extrair regras repetidas de validacao de formularios para helpers ou schemas compartilhados.
 - Criar guard de rota para rotas que exigem autenticacao, caso a regra de negocio seja impedir acesso direto por URL.
 - Implementar ou remover rotas placeholders (`/register`, `/dashboard`, `/roulette-room`) de acordo com o escopo final do projeto.
-- Adicionar `npm test` ao pipeline CI/CD.
-- Revisar a etapa `npm run format` no Jenkins, pois ela altera arquivos no workspace em vez de apenas verificar formatacao.
+- Completar a preparacao de backend, banco e variaveis no job E2E do GitHub Actions.
+- Adicionar limpeza garantida dos dados criados pelos testes, inclusive quando um cenario falha.
 
 ## 18. Decisoes Tecnicas
 
@@ -517,6 +639,7 @@ Decisoes identificadas no codigo:
 - Resultado dos jogos orientado por payloads do backend, com o frontend adaptando os dados para animacoes.
 - Uso de Framer Motion para transicoes e feedback visual.
 - Uso de testes unitarios e de integracao de componentes para fluxos criticos.
+- Uso de Playwright em tres navegadores, com cenarios reais e simulados e evidencias anexadas aos relatorios.
 
 ## 19. Uso de IA
 
@@ -619,7 +742,7 @@ Critérios de aceitação:
 
 Dado que estou na tela de cadastro, quando preencho e-mail válido e senha forte e confirmo, então minha conta é criada e recebo um saldo inicial de fichas.
 Dado que informo um e-mail já cadastrado, quando submeto, então recebo mensagem de erro e o cadastro não é concluído.
-Dado que a senha não atende às regras de validação, quando submeto, então o Zod bloqueia o envio e exibe o erro antes de chamar a API.
+Dado que a senha não atende às regras de validação, quando submeto, então a validação do formulário bloqueia o envio e exibe o erro antes de chamar a API.
 
 Rastreabilidade:
 PR Back: #2 Feat/create user entity and #3 Feat/auth user routes
@@ -683,4 +806,4 @@ Esse refactor foi feito para realocar o token dos usuarios que estava no LocalSt
 
 O RedGreen Frontend apresenta uma aplicacao React com arquitetura organizada em camadas, integracao com API, cache com SWR, interface visual consistente e dois sistemas de jogo implementados. A base de testes cobre diversos fluxos relevantes, especialmente autenticação, ranking, modais, Slot Machine e Gambit.
 
-As principais lacunas identificadas para evolucao academica e tecnica sao a remocao ou conclusao de placeholders, a integracao real de schemas/formularios com as bibliotecas ja instaladas, a inclusao dos testes no pipeline CI/CD e a limpeza de arquivos residuais do template inicial.
+As principais lacunas identificadas para evolucao academica e tecnica sao a remocao ou conclusao de placeholders, a integracao real de schemas/formularios com as bibliotecas ja instaladas, a preparacao completa do ambiente E2E no pipeline CI/CD e a limpeza de arquivos residuais do template inicial. Jest e Playwright ja possuem etapas no GitHub Actions, e a suite de navegador registra evidencias dos fluxos de autenticacao, administracao de mesas e edicao de perfil.
