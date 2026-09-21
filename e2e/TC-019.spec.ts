@@ -5,6 +5,7 @@ import { WaitForStableBox } from './helpers/WaitForStableBox';
 
 test.use({ video: 'off' });
 
+const BirthDate = '01/01/2001';
 const NewPassword = 'e2e-new-password-456';
 const ProfileUpdatedMessage = 'PERFIL ATUALIZADO COM SUCESSO!';
 const InvalidPasswordMessage = 'SENHA INVÁLIDA.';
@@ -80,7 +81,7 @@ test.describe('TC-019 - Unhappy Path', () => {
         name: 'Editar perfil',
       }).click();
       await expect(EditProfileTitle).toBeVisible();
-      await expect(BirthDateField).toHaveValue(Account.BirthDate);
+      await expect(BirthDateField).toHaveValue(BirthDate);
 
       await NewPasswordField.fill(NewPassword);
       await ConfirmNewPasswordField.fill(NewPassword);

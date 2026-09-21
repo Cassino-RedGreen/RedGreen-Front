@@ -5,6 +5,7 @@ import { WaitForStableBox } from './helpers/WaitForStableBox';
 
 test.use({ video: 'off' });
 
+const ValidBirthDate = '01/01/2001';
 const InvalidBirthDate = '31/02/2000';
 const WriteMethods = ['POST', 'PATCH', 'PUT', 'DELETE'];
 
@@ -64,7 +65,7 @@ test.describe('TC-016 - Unhappy Path', () => {
 
       await EditProfileItem.click();
       await expect(EditProfileTitle).toBeVisible();
-      await expect(BirthDateField).toHaveValue(Account.BirthDate);
+      await expect(BirthDateField).toHaveValue(ValidBirthDate);
       await WaitForStableBox(EditProfileTitle);
       await Capture('03-edit-profile-original-birth-date');
 

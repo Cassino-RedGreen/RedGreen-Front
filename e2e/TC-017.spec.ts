@@ -7,6 +7,7 @@ import { WaitForStableBox } from './helpers/WaitForStableBox';
 test.use({ video: 'off' });
 
 const NicknameTakenMessage = 'Nickname already taken';
+const BirthDate = '01/01/2001';
 
 test.describe('TC-017 - Unhappy Path', () => {
   test('rejects a signup with a nickname already taken', async ({
@@ -56,9 +57,7 @@ test.describe('TC-017 - Unhappy Path', () => {
 
       await RecordedPage.getByPlaceholder('Nome').fill(AccountB.Name);
       await NicknameField.fill(AccountB.Nickname);
-      await RecordedPage.getByPlaceholder('DD/MM/AAAA').fill(
-        AccountA.BirthDate
-      );
+      await RecordedPage.getByPlaceholder('DD/MM/AAAA').fill(BirthDate);
       await EmailField.fill(AccountB.Email);
       await RecordedPage.getByPlaceholder('Senha', { exact: true }).fill(
         AccountB.Password
