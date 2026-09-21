@@ -115,6 +115,14 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+    env:
+      # Lidas pelo docker compose (up/down) e pela API do backend
+      POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_SSL: ${{ vars.POSTGRES_SSL }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v7
@@ -143,20 +151,14 @@ jobs:
       - name: Start backend API
         working-directory: backend
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5433/redgreen
-          POSTGRES_HOST: localhost
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: redgreen
-          POSTGRES_PORT: '5433'
-          POSTGRES_SSL: 'false'
-          JWT_SECRET: replace-with-a-strong-secret
-          PORT: '3000'
+          DATABASE_URL: postgres://${{ vars.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@${{ vars.POSTGRES_HOST }}:${{ vars.POSTGRES_PORT }}/${{ vars.POSTGRES_DB }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ vars.PORT }}
         run: nohup npm run start:dev > ../backend.log 2>&1 &
 
       - name: Wait for backend API
         run: |
-          if ! npx wait-on tcp:3000 --timeout 60000; then
+          if ! npx wait-on tcp:${{ vars.PORT }} --timeout 60000; then
             echo "::error::Backend API did not start within 60s"
             cat backend.log
             exit 1
@@ -170,7 +172,9 @@ jobs:
 
       - name: Run E2E tests
         env:
-          VITE_API_BASE_URL: http://localhost:3000
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          E2E_ADMIN_EMAIL: ${{ vars.E2E_ADMIN_EMAIL }}
+          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
         run: npm run test:e2e
 
       - name: Upload E2E report
