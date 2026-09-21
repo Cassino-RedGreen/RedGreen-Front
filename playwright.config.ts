@@ -1,4 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
+import { loadEnv } from 'vite';
+
+const LoadedEnv = loadEnv('', process.cwd(), '');
+for (const [Key, Value] of Object.entries(LoadedEnv)) {
+  if (process.env[Key] === undefined) process.env[Key] = Value;
+}
 
 const BaseUrl = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
 const IsCi = Boolean(process.env.CI);
@@ -8,7 +14,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: IsCi,
   retries: IsCi ? 1 : 0,
-  workers: IsCi ? 1 : undefined,
+  workers: 1,
   reporter: [
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
@@ -18,7 +24,7 @@ export default defineConfig({
     baseURL: BaseUrl,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: 'on',
   },
   projects: [
     {
