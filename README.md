@@ -643,80 +643,12 @@ Decisoes identificadas no codigo:
 
 ## 19. Uso de IA
 
-Modelos utilizados
+Patrick Augusto Lins de Oliveira Damião
+Foi utilizado o Copilot, sempre com o contexto do README explicando a estrutura do projeto (com foco na stack) e apoio do documento com as orientações da tarefa. Durante todas as etapas de desenvolvimento dos testes com o Playwright o processo foi feito a partir de instruções detalhadas de cada etapa (incluindo os momentos onde deveriam ser salvas screenshots), com a maior parte do código sendo gerado diretamente pela IA. A IA ficou responsável apenas por criar o código dos testes, mas a idealização dos testes foi feita por conta própria.
+A IA também foi utilizada para desenvolver os testes de performance, tanto na elaboração do que poderia ser testado quanto na criação dos códigos de teste.
 
-Claude Sonnet (Anthropic): utilizado por meio da interface de chat em claude.ai.
-ChatGPT (OpenAI): utilizado por meio da interface de chat em chatgpt.com.
-
-Para que foram usados
-O Claude foi utilizado como apoio no desenvolvimento do front-end do projeto, auxiliando na refatoração de componentes, criação de novas funcionalidades e resolução de problemas técnicos. As principais áreas de atuação foram:
-
-Refatoração do sistema de mesas do Slot Machine, separando um arquivo grande em componentes menores e reutilizáveis
-Criação do sistema de mesas do jogo Gambit, seguindo o mesmo padrão já estabelecido no projeto
-Implementação do HUD e painel de aposta do jogo Gambit
-Implementação do fluxo de sessão expirada com interceptor 401, modal de aviso e redirecionamento
-Orientação na correção de bugs como casing incorreto de variáveis no route state, chave de token errada e rotas incorretas
-Apoio na atualização de testes automatizados para refletir as mudanças realizadas
-Sugestão de mensagens de commit seguindo o padrão Conventional Commits
-
-O ChatGPT foi utilizado como apoio no desenvolvimento do front-end do projeto, auxiliando na implementação de novas funcionalidades, criação e validação de testes automatizados, refatoração de componentes, correção de erros de tipagem e documentação das alterações realizadas. As principais áreas de atuação foram:
-
-Criação e revisão de testes unitários para os componentes do sistema de mesas
-Explicação do funcionamento de testes com e sem mocks
-Auxílio na implementação do sistema de mesas e progressão dos jogos
-Integração do painel de ranking às telas dos jogos
-Migração do armazenamento do token de autenticação de LocalStorage para Cookies
-Correção de erros de TypeScript relacionados a interfaces e hooks
-Revisão da documentação da Pull Request
-Criação de instruções de teste para validação das funcionalidades implementadas
-Sugestões para internacionalização de mensagens retornadas pelo backend
-Apoio em refatorações e organização dos componentes da aplicação
-
-Exemplos reais de prompts usados
-Claude
-
-1. Refatoração do sistema de mesas
-
-"Ok claude eu preciso fazer um refactor, pois o arquivo está muito grande. Eu queria separar em arquivos para depois fazer imports. Me ajude a fazer, fazendo passo a passo, a parte do arquivo que eu vou retirar e colocar no novo."
-
-O Claude orientou a extração dos componentes um a um, indicando o que remover do arquivo original e o que adicionar ao novo, mantendo os imports e props corretos. 2. Implementação da sessão expirada
-
-"Eu preciso mudar isso. O usuário possui um timer de quanto tempo o token dele não expira, e quando expira é necessário um aviso de que a sessão dele expirou e é preciso relogar."
-
-O Claude sugeriu adicionar um interceptor de resposta no apiClient para capturar erros 401, disparar um evento customizado e criar um componente listener que exibe o modal e redireciona para o login. 3. Sistema de mesas do Gambit
-
-"Ok, claude chegou as apis que eu estava precisando. Por onde podemos começar?"
-
-A partir dos endpoints e campos retornados pelo Swagger, o Claude orientou a criação dos modais de criação e edição, do card da mesa e da página de listagem, seguindo o padrão já existente no projeto.
-ChatGPT
-
-1. Explicação dos testes unitários
-
-"Eu vou mandar todos os testes que eu fiz, depois preciso que me explica cada teste e o que está testando."
-
-O ChatGPT analisou os testes unitários criados para os componentes do sistema de mesas e explicou individualmente o objetivo de cada caso de teste, quais comportamentos estavam sendo validados e quais cenários de sucesso e erro estavam sendo cobertos. 2. Migração da autenticação para Cookies
-
-"Uma coisa que estávamos fazendo é salvar o token no localStorage, isso tem que ser salvo no cookie."
-
-O ChatGPT auxiliou na migração do mecanismo de autenticação, sugerindo uma estrutura para armazenamento, leitura e remoção de cookies e identificando pontos do projeto que precisariam ser atualizados. 3. Tradução das mensagens do Backend
-
-"Possui mensagens que ainda vêm do backend, que precisam ser em português."
-
-O ChatGPT auxiliou na criação de uma estratégia para mapear mensagens retornadas pela API e exibi-las em português para o usuário final sem necessidade de alterações no backend. 4. Documentação da Pull Request
-
-"Como posso explicar a mudança que eu fiz no SlotMachine?"
-
-O ChatGPT auxiliou na elaboração da descrição das alterações realizadas, ajudando a documentar as funcionalidades implementadas e o impacto das mudanças no projeto. 5. Correção de erros de tipagem
-
-"A propriedade 'userType' não existe no tipo..."
-
-O ChatGPT auxiliou na análise de erros de TypeScript relacionados a interfaces, hooks e propriedades inexistentes, sugerindo ajustes nos tipos e retornos das funções utilizadas.
-Dinâmica de uso
-As ferramentas foram utilizadas individualmente como apoio durante o desenvolvimento, sempre com o desenvolvedor conduzindo as decisões. Os arquivos eram compartilhados na conversa e as ferramentas orientavam as mudanças passo a passo, cabendo ao desenvolvedor aplicar, testar e validar cada alteração.
-As respostas não foram aplicadas sem revisão. Sugestões foram analisadas, ajustadas ou descartadas de acordo com os requisitos e padrões do projeto.
-O que não foi feito por IA
-A definição dos requisitos, regras de negócio, arquitetura, identidade visual e experiência dos jogos foi realizada. A validação funcional de todas as alterações, a abertura e merge de pull requests e as decisões finais durante code reviews permaneceram sob responsabilidade dos desenvolvedores.
-Correções pontuais como ajustes de imports incorretos, erros de digitação em nomes de arquivos e pequenas correções de tipagem foram feitas manualmente. Alguns testes também foram escritos e ajustados diretamente , sem auxílio da IA. A implementação final das funcionalidades, ajustes de layout, execução dos testes e validação das regras de negócio foram realizadas manualmente. As ferramentas atuaram apenas como apoio técnico durante o processo de desenvolvimento e documentação do projeto.
+Antonio Feliciano da Silveira Neto 
+Durante o desenvolvimento da suíte de testes, utilizei o Claude (Anthropic) como apoio ao processo de criação dos casos de teste. Usei o Claude no navegador para pensar e estruturar os prompts a partir da minha ideia inicial de cada cenário descrevendo em linguagem natural o fluxo que eu queria testar, as telas envolvidas e o que deveria ser validado e o Claude ajudava a organizar e refinar essa descrição. Com o prompt já mais claro e estruturado, eu o utilizava na extensão do Claude no VSCode para apoiar a implementação do código de automação. A execução, validação e revisão final dos testes foram feitas por mim, com a IA atuando apenas como suporte ao raciocínio e à escrita do código, não como substituta da autoria do trabalho.
 
 ## 20. Metodologia de Desenvolvimento
 
