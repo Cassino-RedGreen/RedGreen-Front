@@ -1,0 +1,2226 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\node_modules\\@playwright\\test\\cli.js",
+      "test"
+    ],
+    "configFile": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\playwright.config.ts",
+    "rootDir": "C:/Users/peron/Documents/GitHub/RedGreen-Front/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/peron/Documents/GitHub/RedGreen-Front/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/peron/Documents/GitHub/RedGreen-Front/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/peron/Documents/GitHub/RedGreen-Front/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Users/peron/Documents/GitHub/RedGreen-Front/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/peron/Documents/GitHub/RedGreen-Front/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Users/peron/Documents/GitHub/RedGreen-Front/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev -- --port 5173",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000,
+      "env": {
+        "VITE_API_BASE_URL": "http://localhost:3000"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "TC-001.spec.ts",
+      "file": "TC-001.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-001 - Happy Path",
+          "file": "TC-001.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "creates an account and logs in with the same account",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6485,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:06.752Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-login-page",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-chromium\\attachments\\01-login-page-85deba598d8942e4ac3707d61c5942dec811fcf9.png"
+                        },
+                        {
+                          "name": "02-email-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-chromium\\attachments\\02-email-filled-6963a5f1135fe239a4b2dff4d33f5497e9244400.png"
+                        },
+                        {
+                          "name": "03-signup-form",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-chromium\\attachments\\03-signup-form-b9537d5e17147d0e4ae4fc903592573a6f4f2fca.png"
+                        },
+                        {
+                          "name": "04-signup-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-chromium\\attachments\\04-signup-filled-d392f9ab6d5c50b362fda9d6279211fa2ff4328f.png"
+                        },
+                        {
+                          "name": "05-post-registration-login",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-chromium\\attachments\\05-post-registration-login-8bf13b97146a24f505720884c44b8504d4368c6c.png"
+                        },
+                        {
+                          "name": "06-authenticated-home",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-chromium\\attachments\\06-authenticated-home-061e3bcadb87e0ed82a6fbabfa53f853e812a238.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "577687e59bef6f4b4ce3-f7cfa44c59d4b88a39fe",
+              "file": "TC-001.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "creates an account and logs in with the same account",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6432,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:32.246Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-login-page",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-firefox\\attachments\\01-login-page-dd78319ae0dc14ca4ef4cfec89bc115a4e20dce1.png"
+                        },
+                        {
+                          "name": "02-email-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-firefox\\attachments\\02-email-filled-f508385252bcdfa622c04bd1f49f0d7613e89f3a.png"
+                        },
+                        {
+                          "name": "03-signup-form",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-firefox\\attachments\\03-signup-form-56e93bf4898d47e6fb321248739407738aa949dc.png"
+                        },
+                        {
+                          "name": "04-signup-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-firefox\\attachments\\04-signup-filled-25b8700cc13dcca24e353ad49583ed34e22b5d42.png"
+                        },
+                        {
+                          "name": "05-post-registration-login",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-firefox\\attachments\\05-post-registration-login-885ddaa41cf32d3a494f86bb80152ac26226b538.png"
+                        },
+                        {
+                          "name": "06-authenticated-home",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-firefox\\attachments\\06-authenticated-home-e45d3fdc22d3b2dfb82b93c5d57bd9619f9c007f.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-firefox\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "577687e59bef6f4b4ce3-9e4db718665fa607d303",
+              "file": "TC-001.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "creates an account and logs in with the same account",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5830,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:57.989Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-login-page",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-webkit\\attachments\\01-login-page-83c751074e29f750e260d6a6ada888702e43608b.png"
+                        },
+                        {
+                          "name": "02-email-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-webkit\\attachments\\02-email-filled-621b7e6a74762676f8c1576bc0528a8278bed056.png"
+                        },
+                        {
+                          "name": "03-signup-form",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-webkit\\attachments\\03-signup-form-fb7d37f450f301091e309ba4559b7a874ee926f3.png"
+                        },
+                        {
+                          "name": "04-signup-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-webkit\\attachments\\04-signup-filled-b6b7c6aedcd7e1a9ca3377e20ae6d79d5ddab422.png"
+                        },
+                        {
+                          "name": "05-post-registration-login",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-webkit\\attachments\\05-post-registration-login-3380574e9abd172e423d6f5eb5ac80c0d16b6c72.png"
+                        },
+                        {
+                          "name": "06-authenticated-home",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-webkit\\attachments\\06-authenticated-home-1dc2a0f668f91751456114c75cfb23adf4e5bc2d.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-001-TC-001---Happy-Path-ca1e3-gs-in-with-the-same-account-webkit\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "577687e59bef6f4b4ce3-bd77ed6cceaea85db5f0",
+              "file": "TC-001.spec.ts",
+              "line": 5,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-002.spec.ts",
+      "file": "TC-002.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-002 - Unhappy Path",
+          "file": "TC-002.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "rejects short and mismatched passwords during registration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4313,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:13.529Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-short-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-chromium\\attachments\\01-short-password-filled-a0c820b0aef563e0aa6541812110914aaa364a84.png"
+                        },
+                        {
+                          "name": "02-short-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-chromium\\attachments\\02-short-password-error-b3eed5497000d607c68cfe4390e5b74218d78d57.png"
+                        },
+                        {
+                          "name": "03-mismatched-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-chromium\\attachments\\03-mismatched-password-filled-389259d856c8b9ff3de35bebd02ef057049e3dae.png"
+                        },
+                        {
+                          "name": "04-mismatched-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-chromium\\attachments\\04-mismatched-password-error-84375ebcfb9538174358cc7be4e7446efca26ea0.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bfc1d44aad53a9e876a9-63002178ecfd0de8d72f",
+              "file": "TC-002.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "rejects short and mismatched passwords during registration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4085,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:39.455Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-short-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-firefox\\attachments\\01-short-password-filled-bce4b2286680b03d7234e0f4f0d429ca569e3913.png"
+                        },
+                        {
+                          "name": "02-short-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-firefox\\attachments\\02-short-password-error-b5590f2b01907e7f0fa77e5b2f0c8850badc9ca0.png"
+                        },
+                        {
+                          "name": "03-mismatched-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-firefox\\attachments\\03-mismatched-password-filled-731866292fda8a12095136991fe13c3718b6ec21.png"
+                        },
+                        {
+                          "name": "04-mismatched-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-firefox\\attachments\\04-mismatched-password-error-38a8fab1aa49de8cf012c1ec69c1be6fdd09fbb1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-firefox\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bfc1d44aad53a9e876a9-e153fa237a0828cb2043",
+              "file": "TC-002.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "rejects short and mismatched passwords during registration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6253,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:04.766Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-short-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-webkit\\attachments\\01-short-password-filled-fcc0866c16d5374022577389697c1c79aadf754a.png"
+                        },
+                        {
+                          "name": "02-short-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-webkit\\attachments\\02-short-password-error-150b0e81ca26edea12455ccc6f95b91278d31878.png"
+                        },
+                        {
+                          "name": "03-mismatched-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-webkit\\attachments\\03-mismatched-password-filled-51bdf1e35175efecf4963caab9cb7b70a64c3fb6.png"
+                        },
+                        {
+                          "name": "04-mismatched-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-webkit\\attachments\\04-mismatched-password-error-925fe80f687aee5ab052fc9fe8afdfe2a9a8d91e.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-002-TC-002---Unhappy-Pa-a6e49-sswords-during-registration-webkit\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "bfc1d44aad53a9e876a9-eae8c273f490a9a91315",
+              "file": "TC-002.spec.ts",
+              "line": 38,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-003.spec.ts",
+      "file": "TC-003.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-003 - Unhappy Path",
+          "file": "TC-003.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "recognizes a registered email and rejects an incorrect password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3393,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:17.881Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-login-page",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-chromium\\attachments\\01-login-page-32af31f5faf217ac63eb85b0c06f664668c0d9eb.png"
+                        },
+                        {
+                          "name": "02-signup-form",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-chromium\\attachments\\02-signup-form-1576e2d08065e6afea41a7099d2a2d6db4841a65.png"
+                        },
+                        {
+                          "name": "03-signup-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-chromium\\attachments\\03-signup-filled-26bd851bef1634e5a2718e77f1ae0173ecdd2c4e.png"
+                        },
+                        {
+                          "name": "04-post-registration-login",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-chromium\\attachments\\04-post-registration-login-21ca18016351a9796bd1ee8707bc1676ac40c43f.png"
+                        },
+                        {
+                          "name": "05-incorrect-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-chromium\\attachments\\05-incorrect-password-filled-c1de0a17e1311a22590ce4cb1ce1af94bc0c1baa.png"
+                        },
+                        {
+                          "name": "06-incorrect-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-chromium\\attachments\\06-incorrect-password-error-fe6a4da5ebf1b6afcdbf51b1b125f293aa1e4621.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92d5083d9b78aba49eb2-aaf52b3e45d49df07355",
+              "file": "TC-003.spec.ts",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "recognizes a registered email and rejects an incorrect password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3089,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:43.579Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-login-page",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-firefox\\attachments\\01-login-page-5442ec4a9c3e4fb92cc835f3576984edf667d29b.png"
+                        },
+                        {
+                          "name": "02-signup-form",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-firefox\\attachments\\02-signup-form-4d96cd0cc8ec1309c676018364e49b50534bbcaa.png"
+                        },
+                        {
+                          "name": "03-signup-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-firefox\\attachments\\03-signup-filled-ff362fd6ae58018adc722b081c4f039aef06f4f3.png"
+                        },
+                        {
+                          "name": "04-post-registration-login",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-firefox\\attachments\\04-post-registration-login-b2f98955d92dbab0bc5788f842ca1129ec2f7808.png"
+                        },
+                        {
+                          "name": "05-incorrect-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-firefox\\attachments\\05-incorrect-password-filled-f3c913db0877e05a026089fb12471672f8730779.png"
+                        },
+                        {
+                          "name": "06-incorrect-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-firefox\\attachments\\06-incorrect-password-error-bbfcd5e1833baed049d8d64696c1e54276a8b788.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-firefox\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92d5083d9b78aba49eb2-4ff2a4221b509cc2dda1",
+              "file": "TC-003.spec.ts",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "recognizes a registered email and rejects an incorrect password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6203,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:11.057Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-login-page",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-webkit\\attachments\\01-login-page-3c4a2fbcba848a6850c9639b6178ebb2f0972a04.png"
+                        },
+                        {
+                          "name": "02-signup-form",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-webkit\\attachments\\02-signup-form-e8dc226b655b7cb0fca22a4394fd72c303b347ca.png"
+                        },
+                        {
+                          "name": "03-signup-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-webkit\\attachments\\03-signup-filled-480d1efc37864af58edb9a9bc8cb5d7274066507.png"
+                        },
+                        {
+                          "name": "04-post-registration-login",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-webkit\\attachments\\04-post-registration-login-edca2f68c6865fe0eee3af2aa301de7d5e9c4aaf.png"
+                        },
+                        {
+                          "name": "05-incorrect-password-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-webkit\\attachments\\05-incorrect-password-filled-2718ffc5ab862c071a4253470a740b5ee6d5218e.png"
+                        },
+                        {
+                          "name": "06-incorrect-password-error",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-webkit\\attachments\\06-incorrect-password-error-7f4c6cdea9ec28327a5c3e94e00507b51cac08ec.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-003-TC-003---Unhappy-Pa-f76cd-jects-an-incorrect-password-webkit\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92d5083d9b78aba49eb2-48e83617a133d7c9b066",
+              "file": "TC-003.spec.ts",
+              "line": 24,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-004.spec.ts",
+      "file": "TC-004.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-004 - Happy Path",
+          "file": "TC-004.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "administrator creates and edits a new table",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-004.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:21.283Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-004.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "e48783768359d1219d03-5a02feeda2ab3ef513ee",
+              "file": "TC-004.spec.ts",
+              "line": 13,
+              "column": 3
+            },
+            {
+              "title": "administrator creates and edits a new table",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-004.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:46.677Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-004.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "e48783768359d1219d03-6e44adde22ffd48808e1",
+              "file": "TC-004.spec.ts",
+              "line": 13,
+              "column": 3
+            },
+            {
+              "title": "administrator creates and edits a new table",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-004.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:17.267Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-004.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "e48783768359d1219d03-67dc2e5ef283b88a653a",
+              "file": "TC-004.spec.ts",
+              "line": 13,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-005.spec.ts",
+      "file": "TC-005.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-005 - Happy Path",
+          "file": "TC-005.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "administrator creates and edits a Gambit table",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-005.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:21.284Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-005.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "19d53905058c42a34022-524eb0cf5c782c5106ed",
+              "file": "TC-005.spec.ts",
+              "line": 13,
+              "column": 3
+            },
+            {
+              "title": "administrator creates and edits a Gambit table",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-005.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:46.678Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-005.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "19d53905058c42a34022-837988b555c2ed9ef0a4",
+              "file": "TC-005.spec.ts",
+              "line": 13,
+              "column": 3
+            },
+            {
+              "title": "administrator creates and edits a Gambit table",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-005.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:17.268Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-005.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "19d53905058c42a34022-c409e8bbe44856071783",
+              "file": "TC-005.spec.ts",
+              "line": 13,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-006.spec.ts",
+      "file": "TC-006.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-006 - Unhappy Path",
+          "file": "TC-006.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "blocks navigation to another Gambit table when a session is active",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:21.284Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c5494511e34622abe317-d7be26f8fb3bffda71b6",
+              "file": "TC-006.spec.ts",
+              "line": 39,
+              "column": 3
+            },
+            {
+              "title": "blocks navigation to another Slot Machine table when a session is active",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:21.285Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c5494511e34622abe317-dfa72c6f614573769b7d",
+              "file": "TC-006.spec.ts",
+              "line": 87,
+              "column": 3
+            },
+            {
+              "title": "blocks navigation to another Gambit table when a session is active",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:46.679Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c5494511e34622abe317-64ab85f027cfb0b188f9",
+              "file": "TC-006.spec.ts",
+              "line": 39,
+              "column": 3
+            },
+            {
+              "title": "blocks navigation to another Slot Machine table when a session is active",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:46.679Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c5494511e34622abe317-35e04ab496ea7070af0c",
+              "file": "TC-006.spec.ts",
+              "line": 87,
+              "column": 3
+            },
+            {
+              "title": "blocks navigation to another Gambit table when a session is active",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:17.268Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c5494511e34622abe317-836da8c68ad2bcaf08e9",
+              "file": "TC-006.spec.ts",
+              "line": 39,
+              "column": 3
+            },
+            {
+              "title": "blocks navigation to another Slot Machine table when a session is active",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:17.269Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-006.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c5494511e34622abe317-8296cbc884cec9f2f90a",
+              "file": "TC-006.spec.ts",
+              "line": 87,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-007.spec.ts",
+      "file": "TC-007.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-007 - Unhappy Path",
+          "file": "TC-007.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "blocks interaction and redirects to login after session expiration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-007.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:21.290Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-007.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ca7b40687a645774213e-ba9ee824d864221390c0",
+              "file": "TC-007.spec.ts",
+              "line": 51,
+              "column": 3
+            },
+            {
+              "title": "blocks interaction and redirects to login after session expiration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-007.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:46.681Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-007.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ca7b40687a645774213e-807dad8ebdf7c4507219",
+              "file": "TC-007.spec.ts",
+              "line": 51,
+              "column": 3
+            },
+            {
+              "title": "blocks interaction and redirects to login after session expiration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-007.spec.ts",
+                        "line": 8,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:17.270Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-007.spec.ts",
+                            "line": 8,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ca7b40687a645774213e-934fe5eabb48793271c8",
+              "file": "TC-007.spec.ts",
+              "line": 51,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-008.spec.ts",
+      "file": "TC-008.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-008 - Unhappy Path",
+          "file": "TC-008.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "shows the inactive-account message when login is rejected",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1948,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:21.327Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-inactive-account-email",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-chromium\\attachments\\01-inactive-account-email-c3ace9133c94594b866b3dd47f5c07fb73a1509e.png"
+                        },
+                        {
+                          "name": "02-inactive-account-password",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-chromium\\attachments\\02-inactive-account-password-e74a10be9b83aa8ee1a84f2f1a1ec7803eba7052.png"
+                        },
+                        {
+                          "name": "03-inactive-account-message",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-chromium\\attachments\\03-inactive-account-message-67c7eb4e6f78d09d1be107780453c3bb3103c9d5.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b953b07c8b8e6d4118b0-f146d0ab1f5526cacaa1",
+              "file": "TC-008.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "shows the inactive-account message when login is rejected",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1888,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:46.719Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-inactive-account-email",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-firefox\\attachments\\01-inactive-account-email-24fbf2d150b679f2ccd4facc3bb30e7ef753d4f3.png"
+                        },
+                        {
+                          "name": "02-inactive-account-password",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-firefox\\attachments\\02-inactive-account-password-912696338e3628acc494c36297b9694debfd9009.png"
+                        },
+                        {
+                          "name": "03-inactive-account-message",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-firefox\\attachments\\03-inactive-account-message-0be6324f3121f8be566873466e7d293f81b4c169.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-firefox\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b953b07c8b8e6d4118b0-2a02d403193f15e516df",
+              "file": "TC-008.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "shows the inactive-account message when login is rejected",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3611,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:17.292Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-inactive-account-email",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-webkit\\attachments\\01-inactive-account-email-5034b11870ce6f818f41d59a066de14a61269259.png"
+                        },
+                        {
+                          "name": "02-inactive-account-password",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-webkit\\attachments\\02-inactive-account-password-31cadc3aa46602656df358e744ee4cf8416962b8.png"
+                        },
+                        {
+                          "name": "03-inactive-account-message",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-webkit\\attachments\\03-inactive-account-message-0e85536c7ba4705321fa980a0ed0e684678678ce.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-008-TC-008---Unhappy-Pa-10118-sage-when-login-is-rejected-webkit\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b953b07c8b8e6d4118b0-c02e470699f95939d646",
+              "file": "TC-008.spec.ts",
+              "line": 5,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-009.spec.ts",
+      "file": "TC-009.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-009 - Happy Path",
+          "file": "TC-009.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "administrator deactivates a table and it stops appearing to a player",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-009.spec.ts",
+                        "line": 9,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:23.284Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-009.spec.ts",
+                            "line": 9,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "04b207b27998ef992328-93b564240f2cda1cf313",
+              "file": "TC-009.spec.ts",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "administrator deactivates a table and it stops appearing to a player",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-009.spec.ts",
+                        "line": 9,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:48.616Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-009.spec.ts",
+                            "line": 9,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "04b207b27998ef992328-f259d68635f195507966",
+              "file": "TC-009.spec.ts",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "administrator deactivates a table and it stops appearing to a player",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                      "location": {
+                        "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-009.spec.ts",
+                        "line": 9,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:20.913Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Configure E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD with a seeded admin account.",
+                          "location": {
+                            "file": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\e2e\\TC-009.spec.ts",
+                            "line": 9,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "04b207b27998ef992328-6bea2dcea4642ad986b2",
+              "file": "TC-009.spec.ts",
+              "line": 101,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "TC-010.spec.ts",
+      "file": "TC-010.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TC-010 - Happy Path",
+          "file": "TC-010.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "user edits name and birth date with the current password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7523,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:23.329Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-edit-profile-modal",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-chromium\\attachments\\01-edit-profile-modal-119129545c429abaf77bb82613363ada1de330ff.png"
+                        },
+                        {
+                          "name": "02-edit-profile-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-chromium\\attachments\\02-edit-profile-filled-8e6947695fa34ed19e7a7c3e3c4f6d585efc6d62.png"
+                        },
+                        {
+                          "name": "03-profile-updated-success",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-chromium\\attachments\\03-profile-updated-success-5bc8875aff1395b9f0ecb4b67dd30de2f0fd9fa7.png"
+                        },
+                        {
+                          "name": "04-profile-modal-closed",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-chromium\\attachments\\04-profile-modal-closed-135890f83954ac72f1d5390843c653295f516f7e.png"
+                        },
+                        {
+                          "name": "05-reopened-profile-updated",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-chromium\\attachments\\05-reopened-profile-updated-0adf182a14951ea4504842d6b0452da451b5a2d9.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d2348bd1f618b8b14c73-bb2ba68a0bb182c5ca32",
+              "file": "TC-010.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "user edits name and birth date with the current password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7931,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:31:48.637Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-edit-profile-modal",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-firefox\\attachments\\01-edit-profile-modal-3883dd8115e0976fd5c9ff27e644bf11e6dfb1a7.png"
+                        },
+                        {
+                          "name": "02-edit-profile-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-firefox\\attachments\\02-edit-profile-filled-00836c27b5a608aafd1bd463c4225184f26d87a7.png"
+                        },
+                        {
+                          "name": "03-profile-updated-success",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-firefox\\attachments\\03-profile-updated-success-88d47ecf244200ee0950d83d6fdfbae30bcb5f03.png"
+                        },
+                        {
+                          "name": "04-profile-modal-closed",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-firefox\\attachments\\04-profile-modal-closed-da03602fcc705425071c6422e69e64bd66ef0bfe.png"
+                        },
+                        {
+                          "name": "05-reopened-profile-updated",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-firefox\\attachments\\05-reopened-profile-updated-7c7231f548ee2829cddc8566a48a495a3f945853.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-firefox\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d2348bd1f618b8b14c73-4047c4866cb414b7ea13",
+              "file": "TC-010.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "user edits name and birth date with the current password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10974,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-21T22:32:20.939Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "01-edit-profile-modal",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-webkit\\attachments\\01-edit-profile-modal-1b5896ada2bbac6f46a43938e667a9b476e9c483.png"
+                        },
+                        {
+                          "name": "02-edit-profile-filled",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-webkit\\attachments\\02-edit-profile-filled-5a7608b9287cf78dc3380b5163b1ad76c5dc884c.png"
+                        },
+                        {
+                          "name": "03-profile-updated-success",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-webkit\\attachments\\03-profile-updated-success-6a3fef078be7f56e523bf97734096936db1358e0.png"
+                        },
+                        {
+                          "name": "04-profile-modal-closed",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-webkit\\attachments\\04-profile-modal-closed-a565d7f174be7e3409f292872e290110c425dcfc.png"
+                        },
+                        {
+                          "name": "05-reopened-profile-updated",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-webkit\\attachments\\05-reopened-profile-updated-3dc5f8271b6b3103c0b2fc045bb4a86d72a2875f.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\peron\\Documents\\GitHub\\RedGreen-Front\\test-results\\TC-010-TC-010---Happy-Path-eb52c-e-with-the-current-password-webkit\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d2348bd1f618b8b14c73-d4ac7c04b17f2bd30707",
+              "file": "TC-010.spec.ts",
+              "line": 38,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-21T22:31:02.046Z",
+    "duration": 90288.891,
+    "expected": 15,
+    "skipped": 18,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

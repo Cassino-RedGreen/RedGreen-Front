@@ -1,18 +1,31 @@
 # RedGreen Frontend
 
 [![CI/CD](https://github.com/Cassino-RedGreen/RedGreen-Front/actions/workflows/ci.yml/badge.svg)](https://github.com/Cassino-RedGreen/RedGreen-Front/actions/workflows/ci.yml)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Relat%C3%B3rios-222222?logo=github)](https://cassino-redgreen.github.io/RedGreen-Front/)
 
 Frontend do projeto **RedGreen**, desenvolvido para a disciplina **C14 - Engenharia de Software**. A aplicacao implementa a interface web de um cassino com autenticação, carteira de fichas, ranking, bonus diario, administracao de mesas e dois jogos principais: **Slot Machine** e **Gambit**.
 
 Este documento foi elaborado a partir da analise do codigo-fonte existente neste repositorio. Funcionalidades, rotas, endpoints e testes descritos aqui correspondem ao que foi identificado no projeto.
 
-# Integrantes
+## Autores
 
-Pedro Armengol de Oliveira - 2093
-Pedro Ribeiro Nogueira - 629
-Danilo Henrique Maia da Silva - 2092
-Pedro Henrique de Paula Andrade - 368
-Patrick Augusto Lins de Oliveira Damião - 496
+Projeto desenvolvido pelas equipes de **Backend** (este repositório) e **Frontend** ([RedGreen-Front](https://github.com/Cassino-RedGreen/RedGreen-Front)).
+
+### Backend
+
+| Autor | GitHub |
+| ----- | ------ |
+| Patrick Augusto Lins de Oliveira Damião | [@Pack0042](https://github.com/Pack0042) |
+| Antonio Feliciano | [@AntonioFSN2](https://github.com/AntonioFSN2) |
+
+### Frontend
+
+| Autor | GitHub |
+| ----- | ------ |
+| Danilo Henrique Maia da Silva | [@DaniloSilva31](https://github.com/DaniloSilva31) |
+| Pedro Henrique Andrade | [@phandrad3](https://github.com/phandrad3) |
+| Pedro Armengol de Oliveira | [@Armengolz](https://github.com/Armengolz) |
+| Pedro R. Nogueira | [@PedroRNogueira](https://github.com/PedroRNogueira) |
 
 ## 1. Visao Geral do Projeto
 
@@ -56,24 +69,22 @@ Funcionalidades declaradas em rotas mas ainda nao implementadas de forma complet
 - `/dashboard`: renderiza apenas um placeholder `Dashboard`.
 - `/roulette-room`: renderiza apenas um placeholder `Roulette Room`.
 
-## 3. Tecnologias Utilizadas
+## 3. Tecnologias e Ferramentas
 
-Dependencias principais identificadas em `package.json`:
-
-- **React 19** e **React DOM** para construcao da interface.
-- **Vite 8** para desenvolvimento e build.
-- **TypeScript 5.9** para tipagem estatica.
-- **React Router DOM 6** para roteamento.
-- **Axios** para comunicacao HTTP.
-- **SWR** para cache e sincronizacao de dados remotos.
-- **Tailwind CSS** para estilos utilitarios.
-- **Framer Motion** para animacoes de interface.
-- **PixiJS** e **@pixi/react** para renderizacao visual em jogos.
-- **lucide-react** para icones.
-- **Zod** e **React Hook Form** como dependencias de formularios e validacao.
-- **Jest**, **ts-jest**, **jsdom** e **React Testing Library** para testes automatizados.
-- **Playwright** para testes de fluxos no navegador, com Chromium, Firefox e WebKit.
-- **ESLint**, **Prettier**, **Husky**, **Commitlint** e **lint-staged** para qualidade de codigo.
+| Categoria | Ferramentas |
+| --------- | ----------- |
+| **Core** | React 19, React DOM, TypeScript 5.9 |
+| **Build e Desenvolvimento** | Vite 8 |
+| **Roteamento** | React Router DOM 6 |
+| **Comunicação HTTP e Cache** | Axios, SWR |
+| **Estilização e Ícones** | Tailwind CSS, lucide-react |
+| **Animações** | Framer Motion |
+| **Motor de Jogos** | PixiJS, `@pixi/react` |
+| **Formulários e Validação** | React Hook Form, Zod |
+| **Testes** | Jest, ts-jest, jsdom, React Testing Library |
+| **Testes E2E** | Playwright (Chromium, Firefox e WebKit) |
+| **Qualidade e Padronização** | ESLint, Prettier, Husky, Commitlint, lint-staged |
+| **CI/CD** | GitHub Actions |
 
 Observacao: embora `react-hook-form`, `@hookform/resolvers` e `zod` estejam instalados, os formularios atualmente implementados usam majoritariamente `useState` e validacoes manuais. Os schemas Zod existentes em `src/domain/schemas.ts` nao aparecem integrados aos formularios analisados.
 
@@ -463,35 +474,6 @@ Para executar com relatorio de cobertura:
 npm test -- --coverage
 ```
 
-### Testes de navegador com Playwright
-
-A configuracao esta em `playwright.config.ts`, e os cenarios ficam em `e2e/`. A tabela abaixo documenta os casos **TC-001 a TC-020**, abrangendo fluxos de sucesso (Happy Path) e de erro (Unhappy Path). O TC-006 possui dois testes. Casos sem as credenciais exigidas aparecem como ignorados (`skipped`).
-
-| Arquivo          | Fluxo validado                                                                 | Dependencias e simulacoes                                                                                                          |
-| ---------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `TC-001.spec.ts` | Cadastro e login com a mesma conta.                                            | API real; cria usuario com e-mail e nickname baseados no horario.                                                                  |
-| `TC-002.spec.ts` | Rejeicao de senha curta e confirmacao divergente.                              | Simula a consulta de e-mail e verifica validacoes da interface.                                                                    |
-| `TC-003.spec.ts` | Exibicao de erro para senha incorreta apos cadastro.                           | Cadastro real; consulta de e-mail e resposta de login `401` simuladas.                                                             |
-| `TC-004.spec.ts` | Criacao e edicao de mesa de Slot Machine, seguida de desativacao e exclusao.   | API real e conta administradora.                                                                                                   |
-| `TC-005.spec.ts` | Criacao e edicao de mesa de Gambit, seguida de desativacao e exclusao.         | API real e conta administradora.                                                                                                   |
-| `TC-006.spec.ts` | Bloqueio de troca de mesa com sessao ativa, em Gambit e Slot Machine.          | Login real de administrador; saldo, mesas e sessoes simulados.                                                                     |
-| `TC-007.spec.ts` | Modal de sessao expirada, bloqueio de interacao e retorno ao login.            | Login real de administrador; dispara o evento `session-expired` no navegador.                                                      |
-| `TC-008.spec.ts` | Mensagem de conta inativa e permanencia no login.                              | Consulta de e-mail e rejeicao do login simuladas.                                                                                  |
-| `TC-009.spec.ts` | Mesa de Slot Machine deixa de aparecer ao jogador apos desativacao.            | API real, administrador e novo jogador; ajusta a resposta real do perfil para evitar o modal de bonus.                             |
-| `TC-010.spec.ts` | Edicao de nome e nascimento com senha atual, conferida ao reabrir o perfil.    | API real e novo usuario; ajusta a resposta real do perfil para evitar o modal de bonus.                                            |
-| `TC-011.spec.ts` | Sessao de Slot Machine com bonus diario, giro, rerolls e cash-out.             | API real, novo usuario, bonus disponivel e mesa Slot 1.                                                                            |
-| `TC-012.spec.ts` | Revelacao de carta de efeito no Gambit e exibicao do efeito atual.             | API real, novo usuario e mesa High Stakes Gambit; interacao com cartas no canvas.                                                  |
-| `TC-013.spec.ts` | Escolha de cartas nas etapas de um evento especial do Gambit.                  | API real e novo usuario; depende de encontrar um evento durante a partida.                                                         |
-| `TC-014.spec.ts` | Restauracao da sessao de Slot Machine ao sair e retornar, seguida de cash-out. | API real e novo usuario; desabilita cache HTTP para conferir a sessao persistida.                                                  |
-| `TC-015.spec.ts` | Restauracao da sessao de Gambit e continuidade ate o cash-out.                 | API real e novo usuario; desabilita cache HTTP e confere cartas, pontos e efeitos persistidos.                                     |
-| `TC-016.spec.ts` | Rejeicao de data de nascimento impossivel na edicao de perfil.                 | Cadastro e login reais; verifica validacao local e ausencia de requisicoes de gravacao.                                            |
-| `TC-017.spec.ts` | Rejeicao de cadastro com nickname ja utilizado.                                | API real; cria uma conta e tenta cadastrar outra com o mesmo nickname.                                                             |
-| `TC-018.spec.ts` | Bloqueio dos controles da Slot Machine para visitante nao autenticado.         | API real, sem login; confere resposta 401 e ausencia de requisicoes de jogo.                                                       |
-| `TC-019.spec.ts` | Troca de senha, rejeicao da senha antiga e login com a nova.                   | API real e novo usuario; atualizacao de perfil e autenticacao sem respostas simuladas.                                             |
-| `TC-020.spec.ts` | Bloqueio de mesas e rejeicao de giro por saldo insuficiente.                   | API real; solicita cadastro com 5 fichas e usa mesas Slot 0 a Slot 3. A mesa de entrada pode ser definida por E2E_FREE_SLOT_TABLE. |
-
-Os testes combinam integracao real e interceptacoes com `page.route`. As simulacoes verificam a resposta da interface a estados controlados, sem comprovar a regra correspondente no backend. No TC-007, por exemplo, o evento e disparado diretamente, sem provocar um `401` real.
-
 ### Preparacao e execucao
 
 1. Instale as dependencias conforme a secao 6 e configure `.env`.
@@ -534,6 +516,35 @@ Configuracoes de execucao:
 - Tempo limite de 120 segundos para o servidor ficar disponivel.
 
 O helper `e2e/helpers/CreateAccount.ts` cadastra e autentica novos jogadores pela interface. Os testes criam dados reais na API: as contas nao possuem limpeza automatica; TC-004, TC-005 e TC-009 removem as mesas no final do fluxo, mas uma falha anterior pode deixar registros. Use uma base destinada a testes.
+
+### Testes de navegador com Playwright
+
+A configuracao esta em `playwright.config.ts`, e os cenarios ficam em `e2e/`. A tabela abaixo documenta os casos **TC-001 a TC-020**, abrangendo fluxos de sucesso (Happy Path) e de erro (Unhappy Path). O TC-006 possui dois testes. Casos sem as credenciais exigidas aparecem como ignorados (`skipped`).
+
+| Arquivo          | Fluxo validado                                                                 | Dependencias e simulacoes                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `TC-001.spec.ts` | Cadastro e login com a mesma conta.                                            | API real; cria usuario com e-mail e nickname baseados no horario.                                                                  |
+| `TC-002.spec.ts` | Rejeicao de senha curta e confirmacao divergente.                              | Simula a consulta de e-mail e verifica validacoes da interface.                                                                    |
+| `TC-003.spec.ts` | Exibicao de erro para senha incorreta apos cadastro.                           | Cadastro real; consulta de e-mail e resposta de login `401` simuladas.                                                             |
+| `TC-004.spec.ts` | Criacao e edicao de mesa de Slot Machine, seguida de desativacao e exclusao.   | API real e conta administradora.                                                                                                   |
+| `TC-005.spec.ts` | Criacao e edicao de mesa de Gambit, seguida de desativacao e exclusao.         | API real e conta administradora.                                                                                                   |
+| `TC-006.spec.ts` | Bloqueio de troca de mesa com sessao ativa, em Gambit e Slot Machine.          | Login real de administrador; saldo, mesas e sessoes simulados.                                                                     |
+| `TC-007.spec.ts` | Modal de sessao expirada, bloqueio de interacao e retorno ao login.            | Login real de administrador; dispara o evento `session-expired` no navegador.                                                      |
+| `TC-008.spec.ts` | Mensagem de conta inativa e permanencia no login.                              | Consulta de e-mail e rejeicao do login simuladas.                                                                                  |
+| `TC-009.spec.ts` | Mesa de Slot Machine deixa de aparecer ao jogador apos desativacao.            | API real, administrador e novo jogador; ajusta a resposta real do perfil para evitar o modal de bonus.                             |
+| `TC-010.spec.ts` | Edicao de nome e nascimento com senha atual, conferida ao reabrir o perfil.    | API real e novo usuario; ajusta a resposta real do perfil para evitar o modal de bonus.                                            |
+| `TC-011.spec.ts` | Sessao de Slot Machine com bonus diario, giro, rerolls e cash-out.             | API real, novo usuario, bonus disponivel e mesa Slot 1.                                                                            |
+| `TC-012.spec.ts` | Revelacao de carta de efeito no Gambit e exibicao do efeito atual.             | API real, novo usuario e mesa High Stakes Gambit; interacao com cartas no canvas.                                                  |
+| `TC-013.spec.ts` | Escolha de cartas nas etapas de um evento especial do Gambit.                  | API real e novo usuario; depende de encontrar um evento durante a partida.                                                         |
+| `TC-014.spec.ts` | Restauracao da sessao de Slot Machine ao sair e retornar, seguida de cash-out. | API real e novo usuario; desabilita cache HTTP para conferir a sessao persistida.                                                  |
+| `TC-015.spec.ts` | Restauracao da sessao de Gambit e continuidade ate o cash-out.                 | API real e novo usuario; desabilita cache HTTP e confere cartas, pontos e efeitos persistidos.                                     |
+| `TC-016.spec.ts` | Rejeicao de data de nascimento impossivel na edicao de perfil.                 | Cadastro e login reais; verifica validacao local e ausencia de requisicoes de gravacao.                                            |
+| `TC-017.spec.ts` | Rejeicao de cadastro com nickname ja utilizado.                                | API real; cria uma conta e tenta cadastrar outra com o mesmo nickname.                                                             |
+| `TC-018.spec.ts` | Bloqueio dos controles da Slot Machine para visitante nao autenticado.         | API real, sem login; confere resposta 401 e ausencia de requisicoes de jogo.                                                       |
+| `TC-019.spec.ts` | Troca de senha, rejeicao da senha antiga e login com a nova.                   | API real e novo usuario; atualizacao de perfil e autenticacao sem respostas simuladas.                                             |
+| `TC-020.spec.ts` | Bloqueio de mesas e rejeicao de giro por saldo insuficiente.                   | API real; solicita cadastro com 5 fichas e usa mesas Slot 0 a Slot 3. A mesa de entrada pode ser definida por E2E_FREE_SLOT_TABLE. |
+
+Os testes combinam integracao real e interceptacoes com `page.route`. As simulacoes verificam a resposta da interface a estados controlados, sem comprovar a regra correspondente no backend. No TC-007, por exemplo, o evento e disparado diretamente, sem provocar um `401` real.
 
 ### Relatorios e evidencias
 
@@ -612,19 +623,7 @@ Lacunas identificadas:
 - O preview usado no CI e um build de producao e exige a URL da API configurada antes do build. A URL passada ao servidor de preview nao substitui a configuracao incorporada no bundle.
 - Existe upload do relatorio HTML, mas nao um artefato separado de `test-results/`.
 
-## 17. Refatoracoes Identificadas
-
-Possiveis refatoracoes observadas a partir do codigo atual:
-
-- Remover ou atualizar `src/App.tsx` e `src/App.css`, pois mantem conteudo residual do template Vite e nao sao usados pelo ponto de entrada atual.
-- Integrar `react-hook-form` e `zod` aos formularios ou remover as dependencias/schemas nao utilizados.
-- Extrair regras repetidas de validacao de formularios para helpers ou schemas compartilhados.
-- Criar guard de rota para rotas que exigem autenticacao, caso a regra de negocio seja impedir acesso direto por URL.
-- Implementar ou remover rotas placeholders (`/register`, `/dashboard`, `/roulette-room`) de acordo com o escopo final do projeto.
-- Completar a preparacao de backend, banco e variaveis no job E2E do GitHub Actions.
-- Adicionar limpeza garantida dos dados criados pelos testes, inclusive quando um cenario falha.
-
-## 18. Decisoes Tecnicas
+## 17. Decisoes Tecnicas
 
 Decisoes identificadas no codigo:
 
@@ -641,7 +640,7 @@ Decisoes identificadas no codigo:
 - Uso de testes unitarios e de integracao de componentes para fluxos criticos.
 - Uso de Playwright em tres navegadores, com cenarios reais e simulados e evidencias anexadas aos relatorios.
 
-## 19. Uso de IA
+## 18. Uso de IA
 
 Patrick Augusto Lins de Oliveira Damião
 Foi utilizado o Copilot, sempre com o contexto do README explicando a estrutura do projeto (com foco na stack) e apoio do documento com as orientações da tarefa. Durante todas as etapas de desenvolvimento dos testes com o Playwright o processo foi feito a partir de instruções detalhadas de cada etapa (incluindo os momentos onde deveriam ser salvas screenshots), com a maior parte do código sendo gerado diretamente pela IA. A IA ficou responsável apenas por criar o código dos testes, mas a idealização dos testes foi feita por conta própria.
@@ -650,7 +649,7 @@ A IA também foi utilizada para desenvolver os testes de performance, tanto na e
 Antonio Feliciano da Silveira Neto 
 Durante o desenvolvimento da suíte de testes, utilizei o Claude (Anthropic) como apoio ao processo de criação dos casos de teste. Usei o Claude no navegador para pensar e estruturar os prompts a partir da minha ideia inicial de cada cenário descrevendo em linguagem natural o fluxo que eu queria testar, as telas envolvidas e o que deveria ser validado e o Claude ajudava a organizar e refinar essa descrição. Com o prompt já mais claro e estruturado, eu o utilizava na extensão do Claude no VSCode para apoiar a implementação do código de automação. A execução, validação e revisão final dos testes foram feitas por mim, com a IA atuando apenas como suporte ao raciocínio e à escrita do código, não como substituta da autoria do trabalho.
 
-## 20. Metodologia de Desenvolvimento
+## 19. Metodologia de Desenvolvimento
 
 No começo do desenvolvimento do projeto não chegamos a pensar e formalizar uma metodologia específica. Em vez disso, definimos alguns combinados para que o projeto progredisse da melhor maneira possível, adotando, na prática, um fluxo ágil informal e adaptado à realidade do grupo.
 Começamos nos dividindo em 3 duplas, em que cada integrante seria responsável por validar e testar as Pull Requests da sua dupla. Cada dupla ficou responsável por um aspecto do projeto: uma com o front na parte de Interface e Integração de Usuário, outra com o front na parte de Motor Gráfico e Animações dos jogos, e a última com o backend — Regras de Negócio e Persistência de Dados.
@@ -658,7 +657,7 @@ Definimos também duas reuniões semanais, uma na terça-feira e outra na quinta
 Nosso principal meio de comunicação foi o Discord, onde fazíamos as reuniões. Além disso, também usamos o WhatsApp para dar feedbacks mais informais e o próprio fluxo das PRs no GitHub, onde já apontávamos mais detalhadamente o que deveria ser mudado.
 Vale destacar que não definimos uma Definição de Pronto (DoD) nem uma Definição de Preparado (DoR), e não tivemos sprints propriamente ditas — trabalhamos com uma cadência fixa de reuniões em vez de ciclos formais.
 
-## 21. Dinâmica de Desenvolvimento
+## 20. Dinâmica de Desenvolvimento
 
 As decisões técnicas foram tomadas, em sua maioria, pelas próprias duplas responsáveis por cada camada, já que cada uma tinha o maior contexto sobre o que estava construindo. Ainda assim, o feedback dos demais integrantes era sempre bem-vindo, principalmente no momento da revisão das Pull Requests, onde pontos de melhoria e abordagens alternativas eram discutidos abertamente. No início, as decisões sobre o que implementar foram guiadas por cobrir os requisitos pedidos no laboratório; conforme o projeto avançou, a priorização passou a ser orientada pela próxima funcionalidade que cada dupla precisava para destravar seu trabalho.
 Para manter o histórico do repositório limpo e legível, estabelecemos um padrão obrigatório tanto para commits quanto para Pull Requests. Os commits seguiam o formato de tipo e descrição (feat:, fix:, chore:, docs:, test:, refactor:, style:), e as branches seguiam a convenção tipo/escopo-descrição-curta (feat/, bugfix/, hotfix/, chore/). As Pull Requests também seguiam um modelo padronizado, com seções explicando o porquê e o que foi feito, como testar e as evidências de funcionamento. Esse padrão facilitou bastante a visualização do que cada PR entregava e tornou as revisões entre as duplas mais ágeis.
@@ -666,7 +665,7 @@ O maior desafio da dinâmica de desenvolvimento veio da criação do Gambit, um 
 Esses ajustes também geraram bloqueios pontuais entre as duplas, já que mudanças na lógica do Gambit no backend impactavam diretamente o trabalho das duplas de front, que dependiam dessas definições para avançar. Nesses casos, nos reorganizamos priorizando as implementações que destravavam o trabalho das outras duplas.
 A principal lição aprendida foi sobre a importância de definir melhor o escopo e as regras de uma funcionalidade original antes de começar a implementá-la. Boa parte dos refactors do Gambit poderia ter sido evitada com um planejamento inicial mais detalhado das mecânicas do jogo. Também percebemos que a ausência de uma Definição de Pronto (DoD) clara deixou alguns critérios de "terminado" subjetivos, e que adotá-la desde o início teria tornado as entregas mais previsíveis. Em um próximo projeto, investiríamos mais tempo no alinhamento de escopo logo no começo e formalizaríamos esses combinados que, neste projeto, ficaram apenas implícitos.
 
-## 22. Historias de usuario
+## 21. Historias de usuario
 
 História 1 — Cadastro de usuário · Prioridade: Alta
 Como visitante, eu quero criar uma conta com e-mail e senha para que eu possa acessar o cassino e receber meu saldo inicial de fichas.
@@ -675,10 +674,6 @@ Critérios de aceitação:
 Dado que estou na tela de cadastro, quando preencho e-mail válido e senha forte e confirmo, então minha conta é criada e recebo um saldo inicial de fichas.
 Dado que informo um e-mail já cadastrado, quando submeto, então recebo mensagem de erro e o cadastro não é concluído.
 Dado que a senha não atende às regras de validação, quando submeto, então a validação do formulário bloqueia o envio e exibe o erro antes de chamar a API.
-
-Rastreabilidade:
-PR Back: #2 Feat/create user entity and #3 Feat/auth user routes
-PR Front: #4 Feat loginpage creation
 
 História 2 — Reroll de slot · Prioridade: Alta
 Como jogador do cassino, eu quero selecionar um slot específico para realizar um reroll para que eu possa tentar melhorar minha combinação e aumentar minhas chances de obter uma recompensa maior.
@@ -690,10 +685,6 @@ Dado que o reroll foi concluído, quando o backend retorna o novo resultado, ent
 Dado que um reroll foi utilizado, quando a operação é concluída, então a quantidade restante de rerolls é atualizada na interface.
 Dado que não possuo mais rerolls disponíveis, quando tento realizar um novo reroll, então o sistema não permite a ação e mantém o estado atual dos slots.
 
-Rastreabilidade:
-PR Back: #22 Feat/integrating slot machines
-PR Front: #18 Feat/adding logic to slot machine, #21 Feat/slot machine organization
-
 História 3 — Ranking de jogadores · Prioridade: Média
 Como jogador competitivo, eu quero ver um ranking dos jogadores para que eu possa comparar meu desempenho com os demais.
 Critérios de aceitação:
@@ -701,20 +692,12 @@ Critérios de aceitação:
 Dado que existem jogadores cadastrados, quando acesso a tela de ranking, então vejo a lista ordenada pelo saldo de fichas.
 Dado que meu saldo é alterado, quando o ranking é recalculado, então minha posição reflete a mudança.
 
-Rastreabilidade:
-PR Back: #17 Feat/new user routes
-PR Front: #11 Feat: homepage creation, #30Feat: add rank route
-
 História 4 — Bônus diário · Prioridade: Média
 Como jogador autenticado, eu quero resgatar meu bônus diário de fichas para que eu possa aumentar meu saldo e continuar jogando.
 Critérios de aceitação:
 Dado que estou logado e ainda não resgatei o bônus do dia, quando acesso o painel de bônus diário, então vejo o dia atual da sequência e posso resgatar a recompensa.
 Dado que o bônus diário já foi resgatado, quando acesso o painel novamente, então o botão de resgate aparece bloqueado com a informação de que o bônus já foi coletado.
 Dado que o resgate é concluído com sucesso, quando a API retorna a recompensa, então o saldo de fichas é atualizado na interface.
-
-Rastreabilidade:
-PR Back: #7 feat/user-profile-routes
-PR Front: #15 add-diary-rewards
 
 História 5 — Gerenciamento de mesas de jogo · Prioridade: Alta
 Como administrador, eu quero criar, editar, desativar e remover mesas de jogo para que eu possa controlar quais mesas estarão disponíveis aos jogadores.
@@ -724,17 +707,7 @@ Dado que informo dados inválidos ao criar ou editar uma mesa, quando tento salv
 Dado que uma mesa está ativa, quando tento excluí-la, então a exclusão fica bloqueada até que a mesa seja desativada.
 Dado que uma mesa possui sessões ativas, quando tento desativá-la, então o sistema exibe um aviso antes de concluir a operação.
 
-Rastreabilidade:
-PR Back: #6 feat/create-SlotMachine-entity, #8 feat/admin-guard, #15 fix/Slot-game-logic
-PR Front: #26 feat-table-system
-
-## 23. Refactor
-
-Refactor: changing token storage to cookie#35
-Refactor Movimentação de Método
-Esse refactor foi feito para realocar o token dos usuarios que estava no LocalStorage para o Cookie, tbm foi retirado o user que era salvo no LocalStorage
-
-## 24. Conclusao
+## 22. Conclusao
 
 O RedGreen Frontend apresenta uma aplicacao React com arquitetura organizada em camadas, integracao com API, cache com SWR, interface visual consistente e dois sistemas de jogo implementados. A base de testes cobre diversos fluxos relevantes, especialmente autenticação, ranking, modais, Slot Machine e Gambit.
 
