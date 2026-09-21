@@ -48,6 +48,7 @@ export const EditGambitTableModal = ({
   const [MaxCardsPurchased, SetMaxCardsPurchased] = useState(
     String(TableMaxCardsPurchased)
   );
+  const [IsTogglingActive, SetIsTogglingActive] = useState(false);
 
   const HandleSave = async () => {
     if (TableId === null) {
@@ -131,6 +132,45 @@ export const EditGambitTableModal = ({
           ? 'Desative a mesa antes de excluir.'
           : 'Erro ao remover mesa.'
       );
+    }
+  };
+
+  const HandleToggleActive = async () => {
+    if (TableId === null) {
+      OnError('Mesa inválida.');
+      return;
+    }
+
+    SetIsTogglingActive(true);
+    try {
+      if (TableActive) {
+        await apiClient.post(`/admin/gambit-tables/${TableId}/deactivate`);
+      } else {
+        await apiClient.patch(`/admin/gambit-tables/${TableId}/activate`);
+      }
+      OnTableUpdated({
+        GambitTableId: TableId,
+        Name,
+        Description: 'Mesa criada pelo sistema',
+        MinimumChipsRequired: Number(MinimumChips),
+        CardPrice: Number(CardPrice),
+        TableMultiplier: Number(TableMultiplier),
+        MinimumCardsPurchased: Number(MinimumCardsPurchased),
+        MaxCardsPurchased: Number(MaxCardsPurchased),
+        Active: !TableActive,
+      });
+      OnSuccess(
+        TableActive
+          ? 'Mesa desativada com sucesso!'
+          : 'Mesa ativada com sucesso!'
+      );
+      OnClose();
+    } catch (err) {
+      OnError(
+        err instanceof Error ? err.message : 'Erro ao alterar status da mesa.'
+      );
+    } finally {
+      SetIsTogglingActive(false);
     }
   };
 
@@ -232,6 +272,23 @@ export const EditGambitTableModal = ({
               style={{ fontFamily: '"Press Start 2P", monospace' }}
             >
               Salvar
+            </button>
+
+            <button
+              onClick={HandleToggleActive}
+              disabled={IsTogglingActive}
+              className={`w-full border-2 py-3 text-[10px] uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                TableActive
+                  ? 'border-orange-500 bg-orange-500/20 text-orange-400 hover:bg-orange-500/30'
+                  : 'border-[hsl(120,50%,35%)] bg-[hsl(120,50%,35%)]/20 text-[hsl(120,50%,45%)] hover:bg-[hsl(120,50%,35%)]/30'
+              }`}
+              style={{ fontFamily: '"Press Start 2P", monospace' }}
+            >
+              {IsTogglingActive
+                ? 'Aguarde...'
+                : TableActive
+                  ? 'Desativar'
+                  : 'Ativar'}
             </button>
 
             <div className="relative group w-full">
