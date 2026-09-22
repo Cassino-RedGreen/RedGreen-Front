@@ -1,16 +1,57 @@
 # RedGreen Frontend
 
+[![CI/CD](https://github.com/Cassino-RedGreen/RedGreen-Front/actions/workflows/ci.yml/badge.svg)](https://github.com/Cassino-RedGreen/RedGreen-Front/actions/workflows/ci.yml)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Relat%C3%B3rios-222222?logo=github)](https://cassino-redgreen.github.io/RedGreen-Front/)
+
 Frontend do projeto **RedGreen**, desenvolvido para a disciplina **C14 - Engenharia de Software**. A aplicacao implementa a interface web de um cassino com autenticação, carteira de fichas, ranking, bonus diario, administracao de mesas e dois jogos principais: **Slot Machine** e **Gambit**.
 
 Este documento foi elaborado a partir da analise do codigo-fonte existente neste repositorio. Funcionalidades, rotas, endpoints e testes descritos aqui correspondem ao que foi identificado no projeto.
 
-# Integrantes
+## Indice
 
-Pedro Armengol de Oliveira - 2093
-Pedro Ribeiro Nogueira - 629
-Danilo Henrique Maia da Silva - 2092
-Pedro Henrique de Paula Andrade - 368
-Patrick Augusto Lins de Oliveira Damião - 496
+- [Autores](#autores)
+- [1. Visao Geral do Projeto](#1-visao-geral-do-projeto)
+- [2. Funcionalidades Implementadas](#2-funcionalidades-implementadas)
+- [3. Tecnologias e Ferramentas](#3-tecnologias-e-ferramentas)
+- [4. Arquitetura Frontend](#4-arquitetura-frontend)
+- [5. Estrutura de Diretorios](#5-estrutura-de-diretorios)
+- [6. Instalacao e Execucao](#6-instalacao-e-execucao)
+- [7. Variaveis de Ambiente](#7-variaveis-de-ambiente)
+- [8. Rotas da Aplicacao](#8-rotas-da-aplicacao)
+- [9. Integracao com API](#9-integracao-com-api)
+- [10. Gerenciamento de Estado](#10-gerenciamento-de-estado)
+- [11. Sistema de Formularios](#11-sistema-de-formularios)
+- [12. Sistema de Jogos](#12-sistema-de-jogos)
+- [13. Interface e UX](#13-interface-e-ux)
+- [14. Testes Automatizados](#14-testes-automatizados)
+- [15. Qualidade de Codigo](#15-qualidade-de-codigo)
+- [16. Pipeline CI/CD](#16-pipeline-cicd)
+- [17. Decisoes Tecnicas](#17-decisoes-tecnicas)
+- [18. Uso de IA](#18-uso-de-ia)
+- [19. Metodologia de Desenvolvimento](#19-metodologia-de-desenvolvimento)
+- [20. Dinâmica de Desenvolvimento](#20-dinâmica-de-desenvolvimento)
+- [21. Historias de Usuario](#21-historias-de-usuario)
+- [22. Conclusao](#22-conclusao)
+
+## Autores
+
+Projeto desenvolvido pelas equipes de **Backend** (este repositório) e **Frontend** ([RedGreen-Front](https://github.com/Cassino-RedGreen/RedGreen-Front)).
+
+### Backend
+
+| Autor | GitHub |
+| ----- | ------ |
+| Patrick Augusto Lins de Oliveira Damião | [@Pack0042](https://github.com/Pack0042) |
+| Antonio Feliciano | [@AntonioFSN2](https://github.com/AntonioFSN2) |
+
+### Frontend
+
+| Autor | GitHub |
+| ----- | ------ |
+| Danilo Henrique Maia da Silva | [@DaniloSilva31](https://github.com/DaniloSilva31) |
+| Pedro Henrique Andrade | [@phandrad3](https://github.com/phandrad3) |
+| Pedro Armengol de Oliveira | [@Armengolz](https://github.com/Armengolz) |
+| Pedro R. Nogueira | [@PedroRNogueira](https://github.com/PedroRNogueira) |
 
 ## 1. Visao Geral do Projeto
 
@@ -41,7 +82,7 @@ Funcionalidades identificadas no codigo:
 - Listagem de mesas de Slot Machine.
 - Criacao, edicao, ativacao/desativacao e exclusao de mesas de Slot Machine para usuario administrador.
 - Listagem de mesas de Gambit.
-- Criacao, edicao e exclusao de mesas de Gambit para usuario administrador.
+- Criacao, edicao, ativacao/desativacao e exclusao de mesas de Gambit para usuario administrador.
 - Bloqueio visual de mesas quando o usuario nao esta logado, nao possui fichas suficientes ou a mesa esta inativa.
 - Aviso quando existe sessao ativa em outra mesa antes de iniciar uma nova partida.
 - Jogo Slot Machine com giro, animacao de rolos, reroll por reel, contador de rerolls, cash-out e restauracao de sessao ativa.
@@ -54,23 +95,22 @@ Funcionalidades declaradas em rotas mas ainda nao implementadas de forma complet
 - `/dashboard`: renderiza apenas um placeholder `Dashboard`.
 - `/roulette-room`: renderiza apenas um placeholder `Roulette Room`.
 
-## 3. Tecnologias Utilizadas
+## 3. Tecnologias e Ferramentas
 
-Dependencias principais identificadas em `package.json`:
-
-- **React 19** e **React DOM** para construcao da interface.
-- **Vite 8** para desenvolvimento e build.
-- **TypeScript 5.9** para tipagem estatica.
-- **React Router DOM 6** para roteamento.
-- **Axios** para comunicacao HTTP.
-- **SWR** para cache e sincronizacao de dados remotos.
-- **Tailwind CSS** para estilos utilitarios.
-- **Framer Motion** para animacoes de interface.
-- **PixiJS** e **@pixi/react** para renderizacao visual em jogos.
-- **lucide-react** para icones.
-- **Zod** e **React Hook Form** como dependencias de formularios e validacao.
-- **Jest**, **ts-jest**, **jsdom** e **React Testing Library** para testes automatizados.
-- **ESLint**, **Prettier**, **Husky**, **Commitlint** e **lint-staged** para qualidade de codigo.
+| Categoria | Ferramentas |
+| --------- | ----------- |
+| **Core** | React 19, React DOM, TypeScript 5.9 |
+| **Build e Desenvolvimento** | Vite 8 |
+| **Roteamento** | React Router DOM 6 |
+| **Comunicação HTTP e Cache** | Axios, SWR |
+| **Estilização e Ícones** | Tailwind CSS, lucide-react |
+| **Animações** | Framer Motion |
+| **Motor de Jogos** | PixiJS, `@pixi/react` |
+| **Formulários e Validação** | React Hook Form, Zod |
+| **Testes** | Jest, ts-jest, jsdom, React Testing Library |
+| **Testes E2E** | Playwright (Chromium, Firefox e WebKit) |
+| **Qualidade e Padronização** | ESLint, Prettier, Husky, Commitlint, lint-staged |
+| **CI/CD** | GitHub Actions |
 
 Observacao: embora `react-hook-form`, `@hookform/resolvers` e `zod` estejam instalados, os formularios atualmente implementados usam majoritariamente `useState` e validacoes manuais. Os schemas Zod existentes em `src/domain/schemas.ts` nao aparecem integrados aos formularios analisados.
 
@@ -123,10 +163,17 @@ RedGreen-Front/
 |   |-- setupTests.ts
 |   `-- validators.ts
 |-- test/
+|-- e2e/
+|   |-- helpers/
+|   `-- TC-001.spec.ts ... TC-010.spec.ts
+|-- .github/
+|   `-- workflows/
+|       `-- ci.yml
 |-- .husky/
+|-- .env.example
 |-- eslint.config.js
 |-- jest.config.js
-|-- Jenkinsfile
+|-- playwright.config.ts
 |-- package.json
 |-- tailwind.config.js
 |-- tsconfig.json
@@ -141,14 +188,22 @@ Observacao tecnica: `src/App.tsx` e `src/App.css` mantem codigo residual do temp
 
 Pre-requisitos:
 
-- Node.js compativel com o projeto. O Jenkinsfile usa `node-22`.
+- Node.js 22 atualizado, conforme a versao principal utilizada no GitHub Actions.
 - npm.
+- Backend em execucao para os fluxos que consomem a API real.
+- k6, para os testes de performance. No Windows, instale com:
+
+```bash
+winget install k6 --source winget
+```
 
 Instalacao:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
+
+O comando segue a instalacao usada no CI para compatibilidade entre dependencias. Fora de CI, o script `postinstall` executa `npx playwright install` para instalar os navegadores dos testes. Copie `.env.example` para `.env` e ajuste a URL da API antes de iniciar a aplicacao.
 
 Execucao em desenvolvimento:
 
@@ -168,10 +223,16 @@ Preview do build:
 npm run preview
 ```
 
-Testes:
+Testes unitarios:
 
 ```bash
 npm test
+```
+
+Testes end-to-end:
+
+```bash
+npm run test:e2e
 ```
 
 Lint:
@@ -188,17 +249,17 @@ npm run format
 
 ## 7. Variaveis de Ambiente
 
-Variavel identificada no codigo:
+Variaveis identificadas no codigo e na configuracao dos testes:
 
-| Variavel            | Obrigatoria | Padrao                  | Uso                                                |
-| ------------------- | ----------: | ----------------------- | -------------------------------------------------- |
-| `VITE_API_BASE_URL` |         Nao | `http://localhost:3000` | Define a URL base usada pelo Axios em `apiClient`. |
+| Variavel             |                     Obrigatoria | Padrao                                     | Uso                                                                                                   |
+| -------------------- | ------------------------------: | ------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`  |                     Em producao | `http://localhost:3000` em desenvolvimento | Define a URL base usada pelo Axios em `apiClient`.                                                    |
+| `E2E_BASE_URL`       |                             Nao | `http://localhost:5173`                    | Endereco do frontend acessado pelo Playwright.                                                        |
+| `E2E_ADMIN_EMAIL`    | Para cenarios com administrador | Sem padrao                                 | E-mail de uma conta administradora existente na API.                                                  |
+| `E2E_ADMIN_PASSWORD` | Para cenarios com administrador | Sem padrao                                 | Senha da conta administradora usada nos testes.                                                       |
+| `CI`                 |                     No pipeline | Definida pelo GitHub Actions               | Ativa as configuracoes de CI do Playwright e desabilita a instalacao de navegadores no `postinstall`. |
 
-A configuracao esta em `src/config.ts`:
-
-```ts
-apiBaseUrl: import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3000';
-```
+A configuracao esta em `src/config.ts`, que remove espacos da URL e usa o fallback local em desenvolvimento. Em producao, a ausencia de `VITE_API_BASE_URL` provoca um erro ao carregar a aplicacao; configure a variavel antes do build.
 
 O arquivo `src/infrastructure/env.ts` tambem permite registrar e ler variaveis de ambiente em runtime por meio de `globalThis.__REDGREEN_VITE_ENV__`, mas o uso direto identificado ocorre em `src/main.tsx` com `setRuntimeEnv(import.meta.env)`.
 
@@ -206,7 +267,11 @@ Exemplo de `.env`:
 
 ```env
 VITE_API_BASE_URL=http://localhost:3000
+E2E_ADMIN_EMAIL=
+E2E_ADMIN_PASSWORD=
 ```
+
+O exemplo corresponde a `.env.example`. O Playwright carrega `.env` e `.env.local` com `loadEnv` do Vite e preserva variaveis ja definidas no processo. `E2E_BASE_URL` pode ser adicionada se necessario; ela nao altera a porta `5173` dos comandos de inicializacao configurados. As credenciais de teste nao devem receber o prefixo `VITE_`, usado para expor variaveis ao frontend. O arquivo `.env` esta ignorado pelo Git.
 
 ## 8. Rotas da Aplicacao
 
@@ -271,6 +336,8 @@ Endpoints identificados no codigo:
 | `POST`   | `/sessions/active/cash-out`                       | Encerra a sessao ativa da Slot Machine.              |
 
 ### Gambit
+
+O gerenciamento administrativo tambem usa `POST /admin/gambit-tables/:id/deactivate` para desativar mesas e `PATCH /admin/gambit-tables/:id/activate` para reativa-las.
 
 | Metodo   | Endpoint                                 | Uso no frontend                                           |
 | -------- | ---------------------------------------- | --------------------------------------------------------- |
@@ -400,6 +467,10 @@ Caracteristicas visuais identificadas:
 
 ## 14. Testes Automatizados
 
+O projeto possui duas suites independentes: Jest para testes unitarios e de integracao de componentes, e Playwright para fluxos executados em navegadores. `npm test` executa apenas Jest; `e2e/` esta excluido em `jest.config.js`.
+
+### Testes com Jest
+
 Configuracao:
 
 - Framework: Jest.
@@ -434,7 +505,96 @@ Comando:
 npm test
 ```
 
-Observacao: o Jenkinsfile atual nao executa `npm test` no pipeline.
+Para executar com relatorio de cobertura:
+
+```bash
+npm test -- --coverage
+```
+
+### Preparacao e execucao
+
+1. Instale as dependencias conforme a secao 6 e configure `.env`.
+2. Inicie o backend e seu banco de dados conforme as instrucoes do repositorio da API. O Playwright deste projeto inicia somente o frontend.
+3. Para TC-004, TC-005, TC-006, TC-007 e TC-009, configure `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD` com uma conta administradora previamente cadastrada. Sem essas variaveis, esses casos sao ignorados.
+4. Execute a suite ou selecione um arquivo e navegador pelos comandos abaixo.
+
+```bash
+# Todos os cenarios nos tres navegadores
+npm run test:e2e
+
+# Apenas Chromium
+npm run test:e2e -- --project=chromium
+
+# Um cenario especifico
+npm run test:e2e -- e2e/TC-001.spec.ts --project=chromium
+
+# Navegador visivel ou depuracao passo a passo
+npm run test:e2e -- e2e/TC-001.spec.ts --project=chromium --headed
+npm run test:e2e -- e2e/TC-001.spec.ts --project=chromium --debug
+
+# Interface interativa e relatorio da execucao
+npm run test:e2e:ui
+npm run test:e2e:report
+
+# Listar os casos sem executar os fluxos
+npm run test:e2e -- --list
+```
+
+Se os navegadores ainda nao estiverem instalados, execute `npx playwright install`. No Linux/CI, o pipeline usa `npx playwright install --with-deps` para instalar tambem as dependencias do sistema.
+
+Configuracoes de execucao:
+
+- Projetos `chromium`, `firefox` e `webkit`, com perfis desktop.
+- Um worker (`workers: 1`), mesmo com `fullyParallel: true` habilitado.
+- Sem repeticao automatica local; uma nova tentativa em caso de falha no CI.
+- `test.only` proibido no CI por `forbidOnly`.
+- Localmente, inicia `npm run dev -- --port 5173` ou reutiliza um servidor existente no endereco configurado.
+- No CI, executa `npm run build && npm run preview -- --port 5173`, sem reutilizar servidor existente.
+- Tempo limite de 120 segundos para o servidor ficar disponivel.
+
+O helper `e2e/helpers/CreateAccount.ts` cadastra e autentica novos jogadores pela interface. Os testes criam dados reais na API: as contas nao possuem limpeza automatica; TC-004, TC-005 e TC-009 removem as mesas no final do fluxo, mas uma falha anterior pode deixar registros. Use uma base destinada a testes.
+
+### Testes de navegador com Playwright
+
+A configuracao esta em `playwright.config.ts`, e os cenarios ficam em `e2e/`. A tabela abaixo documenta os casos **TC-001 a TC-020**, abrangendo fluxos de sucesso (Happy Path) e de erro (Unhappy Path). O TC-006 possui dois testes. Casos sem as credenciais exigidas aparecem como ignorados (`skipped`).
+
+| Arquivo          | Fluxo validado                                                                 | Dependencias e simulacoes                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `TC-001.spec.ts` | Cadastro e login com a mesma conta.                                            | API real; cria usuario com e-mail e nickname baseados no horario.                                                                  |
+| `TC-002.spec.ts` | Rejeicao de senha curta e confirmacao divergente.                              | Simula a consulta de e-mail e verifica validacoes da interface.                                                                    |
+| `TC-003.spec.ts` | Exibicao de erro para senha incorreta apos cadastro.                           | Cadastro real; consulta de e-mail e resposta de login `401` simuladas.                                                             |
+| `TC-004.spec.ts` | Criacao e edicao de mesa de Slot Machine, seguida de desativacao e exclusao.   | API real e conta administradora.                                                                                                   |
+| `TC-005.spec.ts` | Criacao e edicao de mesa de Gambit, seguida de desativacao e exclusao.         | API real e conta administradora.                                                                                                   |
+| `TC-006.spec.ts` | Bloqueio de troca de mesa com sessao ativa, em Gambit e Slot Machine.          | Login real de administrador; saldo, mesas e sessoes simulados.                                                                     |
+| `TC-007.spec.ts` | Modal de sessao expirada, bloqueio de interacao e retorno ao login.            | Login real de administrador; dispara o evento `session-expired` no navegador.                                                      |
+| `TC-008.spec.ts` | Mensagem de conta inativa e permanencia no login.                              | Consulta de e-mail e rejeicao do login simuladas.                                                                                  |
+| `TC-009.spec.ts` | Mesa de Slot Machine deixa de aparecer ao jogador apos desativacao.            | API real, administrador e novo jogador; ajusta a resposta real do perfil para evitar o modal de bonus.                             |
+| `TC-010.spec.ts` | Edicao de nome e nascimento com senha atual, conferida ao reabrir o perfil.    | API real e novo usuario; ajusta a resposta real do perfil para evitar o modal de bonus.                                            |
+| `TC-011.spec.ts` | Sessao de Slot Machine com bonus diario, giro, rerolls e cash-out.             | API real, novo usuario, bonus disponivel e mesa Slot 1.                                                                            |
+| `TC-012.spec.ts` | Revelacao de carta de efeito no Gambit e exibicao do efeito atual.             | API real, novo usuario e mesa High Stakes Gambit; interacao com cartas no canvas.                                                  |
+| `TC-013.spec.ts` | Escolha de cartas nas etapas de um evento especial do Gambit.                  | API real e novo usuario; depende de encontrar um evento durante a partida.                                                         |
+| `TC-014.spec.ts` | Restauracao da sessao de Slot Machine ao sair e retornar, seguida de cash-out. | API real e novo usuario; desabilita cache HTTP para conferir a sessao persistida.                                                  |
+| `TC-015.spec.ts` | Restauracao da sessao de Gambit e continuidade ate o cash-out.                 | API real e novo usuario; desabilita cache HTTP e confere cartas, pontos e efeitos persistidos.                                     |
+| `TC-016.spec.ts` | Rejeicao de data de nascimento impossivel na edicao de perfil.                 | Cadastro e login reais; verifica validacao local e ausencia de requisicoes de gravacao.                                            |
+| `TC-017.spec.ts` | Rejeicao de cadastro com nickname ja utilizado.                                | API real; cria uma conta e tenta cadastrar outra com o mesmo nickname.                                                             |
+| `TC-018.spec.ts` | Bloqueio dos controles da Slot Machine para visitante nao autenticado.         | API real, sem login; confere resposta 401 e ausencia de requisicoes de jogo.                                                       |
+| `TC-019.spec.ts` | Troca de senha, rejeicao da senha antiga e login com a nova.                   | API real e novo usuario; atualizacao de perfil e autenticacao sem respostas simuladas.                                             |
+| `TC-020.spec.ts` | Bloqueio de mesas e rejeicao de giro por saldo insuficiente.                   | API real; solicita cadastro com 5 fichas e usa mesas Slot 0 a Slot 3. A mesa de entrada pode ser definida por E2E_FREE_SLOT_TABLE. |
+
+Os testes combinam integracao real e interceptacoes com `page.route`. As simulacoes verificam a resposta da interface a estados controlados, sem comprovar a regra correspondente no backend. No TC-007, por exemplo, o evento e disparado diretamente, sem provocar um `401` real.
+
+### Relatorios e evidencias
+
+- Resultado textual no terminal com o reporter `list`.
+- Relatorio HTML em `playwright-report/`, aberto com `npm run test:e2e:report`.
+- Resultado estruturado em `playwright-report/results.json`.
+- Videos habilitados para todas as execucoes e screenshots automaticos em falhas.
+- Trace na primeira repeticao (`on-first-retry`). Como localmente nao ha retries, use `--retries=1` para obter esse trace se o teste falhar e for repetido.
+- Screenshots das etapas capturados por `e2e/helpers/CaptureScreenshot.ts`, salvos no diretorio de saida do teste e anexados ao relatorio, inclusive em cenarios aprovados.
+
+Os arquivos de execucao ficam em `test-results/`. Esse diretorio e `playwright-report/` estao ignorados pelo Git. As capturas sao evidencias dos passos; a suite nao configura comparacao visual de screenshots com imagens de referencia.
+
+Se um caso aparecer como `skipped`, confira as credenciais exigidas. Para erros de conexao, verifique separadamente a URL do frontend (`E2E_BASE_URL`) e a URL da API (`VITE_API_BASE_URL`). Para falhas de uma etapa, consulte a mensagem de assercao e os anexos no relatorio HTML.
 
 ### Testes E2E e relatorio publicado
 
@@ -468,6 +628,8 @@ Ferramentas configuradas:
 - **Commitlint:** configurado com `@commitlint/config-conventional`.
 - **lint-staged:** executa `eslint --fix` e `prettier --write` em arquivos `ts` e `tsx`.
 
+Observacao: a configuracao de `lint-staged` existe em `package.json`, mas nao ha hook `pre-commit` versionado que a execute automaticamente. O hook identificado e `commit-msg`.
+
 Tipos de commit aceitos pelo Commitlint:
 
 - `ci`
@@ -482,49 +644,34 @@ Tipos de commit aceitos pelo Commitlint:
 - `revert`
 - `style`
 
-Scripts relevantes:
-
-```bash
-npm run lint
-npm run format
-npm run build
-npm test
-```
+Os scripts de lint, formatacao e testes estao documentados na secao [6. Instalacao e Execucao](#6-instalacao-e-execucao). Os comandos `lint` e `format` alteram arquivos; `lint:check` e `format:check` apenas verificam e sao usados no CI.
 
 ## 16. Pipeline CI/CD
 
-O arquivo `Jenkinsfile` define um pipeline Jenkins com:
+O arquivo `.github/workflows/ci.yml` define o pipeline no **GitHub Actions**, disparado em pushes para `main` e em pull requests. Execucoes anteriores do mesmo workflow e referencia sao canceladas quando uma nova execucao comeca.
 
-1. Checkout do repositorio.
-2. Instalacao de dependencias com `npm install --legacy-peer-deps`.
-3. Execucao de lint com `npm run lint`.
-4. Execucao de formatacao com `npm run format`.
-5. Build com `npm run build`.
-6. Deploy na Vercel via `curl -X POST $VERCEL_DEPLOY_HOOK_URL`.
-7. Limpeza do workspace com `cleanWs()`.
+1. `install`: instala dependencias com `npm install --legacy-peer-deps`.
+2. `lint`: executa `npm run lint:check` e `npm run format:check`.
+3. `test`: executa a suite Jest com `npm run test`.
+4. `build`: gera o bundle e publica `dist/` como artefato `application-dist`.
+5. `e2e`: instala os navegadores e dependencias do Playwright, faz build, executa `npm run test:e2e` e publica `playwright-report/` e `test-results/` como artefatos.
+6. `pages` (Publish E2E Report): apenas em push para `main`, baixa o relatorio e as evidencias do job `e2e`, gera o site do relatorio com `npm run report:site` e publica no **GitHub Pages**.
 
 Configuracoes identificadas:
 
-- Node configurado como `node-22`.
-- Variavel segura `VERCEL_DEPLOY_HOOK_URL` carregada via credentials do Jenkins.
+- Jobs sequenciais por `needs`, em `ubuntu-latest`, com Node.js 22, cache do npm e limite de 15 minutos por job (10 minutos no job `pages`).
+- Cada job faz checkout e instala suas dependencias novamente.
+- Artefatos `application-dist`, `playwright-report` e `playwright-test-results` mantidos por 7 dias.
+- Upload de `playwright-report/` e `test-results/` com `if: always()`, inclusive quando os testes falham, se houver relatorio gerado.
+- O job `pages` roda apenas quando o job `e2e` nao foi cancelado nem ignorado e a execucao esta na branch `main`, publicando o relatorio Playwright em `https://cassino-redgreen.github.io/RedGreen-Front/`.
+- Nao ha `Jenkinsfile` no repositorio.
 
-Lacuna identificada:
+Lacunas identificadas:
 
-- Nao ha stage de testes automatizados no Jenkinsfile, apesar de existir `npm test` e uma suite de testes no repositorio.
+- O workflow ainda nao inicia backend/banco nem injeta `VITE_API_BASE_URL`, `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD`. Os casos que usam API real dependem dessa preparacao; os que exigem administrador sao ignorados sem credenciais.
+- O preview usado no CI e um build de producao e exige a URL da API configurada antes do build. A URL passada ao servidor de preview nao substitui a configuracao incorporada no bundle.
 
-## 17. Refatoracoes Identificadas
-
-Possiveis refatoracoes observadas a partir do codigo atual:
-
-- Remover ou atualizar `src/App.tsx` e `src/App.css`, pois mantem conteudo residual do template Vite e nao sao usados pelo ponto de entrada atual.
-- Integrar `react-hook-form` e `zod` aos formularios ou remover as dependencias/schemas nao utilizados.
-- Extrair regras repetidas de validacao de formularios para helpers ou schemas compartilhados.
-- Criar guard de rota para rotas que exigem autenticacao, caso a regra de negocio seja impedir acesso direto por URL.
-- Implementar ou remover rotas placeholders (`/register`, `/dashboard`, `/roulette-room`) de acordo com o escopo final do projeto.
-- Adicionar `npm test` ao pipeline CI/CD.
-- Revisar a etapa `npm run format` no Jenkins, pois ela altera arquivos no workspace em vez de apenas verificar formatacao.
-
-## 18. Decisoes Tecnicas
+## 17. Decisoes Tecnicas
 
 Decisoes identificadas no codigo:
 
@@ -539,85 +686,18 @@ Decisoes identificadas no codigo:
 - Resultado dos jogos orientado por payloads do backend, com o frontend adaptando os dados para animacoes.
 - Uso de Framer Motion para transicoes e feedback visual.
 - Uso de testes unitarios e de integracao de componentes para fluxos criticos.
+- Uso de Playwright em tres navegadores, com cenarios reais e simulados e evidencias anexadas aos relatorios.
 
-## 19. Uso de IA
+## 18. Uso de IA
 
-Modelos utilizados
+Patrick Augusto Lins de Oliveira Damião
+Foi utilizado o Copilot, sempre com o contexto do README explicando a estrutura do projeto (com foco na stack) e apoio do documento com as orientações da tarefa. Durante todas as etapas de desenvolvimento dos testes com o Playwright o processo foi feito a partir de instruções detalhadas de cada etapa (incluindo os momentos onde deveriam ser salvas screenshots), com a maior parte do código sendo gerado diretamente pela IA. A IA ficou responsável apenas por criar o código dos testes, mas a idealização dos testes foi feita por conta própria.
+A IA também foi utilizada para desenvolver os testes de performance, tanto na elaboração do que poderia ser testado quanto na criação dos códigos de teste.
 
-Claude Sonnet (Anthropic): utilizado por meio da interface de chat em claude.ai.
-ChatGPT (OpenAI): utilizado por meio da interface de chat em chatgpt.com.
+Antonio Feliciano da Silveira Neto 
+Durante o desenvolvimento da suíte de testes, utilizei o Claude (Anthropic) como apoio ao processo de criação dos casos de teste. Usei o Claude no navegador para pensar e estruturar os prompts a partir da minha ideia inicial de cada cenário descrevendo em linguagem natural o fluxo que eu queria testar, as telas envolvidas e o que deveria ser validado e o Claude ajudava a organizar e refinar essa descrição. Com o prompt já mais claro e estruturado, eu o utilizava na extensão do Claude no VSCode para apoiar a implementação do código de automação. A execução, validação e revisão final dos testes foram feitas por mim, com a IA atuando apenas como suporte ao raciocínio e à escrita do código, não como substituta da autoria do trabalho.
 
-Para que foram usados
-O Claude foi utilizado como apoio no desenvolvimento do front-end do projeto, auxiliando na refatoração de componentes, criação de novas funcionalidades e resolução de problemas técnicos. As principais áreas de atuação foram:
-
-Refatoração do sistema de mesas do Slot Machine, separando um arquivo grande em componentes menores e reutilizáveis
-Criação do sistema de mesas do jogo Gambit, seguindo o mesmo padrão já estabelecido no projeto
-Implementação do HUD e painel de aposta do jogo Gambit
-Implementação do fluxo de sessão expirada com interceptor 401, modal de aviso e redirecionamento
-Orientação na correção de bugs como casing incorreto de variáveis no route state, chave de token errada e rotas incorretas
-Apoio na atualização de testes automatizados para refletir as mudanças realizadas
-Sugestão de mensagens de commit seguindo o padrão Conventional Commits
-
-O ChatGPT foi utilizado como apoio no desenvolvimento do front-end do projeto, auxiliando na implementação de novas funcionalidades, criação e validação de testes automatizados, refatoração de componentes, correção de erros de tipagem e documentação das alterações realizadas. As principais áreas de atuação foram:
-
-Criação e revisão de testes unitários para os componentes do sistema de mesas
-Explicação do funcionamento de testes com e sem mocks
-Auxílio na implementação do sistema de mesas e progressão dos jogos
-Integração do painel de ranking às telas dos jogos
-Migração do armazenamento do token de autenticação de LocalStorage para Cookies
-Correção de erros de TypeScript relacionados a interfaces e hooks
-Revisão da documentação da Pull Request
-Criação de instruções de teste para validação das funcionalidades implementadas
-Sugestões para internacionalização de mensagens retornadas pelo backend
-Apoio em refatorações e organização dos componentes da aplicação
-
-Exemplos reais de prompts usados
-Claude
-
-1. Refatoração do sistema de mesas
-
-"Ok claude eu preciso fazer um refactor, pois o arquivo está muito grande. Eu queria separar em arquivos para depois fazer imports. Me ajude a fazer, fazendo passo a passo, a parte do arquivo que eu vou retirar e colocar no novo."
-
-O Claude orientou a extração dos componentes um a um, indicando o que remover do arquivo original e o que adicionar ao novo, mantendo os imports e props corretos. 2. Implementação da sessão expirada
-
-"Eu preciso mudar isso. O usuário possui um timer de quanto tempo o token dele não expira, e quando expira é necessário um aviso de que a sessão dele expirou e é preciso relogar."
-
-O Claude sugeriu adicionar um interceptor de resposta no apiClient para capturar erros 401, disparar um evento customizado e criar um componente listener que exibe o modal e redireciona para o login. 3. Sistema de mesas do Gambit
-
-"Ok, claude chegou as apis que eu estava precisando. Por onde podemos começar?"
-
-A partir dos endpoints e campos retornados pelo Swagger, o Claude orientou a criação dos modais de criação e edição, do card da mesa e da página de listagem, seguindo o padrão já existente no projeto.
-ChatGPT
-
-1. Explicação dos testes unitários
-
-"Eu vou mandar todos os testes que eu fiz, depois preciso que me explica cada teste e o que está testando."
-
-O ChatGPT analisou os testes unitários criados para os componentes do sistema de mesas e explicou individualmente o objetivo de cada caso de teste, quais comportamentos estavam sendo validados e quais cenários de sucesso e erro estavam sendo cobertos. 2. Migração da autenticação para Cookies
-
-"Uma coisa que estávamos fazendo é salvar o token no localStorage, isso tem que ser salvo no cookie."
-
-O ChatGPT auxiliou na migração do mecanismo de autenticação, sugerindo uma estrutura para armazenamento, leitura e remoção de cookies e identificando pontos do projeto que precisariam ser atualizados. 3. Tradução das mensagens do Backend
-
-"Possui mensagens que ainda vêm do backend, que precisam ser em português."
-
-O ChatGPT auxiliou na criação de uma estratégia para mapear mensagens retornadas pela API e exibi-las em português para o usuário final sem necessidade de alterações no backend. 4. Documentação da Pull Request
-
-"Como posso explicar a mudança que eu fiz no SlotMachine?"
-
-O ChatGPT auxiliou na elaboração da descrição das alterações realizadas, ajudando a documentar as funcionalidades implementadas e o impacto das mudanças no projeto. 5. Correção de erros de tipagem
-
-"A propriedade 'userType' não existe no tipo..."
-
-O ChatGPT auxiliou na análise de erros de TypeScript relacionados a interfaces, hooks e propriedades inexistentes, sugerindo ajustes nos tipos e retornos das funções utilizadas.
-Dinâmica de uso
-As ferramentas foram utilizadas individualmente como apoio durante o desenvolvimento, sempre com o desenvolvedor conduzindo as decisões. Os arquivos eram compartilhados na conversa e as ferramentas orientavam as mudanças passo a passo, cabendo ao desenvolvedor aplicar, testar e validar cada alteração.
-As respostas não foram aplicadas sem revisão. Sugestões foram analisadas, ajustadas ou descartadas de acordo com os requisitos e padrões do projeto.
-O que não foi feito por IA
-A definição dos requisitos, regras de negócio, arquitetura, identidade visual e experiência dos jogos foi realizada. A validação funcional de todas as alterações, a abertura e merge de pull requests e as decisões finais durante code reviews permaneceram sob responsabilidade dos desenvolvedores.
-Correções pontuais como ajustes de imports incorretos, erros de digitação em nomes de arquivos e pequenas correções de tipagem foram feitas manualmente. Alguns testes também foram escritos e ajustados diretamente , sem auxílio da IA. A implementação final das funcionalidades, ajustes de layout, execução dos testes e validação das regras de negócio foram realizadas manualmente. As ferramentas atuaram apenas como apoio técnico durante o processo de desenvolvimento e documentação do projeto.
-
-## 20. Metodologia de Desenvolvimento
+## 19. Metodologia de Desenvolvimento
 
 No começo do desenvolvimento do projeto não chegamos a pensar e formalizar uma metodologia específica. Em vez disso, definimos alguns combinados para que o projeto progredisse da melhor maneira possível, adotando, na prática, um fluxo ágil informal e adaptado à realidade do grupo.
 Começamos nos dividindo em 3 duplas, em que cada integrante seria responsável por validar e testar as Pull Requests da sua dupla. Cada dupla ficou responsável por um aspecto do projeto: uma com o front na parte de Interface e Integração de Usuário, outra com o front na parte de Motor Gráfico e Animações dos jogos, e a última com o backend — Regras de Negócio e Persistência de Dados.
@@ -625,7 +705,7 @@ Definimos também duas reuniões semanais, uma na terça-feira e outra na quinta
 Nosso principal meio de comunicação foi o Discord, onde fazíamos as reuniões. Além disso, também usamos o WhatsApp para dar feedbacks mais informais e o próprio fluxo das PRs no GitHub, onde já apontávamos mais detalhadamente o que deveria ser mudado.
 Vale destacar que não definimos uma Definição de Pronto (DoD) nem uma Definição de Preparado (DoR), e não tivemos sprints propriamente ditas — trabalhamos com uma cadência fixa de reuniões em vez de ciclos formais.
 
-## 21. Dinâmica de Desenvolvimento
+## 20. Dinâmica de Desenvolvimento
 
 As decisões técnicas foram tomadas, em sua maioria, pelas próprias duplas responsáveis por cada camada, já que cada uma tinha o maior contexto sobre o que estava construindo. Ainda assim, o feedback dos demais integrantes era sempre bem-vindo, principalmente no momento da revisão das Pull Requests, onde pontos de melhoria e abordagens alternativas eram discutidos abertamente. No início, as decisões sobre o que implementar foram guiadas por cobrir os requisitos pedidos no laboratório; conforme o projeto avançou, a priorização passou a ser orientada pela próxima funcionalidade que cada dupla precisava para destravar seu trabalho.
 Para manter o histórico do repositório limpo e legível, estabelecemos um padrão obrigatório tanto para commits quanto para Pull Requests. Os commits seguiam o formato de tipo e descrição (feat:, fix:, chore:, docs:, test:, refactor:, style:), e as branches seguiam a convenção tipo/escopo-descrição-curta (feat/, bugfix/, hotfix/, chore/). As Pull Requests também seguiam um modelo padronizado, com seções explicando o porquê e o que foi feito, como testar e as evidências de funcionamento. Esse padrão facilitou bastante a visualização do que cada PR entregava e tornou as revisões entre as duplas mais ágeis.
@@ -633,76 +713,62 @@ O maior desafio da dinâmica de desenvolvimento veio da criação do Gambit, um 
 Esses ajustes também geraram bloqueios pontuais entre as duplas, já que mudanças na lógica do Gambit no backend impactavam diretamente o trabalho das duplas de front, que dependiam dessas definições para avançar. Nesses casos, nos reorganizamos priorizando as implementações que destravavam o trabalho das outras duplas.
 A principal lição aprendida foi sobre a importância de definir melhor o escopo e as regras de uma funcionalidade original antes de começar a implementá-la. Boa parte dos refactors do Gambit poderia ter sido evitada com um planejamento inicial mais detalhado das mecânicas do jogo. Também percebemos que a ausência de uma Definição de Pronto (DoD) clara deixou alguns critérios de "terminado" subjetivos, e que adotá-la desde o início teria tornado as entregas mais previsíveis. Em um próximo projeto, investiríamos mais tempo no alinhamento de escopo logo no começo e formalizaríamos esses combinados que, neste projeto, ficaram apenas implícitos.
 
-## 22. Historias de usuario
+## 21. Historias de usuario
 
-História 1 — Cadastro de usuário · Prioridade: Alta
+### História 1: Cadastro de usuário (Prioridade: Alta)
+
 Como visitante, eu quero criar uma conta com e-mail e senha para que eu possa acessar o cassino e receber meu saldo inicial de fichas.
+
 Critérios de aceitação:
 
-Dado que estou na tela de cadastro, quando preencho e-mail válido e senha forte e confirmo, então minha conta é criada e recebo um saldo inicial de fichas.
-Dado que informo um e-mail já cadastrado, quando submeto, então recebo mensagem de erro e o cadastro não é concluído.
-Dado que a senha não atende às regras de validação, quando submeto, então o Zod bloqueia o envio e exibe o erro antes de chamar a API.
+- Dado que estou na tela de cadastro, quando preencho e-mail válido e senha forte e confirmo, então minha conta é criada e recebo um saldo inicial de fichas.
+- Dado que informo um e-mail já cadastrado, quando submeto, então recebo mensagem de erro e o cadastro não é concluído.
+- Dado que a senha não atende às regras de validação, quando submeto, então a validação do formulário bloqueia o envio e exibe o erro antes de chamar a API.
 
-Rastreabilidade:
-PR Back: #2 Feat/create user entity and #3 Feat/auth user routes
-PR Front: #4 Feat loginpage creation
+### História 2: Reroll de slot (Prioridade: Alta)
 
-História 2 — Reroll de slot · Prioridade: Alta
 Como jogador do cassino, eu quero selecionar um slot específico para realizar um reroll para que eu possa tentar melhorar minha combinação e aumentar minhas chances de obter uma recompensa maior.
+
 Critérios de aceitação:
 
-Dado que possuo rerolls disponíveis, quando seleciono um dos slots permitidos, então o sistema destaca visualmente o slot escolhido.
-Dado que um slot foi selecionado, quando confirmo a ação de reroll, então apenas o slot escolhido executa novamente a animação de giro.
-Dado que o reroll foi concluído, quando o backend retorna o novo resultado, então o símbolo exibido no slot corresponde exatamente ao valor recebido.
-Dado que um reroll foi utilizado, quando a operação é concluída, então a quantidade restante de rerolls é atualizada na interface.
-Dado que não possuo mais rerolls disponíveis, quando tento realizar um novo reroll, então o sistema não permite a ação e mantém o estado atual dos slots.
+- Dado que possuo rerolls disponíveis, quando seleciono um dos slots permitidos, então o sistema destaca visualmente o slot escolhido.
+- Dado que um slot foi selecionado, quando confirmo a ação de reroll, então apenas o slot escolhido executa novamente a animação de giro.
+- Dado que o reroll foi concluído, quando o backend retorna o novo resultado, então o símbolo exibido no slot corresponde exatamente ao valor recebido.
+- Dado que um reroll foi utilizado, quando a operação é concluída, então a quantidade restante de rerolls é atualizada na interface.
+- Dado que não possuo mais rerolls disponíveis, quando tento realizar um novo reroll, então o sistema não permite a ação e mantém o estado atual dos slots.
 
-Rastreabilidade:
-PR Back: #22 Feat/integrating slot machines
-PR Front: #18 Feat/adding logic to slot machine, #21 Feat/slot machine organization
+### História 3: Ranking de jogadores (Prioridade: Média)
 
-História 3 — Ranking de jogadores · Prioridade: Média
 Como jogador competitivo, eu quero ver um ranking dos jogadores para que eu possa comparar meu desempenho com os demais.
+
 Critérios de aceitação:
 
-Dado que existem jogadores cadastrados, quando acesso a tela de ranking, então vejo a lista ordenada pelo saldo de fichas.
-Dado que meu saldo é alterado, quando o ranking é recalculado, então minha posição reflete a mudança.
+- Dado que existem jogadores cadastrados, quando acesso a tela de ranking, então vejo a lista ordenada pelo saldo de fichas.
+- Dado que meu saldo é alterado, quando o ranking é recalculado, então minha posição reflete a mudança.
 
-Rastreabilidade:
-PR Back: #17 Feat/new user routes
-PR Front: #11 Feat: homepage creation, #30Feat: add rank route
+### História 4: Bônus diário (Prioridade: Média)
 
-História 4 — Bônus diário · Prioridade: Média
 Como jogador autenticado, eu quero resgatar meu bônus diário de fichas para que eu possa aumentar meu saldo e continuar jogando.
+
 Critérios de aceitação:
-Dado que estou logado e ainda não resgatei o bônus do dia, quando acesso o painel de bônus diário, então vejo o dia atual da sequência e posso resgatar a recompensa.
-Dado que o bônus diário já foi resgatado, quando acesso o painel novamente, então o botão de resgate aparece bloqueado com a informação de que o bônus já foi coletado.
-Dado que o resgate é concluído com sucesso, quando a API retorna a recompensa, então o saldo de fichas é atualizado na interface.
 
-Rastreabilidade:
-PR Back: #7 feat/user-profile-routes
-PR Front: #15 add-diary-rewards
+- Dado que estou logado e ainda não resgatei o bônus do dia, quando acesso o painel de bônus diário, então vejo o dia atual da sequência e posso resgatar a recompensa.
+- Dado que o bônus diário já foi resgatado, quando acesso o painel novamente, então o botão de resgate aparece bloqueado com a informação de que o bônus já foi coletado.
+- Dado que o resgate é concluído com sucesso, quando a API retorna a recompensa, então o saldo de fichas é atualizado na interface.
 
-História 5 — Gerenciamento de mesas de jogo · Prioridade: Alta
+### História 5: Gerenciamento de mesas de jogo (Prioridade: Alta)
+
 Como administrador, eu quero criar, editar, desativar e remover mesas de jogo para que eu possa controlar quais mesas estarão disponíveis aos jogadores.
+
 Critérios de aceitação:
-Dado que estou autenticado como administrador, quando acesso a tela de mesas, então vejo a opção de criar uma nova mesa.
-Dado que informo dados inválidos ao criar ou editar uma mesa, quando tento salvar, então recebo uma mensagem de erro e a operação não é concluída.
-Dado que uma mesa está ativa, quando tento excluí-la, então a exclusão fica bloqueada até que a mesa seja desativada.
-Dado que uma mesa possui sessões ativas, quando tento desativá-la, então o sistema exibe um aviso antes de concluir a operação.
 
-Rastreabilidade:
-PR Back: #6 feat/create-SlotMachine-entity, #8 feat/admin-guard, #15 fix/Slot-game-logic
-PR Front: #26 feat-table-system
+- Dado que estou autenticado como administrador, quando acesso a tela de mesas, então vejo a opção de criar uma nova mesa.
+- Dado que informo dados inválidos ao criar ou editar uma mesa, quando tento salvar, então recebo uma mensagem de erro e a operação não é concluída.
+- Dado que uma mesa está ativa, quando tento excluí-la, então a exclusão fica bloqueada até que a mesa seja desativada.
+- Dado que uma mesa possui sessões ativas, quando tento desativá-la, então o sistema exibe um aviso antes de concluir a operação.
 
-## 23. Refactor
-
-Refactor: changing token storage to cookie#35
-Refactor Movimentação de Método
-Esse refactor foi feito para realocar o token dos usuarios que estava no LocalStorage para o Cookie, tbm foi retirado o user que era salvo no LocalStorage
-
-## 24. Conclusao
+## 22. Conclusao
 
 O RedGreen Frontend apresenta uma aplicacao React com arquitetura organizada em camadas, integracao com API, cache com SWR, interface visual consistente e dois sistemas de jogo implementados. A base de testes cobre diversos fluxos relevantes, especialmente autenticação, ranking, modais, Slot Machine e Gambit.
 
-As principais lacunas identificadas para evolucao academica e tecnica sao a remocao ou conclusao de placeholders, a integracao real de schemas/formularios com as bibliotecas ja instaladas, a inclusao dos testes no pipeline CI/CD e a limpeza de arquivos residuais do template inicial.
+As principais lacunas identificadas para evolucao academica e tecnica sao a remocao ou conclusao de placeholders, a integracao real de schemas/formularios com as bibliotecas ja instaladas, a preparacao completa do ambiente E2E no pipeline CI/CD e a limpeza de arquivos residuais do template inicial. Jest e Playwright ja possuem etapas no GitHub Actions, e a suite de navegador registra evidencias dos fluxos de autenticacao, administracao de mesas e edicao de perfil.
