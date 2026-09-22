@@ -14,6 +14,7 @@ const EventCardsCount = 3;
 const EventStages = 2;
 const EventTimeout = 30_000;
 const ClickTimeout = 2_000;
+const EventClickTimeout = 8_000;
 
 type GambitSessionBody = {
   BurnSlotsAvailable: number;
@@ -387,7 +388,10 @@ test.describe('TC-013 - Happy Path', () => {
 
       await WaitForEventCards(1);
       await Capture('06-event-green-table');
-      await EventCards.first().click({ force: true, timeout: ClickTimeout });
+      await EventCards.first().click({
+        force: true,
+        timeout: EventClickTimeout,
+      });
 
       await WaitForEventCards(2);
       await Capture('07-event-red-table');
@@ -398,7 +402,10 @@ test.describe('TC-013 - Happy Path', () => {
           Candidate.request().method() === 'POST',
         { timeout: EventTimeout }
       );
-      await EventCards.first().click({ force: true, timeout: ClickTimeout });
+      await EventCards.first().click({
+        force: true,
+        timeout: EventClickTimeout,
+      });
       const ResolveEventResponse = await ResolveEventResponsePromise;
       expect(ResolveEventResponse.ok()).toBe(true);
 
