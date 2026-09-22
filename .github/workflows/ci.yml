@@ -116,9 +116,24 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+    env:
+      # Lidas pelo docker compose (up/down) e pela API do backend
+      POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_SSL: ${{ vars.POSTGRES_SSL }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Checkout backend
+        uses: actions/checkout@v7
+        with:
+          repository: Cassino-RedGreen/RedGreen-Back
+          ref: main
+          path: backend
 
       - name: Set up Node 22
         uses: actions/setup-node@v7
@@ -126,16 +141,41 @@ jobs:
           node-version: '22'
           cache: npm
 
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Start Postgres
+        working-directory: backend
+        run: docker compose up -d --wait postgres
+
+      - name: Start backend API
+        working-directory: backend
+        env:
+          DATABASE_URL: postgres://${{ vars.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@${{ vars.POSTGRES_HOST }}:${{ vars.POSTGRES_PORT }}/${{ vars.POSTGRES_DB }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ vars.PORT }}
+        run: nohup npm run start:dev > ../backend.log 2>&1 &
+
+      - name: Wait for backend API
+        run: |
+          if ! npx wait-on tcp:${{ vars.PORT }} --timeout 60000; then
+            echo "::error::Backend API did not start within 60s"
+            cat backend.log
+            exit 1
+          fi
+
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
-      - name: Build production bundle
-        run: npm run build
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
       - name: Run E2E tests
+        env:
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          E2E_ADMIN_EMAIL: ${{ vars.E2E_ADMIN_EMAIL }}
+          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
         run: npm run test:e2e
 
       - name: Upload E2E report
@@ -147,7 +187,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Upload E2E evidence
+      - name: Upload E2E test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -155,6 +195,20 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Upload backend log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-log
+          path: backend.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Stop Postgres
+        if: always()
+        working-directory: backend
+        run: docker compose down -v
 
   pages:
     name: Publish E2E Report

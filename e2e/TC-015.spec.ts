@@ -99,7 +99,7 @@ test.describe('TC-015 - Happy Path', () => {
       exact: true,
     });
     const TableHeading = RecordedPage.getByRole('heading', {
-      name: 'High Stakes Gambit',
+      name: 'High Stake Gambit',
       exact: true,
     });
     const BackArrow = RecordedPage.getByRole('button', {

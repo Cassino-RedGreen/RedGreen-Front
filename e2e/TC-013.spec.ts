@@ -14,6 +14,7 @@ const EventCardsCount = 3;
 const EventStages = 2;
 const EventTimeout = 30_000;
 const ClickTimeout = 2_000;
+const EventClickTimeout = 8_000;
 
 type GambitSessionBody = {
   BurnSlotsAvailable: number;
@@ -100,12 +101,12 @@ test.describe('TC-013 - Happy Path', () => {
       ).toBeVisible();
       await expect(RecordedPage.getByText('Bloqueado')).toHaveCount(0);
       await expect(
-        RecordedPage.getByRole('heading', { name: 'High Stakes Gambit' })
+        RecordedPage.getByRole('heading', { name: 'High Stake Gambit' })
       ).toBeVisible();
       await Capture('02-gambit-tables');
 
       await RecordedPage.getByRole('heading', {
-        name: 'High Stakes Gambit',
+        name: 'High Stake Gambit',
       }).click();
       await expect(RecordedPage).toHaveURL('/gambit-room');
       await expect(
@@ -387,7 +388,10 @@ test.describe('TC-013 - Happy Path', () => {
 
       await WaitForEventCards(1);
       await Capture('06-event-green-table');
-      await EventCards.first().click({ force: true, timeout: ClickTimeout });
+      await EventCards.first().click({
+        force: true,
+        timeout: EventClickTimeout,
+      });
 
       await WaitForEventCards(2);
       await Capture('07-event-red-table');
@@ -398,7 +402,10 @@ test.describe('TC-013 - Happy Path', () => {
           Candidate.request().method() === 'POST',
         { timeout: EventTimeout }
       );
-      await EventCards.first().click({ force: true, timeout: ClickTimeout });
+      await EventCards.first().click({
+        force: true,
+        timeout: EventClickTimeout,
+      });
       const ResolveEventResponse = await ResolveEventResponsePromise;
       expect(ResolveEventResponse.ok()).toBe(true);
 

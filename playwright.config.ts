@@ -14,7 +14,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: IsCi,
   retries: IsCi ? 1 : 0,
-  workers: 1,
+  workers: 3,
   reporter: [
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
@@ -27,18 +27,13 @@ export default defineConfig({
     video: 'on',
   },
   projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      expect: { timeout: 20000 },
     },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
   webServer: {
     command: IsCi

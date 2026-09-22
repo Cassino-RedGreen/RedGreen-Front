@@ -100,12 +100,12 @@ test.describe('TC-012 - Happy Path', () => {
       ).toBeVisible();
       await expect(RecordedPage.getByText('Bloqueado')).toHaveCount(0);
       await expect(
-        RecordedPage.getByRole('heading', { name: 'High Stakes Gambit' })
+        RecordedPage.getByRole('heading', { name: 'High Stake Gambit' })
       ).toBeVisible();
       await Capture('02-gambit-tables');
 
       await RecordedPage.getByRole('heading', {
-        name: 'High Stakes Gambit',
+        name: 'High Stake Gambit',
       }).click();
       await expect(RecordedPage).toHaveURL('/gambit-room');
       await expect(
