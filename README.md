@@ -7,6 +7,32 @@ Frontend do projeto **RedGreen**, desenvolvido para a disciplina **C14 - Engenha
 
 Este documento foi elaborado a partir da analise do codigo-fonte existente neste repositorio. Funcionalidades, rotas, endpoints e testes descritos aqui correspondem ao que foi identificado no projeto.
 
+## Indice
+
+- [Autores](#autores)
+- [1. Visao Geral do Projeto](#1-visao-geral-do-projeto)
+- [2. Funcionalidades Implementadas](#2-funcionalidades-implementadas)
+- [3. Tecnologias e Ferramentas](#3-tecnologias-e-ferramentas)
+- [4. Arquitetura Frontend](#4-arquitetura-frontend)
+- [5. Estrutura de Diretorios](#5-estrutura-de-diretorios)
+- [6. Instalacao e Execucao](#6-instalacao-e-execucao)
+- [7. Variaveis de Ambiente](#7-variaveis-de-ambiente)
+- [8. Rotas da Aplicacao](#8-rotas-da-aplicacao)
+- [9. Integracao com API](#9-integracao-com-api)
+- [10. Gerenciamento de Estado](#10-gerenciamento-de-estado)
+- [11. Sistema de Formularios](#11-sistema-de-formularios)
+- [12. Sistema de Jogos](#12-sistema-de-jogos)
+- [13. Interface e UX](#13-interface-e-ux)
+- [14. Testes Automatizados](#14-testes-automatizados)
+- [15. Qualidade de Codigo](#15-qualidade-de-codigo)
+- [16. Pipeline CI/CD](#16-pipeline-cicd)
+- [17. Decisoes Tecnicas](#17-decisoes-tecnicas)
+- [18. Uso de IA](#18-uso-de-ia)
+- [19. Metodologia de Desenvolvimento](#19-metodologia-de-desenvolvimento)
+- [20. Dinâmica de Desenvolvimento](#20-dinâmica-de-desenvolvimento)
+- [21. Historias de Usuario](#21-historias-de-usuario)
+- [22. Conclusao](#22-conclusao)
+
 ## Autores
 
 Projeto desenvolvido pelas equipes de **Backend** (este repositório) e **Frontend** ([RedGreen-Front](https://github.com/Cassino-RedGreen/RedGreen-Front)).
@@ -165,6 +191,11 @@ Pre-requisitos:
 - Node.js 22 atualizado, conforme a versao principal utilizada no GitHub Actions.
 - npm.
 - Backend em execucao para os fluxos que consomem a API real.
+- k6, para os testes de performance. No Windows, instale com:
+
+```bash
+winget install k6 --source winget
+```
 
 Instalacao:
 
@@ -192,10 +223,16 @@ Preview do build:
 npm run preview
 ```
 
-Testes:
+Testes unitarios:
 
 ```bash
 npm test
+```
+
+Testes end-to-end:
+
+```bash
+npm run test:e2e
 ```
 
 Lint:
@@ -585,19 +622,7 @@ Tipos de commit aceitos pelo Commitlint:
 - `revert`
 - `style`
 
-Scripts relevantes:
-
-```bash
-npm run lint
-npm run lint:check
-npm run format
-npm run format:check
-npm run build
-npm test
-npm run test:e2e
-```
-
-Os comandos `lint` e `format` alteram arquivos; `lint:check` e `format:check` apenas verificam e sao usados no CI.
+Os scripts de lint, formatacao e testes estao documentados na secao [6. Instalacao e Execucao](#6-instalacao-e-execucao). Os comandos `lint` e `format` alteram arquivos; `lint:check` e `format:check` apenas verificam e sao usados no CI.
 
 ## 16. Pipeline CI/CD
 
@@ -607,21 +632,22 @@ O arquivo `.github/workflows/ci.yml` define o pipeline no **GitHub Actions**, di
 2. `lint`: executa `npm run lint:check` e `npm run format:check`.
 3. `test`: executa a suite Jest com `npm run test`.
 4. `build`: gera o bundle e publica `dist/` como artefato `application-dist`.
-5. `e2e`: instala os navegadores e dependencias do Playwright, faz build e executa `npm run test:e2e`.
+5. `e2e`: instala os navegadores e dependencias do Playwright, faz build, executa `npm run test:e2e` e publica `playwright-report/` e `test-results/` como artefatos.
+6. `pages` (Publish E2E Report): apenas em push para `main`, baixa o relatorio e as evidencias do job `e2e`, gera o site do relatorio com `npm run report:site` e publica no **GitHub Pages**.
 
 Configuracoes identificadas:
 
-- Jobs sequenciais por `needs`, em `ubuntu-latest`, com Node.js 22, cache do npm e limite de 15 minutos por job.
+- Jobs sequenciais por `needs`, em `ubuntu-latest`, com Node.js 22, cache do npm e limite de 15 minutos por job (10 minutos no job `pages`).
 - Cada job faz checkout e instala suas dependencias novamente.
-- Artefatos `application-dist` e `playwright-report` mantidos por 7 dias.
-- Upload de `playwright-report/` com `if: always()`, inclusive quando os testes falham, se houver relatorio gerado.
-- Nao ha etapa de deploy no workflow atual nem `Jenkinsfile` no repositorio.
+- Artefatos `application-dist`, `playwright-report` e `playwright-test-results` mantidos por 7 dias.
+- Upload de `playwright-report/` e `test-results/` com `if: always()`, inclusive quando os testes falham, se houver relatorio gerado.
+- O job `pages` roda apenas quando o job `e2e` nao foi cancelado nem ignorado e a execucao esta na branch `main`, publicando o relatorio Playwright em `https://cassino-redgreen.github.io/RedGreen-Front/`.
+- Nao ha `Jenkinsfile` no repositorio.
 
 Lacunas identificadas:
 
 - O workflow ainda nao inicia backend/banco nem injeta `VITE_API_BASE_URL`, `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD`. Os casos que usam API real dependem dessa preparacao; os que exigem administrador sao ignorados sem credenciais.
 - O preview usado no CI e um build de producao e exige a URL da API configurada antes do build. A URL passada ao servidor de preview nao substitui a configuracao incorporada no bundle.
-- Existe upload do relatorio HTML, mas nao um artefato separado de `test-results/`.
 
 ## 17. Decisoes Tecnicas
 
@@ -667,45 +693,57 @@ A principal lição aprendida foi sobre a importância de definir melhor o escop
 
 ## 21. Historias de usuario
 
-História 1 — Cadastro de usuário · Prioridade: Alta
+### História 1: Cadastro de usuário (Prioridade: Alta)
+
 Como visitante, eu quero criar uma conta com e-mail e senha para que eu possa acessar o cassino e receber meu saldo inicial de fichas.
+
 Critérios de aceitação:
 
-Dado que estou na tela de cadastro, quando preencho e-mail válido e senha forte e confirmo, então minha conta é criada e recebo um saldo inicial de fichas.
-Dado que informo um e-mail já cadastrado, quando submeto, então recebo mensagem de erro e o cadastro não é concluído.
-Dado que a senha não atende às regras de validação, quando submeto, então a validação do formulário bloqueia o envio e exibe o erro antes de chamar a API.
+- Dado que estou na tela de cadastro, quando preencho e-mail válido e senha forte e confirmo, então minha conta é criada e recebo um saldo inicial de fichas.
+- Dado que informo um e-mail já cadastrado, quando submeto, então recebo mensagem de erro e o cadastro não é concluído.
+- Dado que a senha não atende às regras de validação, quando submeto, então a validação do formulário bloqueia o envio e exibe o erro antes de chamar a API.
 
-História 2 — Reroll de slot · Prioridade: Alta
+### História 2: Reroll de slot (Prioridade: Alta)
+
 Como jogador do cassino, eu quero selecionar um slot específico para realizar um reroll para que eu possa tentar melhorar minha combinação e aumentar minhas chances de obter uma recompensa maior.
+
 Critérios de aceitação:
 
-Dado que possuo rerolls disponíveis, quando seleciono um dos slots permitidos, então o sistema destaca visualmente o slot escolhido.
-Dado que um slot foi selecionado, quando confirmo a ação de reroll, então apenas o slot escolhido executa novamente a animação de giro.
-Dado que o reroll foi concluído, quando o backend retorna o novo resultado, então o símbolo exibido no slot corresponde exatamente ao valor recebido.
-Dado que um reroll foi utilizado, quando a operação é concluída, então a quantidade restante de rerolls é atualizada na interface.
-Dado que não possuo mais rerolls disponíveis, quando tento realizar um novo reroll, então o sistema não permite a ação e mantém o estado atual dos slots.
+- Dado que possuo rerolls disponíveis, quando seleciono um dos slots permitidos, então o sistema destaca visualmente o slot escolhido.
+- Dado que um slot foi selecionado, quando confirmo a ação de reroll, então apenas o slot escolhido executa novamente a animação de giro.
+- Dado que o reroll foi concluído, quando o backend retorna o novo resultado, então o símbolo exibido no slot corresponde exatamente ao valor recebido.
+- Dado que um reroll foi utilizado, quando a operação é concluída, então a quantidade restante de rerolls é atualizada na interface.
+- Dado que não possuo mais rerolls disponíveis, quando tento realizar um novo reroll, então o sistema não permite a ação e mantém o estado atual dos slots.
 
-História 3 — Ranking de jogadores · Prioridade: Média
+### História 3: Ranking de jogadores (Prioridade: Média)
+
 Como jogador competitivo, eu quero ver um ranking dos jogadores para que eu possa comparar meu desempenho com os demais.
+
 Critérios de aceitação:
 
-Dado que existem jogadores cadastrados, quando acesso a tela de ranking, então vejo a lista ordenada pelo saldo de fichas.
-Dado que meu saldo é alterado, quando o ranking é recalculado, então minha posição reflete a mudança.
+- Dado que existem jogadores cadastrados, quando acesso a tela de ranking, então vejo a lista ordenada pelo saldo de fichas.
+- Dado que meu saldo é alterado, quando o ranking é recalculado, então minha posição reflete a mudança.
 
-História 4 — Bônus diário · Prioridade: Média
+### História 4: Bônus diário (Prioridade: Média)
+
 Como jogador autenticado, eu quero resgatar meu bônus diário de fichas para que eu possa aumentar meu saldo e continuar jogando.
-Critérios de aceitação:
-Dado que estou logado e ainda não resgatei o bônus do dia, quando acesso o painel de bônus diário, então vejo o dia atual da sequência e posso resgatar a recompensa.
-Dado que o bônus diário já foi resgatado, quando acesso o painel novamente, então o botão de resgate aparece bloqueado com a informação de que o bônus já foi coletado.
-Dado que o resgate é concluído com sucesso, quando a API retorna a recompensa, então o saldo de fichas é atualizado na interface.
 
-História 5 — Gerenciamento de mesas de jogo · Prioridade: Alta
-Como administrador, eu quero criar, editar, desativar e remover mesas de jogo para que eu possa controlar quais mesas estarão disponíveis aos jogadores.
 Critérios de aceitação:
-Dado que estou autenticado como administrador, quando acesso a tela de mesas, então vejo a opção de criar uma nova mesa.
-Dado que informo dados inválidos ao criar ou editar uma mesa, quando tento salvar, então recebo uma mensagem de erro e a operação não é concluída.
-Dado que uma mesa está ativa, quando tento excluí-la, então a exclusão fica bloqueada até que a mesa seja desativada.
-Dado que uma mesa possui sessões ativas, quando tento desativá-la, então o sistema exibe um aviso antes de concluir a operação.
+
+- Dado que estou logado e ainda não resgatei o bônus do dia, quando acesso o painel de bônus diário, então vejo o dia atual da sequência e posso resgatar a recompensa.
+- Dado que o bônus diário já foi resgatado, quando acesso o painel novamente, então o botão de resgate aparece bloqueado com a informação de que o bônus já foi coletado.
+- Dado que o resgate é concluído com sucesso, quando a API retorna a recompensa, então o saldo de fichas é atualizado na interface.
+
+### História 5: Gerenciamento de mesas de jogo (Prioridade: Alta)
+
+Como administrador, eu quero criar, editar, desativar e remover mesas de jogo para que eu possa controlar quais mesas estarão disponíveis aos jogadores.
+
+Critérios de aceitação:
+
+- Dado que estou autenticado como administrador, quando acesso a tela de mesas, então vejo a opção de criar uma nova mesa.
+- Dado que informo dados inválidos ao criar ou editar uma mesa, quando tento salvar, então recebo uma mensagem de erro e a operação não é concluída.
+- Dado que uma mesa está ativa, quando tento excluí-la, então a exclusão fica bloqueada até que a mesa seja desativada.
+- Dado que uma mesa possui sessões ativas, quando tento desativá-la, então o sistema exibe um aviso antes de concluir a operação.
 
 ## 22. Conclusao
 
