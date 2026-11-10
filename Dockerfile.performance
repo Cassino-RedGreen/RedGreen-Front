@@ -1,0 +1,12 @@
+# syntax=docker/dockerfile:1
+FROM mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+WORKDIR /opt/performance
+ENV CI=true PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
+    PERF_BASE_URL=http://redgreen-frontend:8080 PERF_OUTPUT_DIR=/reports \
+    PERF_RUNS=5 PERF_BROWSER_RUNS=5
+COPY performance/package.json performance/package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund
+COPY performance/*.mjs performance/*.cjs ./
+# Discover the executable through the matching Playwright API, never a hardcoded revision path.
+RUN node verify-browser.mjs
+CMD ["node", "run.mjs"]
