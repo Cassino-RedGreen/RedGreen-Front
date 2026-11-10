@@ -10,6 +10,8 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
-RUN npm test 
+RUN mkdir -p /app/reports && chown node:node /app/reports
 
-CMD ["npm", "test"]
+USER node
+
+CMD ["npm", "test", "--", "--coverage", "--coverageDirectory=/app/reports"]
