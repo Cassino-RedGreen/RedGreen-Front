@@ -13,5 +13,10 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
+RUN mkdir -p /app/playwright-report /app/test-results /app/node_modules/.tmp \
+    && chown pwuser:pwuser /app \
+    && chown -R pwuser:pwuser /app/playwright-report /app/test-results /app/node_modules/.tmp
+
+USER pwuser
 
 CMD ["npm", "run", "test:e2e"]
