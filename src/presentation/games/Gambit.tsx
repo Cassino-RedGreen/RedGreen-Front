@@ -246,6 +246,7 @@ export const Gambit = ({
     setIsPendingEventPresentationDelayed,
   ] = useState(false);
   const [isAutoCashOutPending, setIsAutoCashOutPending] = useState(false);
+  const [isBoardReady, setIsBoardReady] = useState(false);
   const [scoreFeedback, setScoreFeedback] =
     useState<GambitScoreFeedback | null>(null);
   const revealAnimationLockedRef = useRef(false);
@@ -437,6 +438,12 @@ export const Gambit = ({
     (!isSelectingInteraction &&
       !hasBumisDisguisedPreparedEffect &&
       burnsRemaining <= 0);
+  // Exposed as data-locked on the board wrapper. Besides isBoardLocked, it
+  // covers the board-wide cases where a click is dropped without a request:
+  // card sprites not created yet, and an open Clarividencia preview, which
+  // only accepts the previewed card.
+  const isBoardClickLocked =
+    isBoardLocked || !isBoardReady || previewedCardId !== null;
 
   useEffect(() => {
     setSession(initialSession ?? null);
@@ -1123,7 +1130,11 @@ export const Gambit = ({
             </div>
           </div>
 
-          <div className="bg-card p-4 pixel-border-gold">
+          <div
+            className="bg-card p-4 pixel-border-gold"
+            data-locked={String(isBoardClickLocked)}
+            data-testid="gambit-board"
+          >
             <GambitBoard
               cards={cards}
               className="aspect-square w-full overflow-hidden"
@@ -1133,6 +1144,7 @@ export const Gambit = ({
               interactionLocked={isBoardLocked}
               onCardReveal={handleCardReveal}
               onCardRevealAnimationComplete={handleCardRevealAnimationComplete}
+              onReadyChange={setIsBoardReady}
               selectedCardIds={pendingInteractionFeedbackCardIds}
             />
           </div>

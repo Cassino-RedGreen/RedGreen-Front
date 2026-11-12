@@ -1,5 +1,5 @@
 import type { CSSProperties, HTMLAttributes } from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Application, Container, Graphics, Text, TextStyle } from 'pixi.js';
 import { createGambitCard, type GambitCardInstance } from './GambitCard';
 import { GAMBIT_GRID_SIZE } from './GambitGameConfig';
@@ -15,6 +15,7 @@ type GambitBoardProps = Pick<
   interactionLocked?: boolean;
   onCardReveal: (cardId: number) => void;
   onCardRevealAnimationComplete?: (cardId: number) => void;
+  onReadyChange?: (isReady: boolean) => void;
   selectedCardIds?: number[];
 };
 
@@ -98,6 +99,7 @@ export const GambitBoard = ({
   interactionLocked = false,
   onCardReveal,
   onCardRevealAnimationComplete,
+  onReadyChange,
   selectedCardIds = [],
   style,
 }: GambitBoardProps) => {
@@ -110,31 +112,38 @@ export const GambitBoard = ({
     onCardRevealAnimationComplete
   );
   const onCardRevealRef = useRef(onCardReveal);
+  const onReadyChangeRef = useRef(onReadyChange);
   const renderBoardRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
+  // Layout effects keep the Pixi cards and click handlers in sync with the
+  // committed props before the browser handles the next input event.
+  useLayoutEffect(() => {
     onCardRevealRef.current = onCardReveal;
   }, [onCardReveal]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     onCardRevealAnimationCompleteRef.current = onCardRevealAnimationComplete;
   }, [onCardRevealAnimationComplete]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    onReadyChangeRef.current = onReadyChange;
+  }, [onReadyChange]);
+
+  useLayoutEffect(() => {
     clarividenciaPreviewModeRef.current = clarividenciaPreviewMode;
   }, [clarividenciaPreviewMode]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     interactionLockedRef.current = interactionLocked;
     renderBoardRef.current?.();
   }, [interactionLocked]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     selectedCardIdsRef.current = selectedCardIds;
     renderBoardRef.current?.();
   }, [selectedCardIds]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     cardsRef.current = cards;
     renderBoardRef.current?.();
   }, [cards]);
@@ -313,11 +322,13 @@ export const GambitBoard = ({
 
         texturesReady = true;
         syncCards();
+        onReadyChangeRef.current?.(true);
       });
 
     return () => {
       isDisposed = true;
       renderBoardRef.current = null;
+      onReadyChangeRef.current?.(false);
       observer?.disconnect();
 
       cardInstances.forEach((instance) => {
