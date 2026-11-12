@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/playwright:v1.63.0-noble
+
+WORKDIR /app
+
+ENV CI=true
+ENV HUSKY=0
+
+ARG VITE_API_BASE_URL=http://host.docker.internal:3000
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
+COPY package.json package-lock.json ./
+RUN npm ci --legacy-peer-deps
+
+COPY . .
+
+RUN mkdir -p /app/node_modules/.tmp \
+    && chown pwuser:pwuser /app \
+    && chown -R pwuser:pwuser /app/node_modules/.tmp
+
+USER pwuser
+
+CMD ["npm", "run", "test:e2e"]
