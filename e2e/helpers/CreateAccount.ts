@@ -7,11 +7,13 @@ export type Account = {
 };
 
 export const CreateAccount = async (Page: Page): Promise<Account> => {
-  const Timestamp = Date.now();
+  // The random suffix keeps parallel workers from registering the same
+  // account when they start in the same millisecond.
+  const Unique = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
   const Account: Account = {
-    Email: `e2e-${Timestamp}@example.com`,
+    Email: `e2e-${Unique}@example.com`,
     Password: 'e2e-password-123',
-    Nickname: `e2e-${Timestamp}`,
+    Nickname: `e2e-${Unique}`,
   };
 
   await Page.goto('/login');
