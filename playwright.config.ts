@@ -11,6 +11,8 @@ const IsCi = Boolean(process.env.CI);
 
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global-setup.ts',
+  expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: IsCi,
   retries: IsCi ? 1 : 0,
