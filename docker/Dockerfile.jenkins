@@ -8,8 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     gnupg \
     lsb-release \
-    gosu \
-    msmtp \
+    python3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg \
@@ -23,19 +22,14 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg \
     && apt-get install -y --no-install-recommends docker-ce-cli \
     && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -f docker && usermod -aG docker jenkins
+COPY jenkins/casc.yaml /var/jenkins_conf/casc.yaml
 
-COPY pipeline_docker/scripts/notificacao/msmtprc.template /etc/msmtprc.template
+USER jenkins
 
-COPY pipeline_docker/scripts/notificacao/enviar-email.sh /usr/local/bin/enviar-email.sh
-RUN chmod +x /usr/local/bin/enviar-email.sh
-
-COPY pipeline_docker/scripts/notificacao/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-COPY pipeline_docker/jenkins/plugins.txt /usr/share/jenkins/ref/plugins.txt
+COPY --chown=jenkins:jenkins jenkins/plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
 
-EXPOSE 8080 50000
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+ENV CASC_JENKINS_CONFIG=/var/jenkins_conf/casc.yaml
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+EXPOSE 8080 50000

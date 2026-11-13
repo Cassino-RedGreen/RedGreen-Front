@@ -1,3 +1,4 @@
+configuration-as-code:latest
 workflow-aggregator:latest
 pipeline-stage-view:latest
 pipeline-utility-steps:latest
