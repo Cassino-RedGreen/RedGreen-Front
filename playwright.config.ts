@@ -32,7 +32,12 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: { 'webgl.force-enabled': true },
+        },
+      },
       expect: { timeout: 20000 },
     },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
