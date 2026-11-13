@@ -12,9 +12,9 @@ const CardPrice = 10;
 const GridCards = 25;
 const EventCardsCount = 3;
 const EventStages = 2;
-const EventTimeout = 300000_000;
-const ClickTimeout = 200000_000;
-const EventClickTimeout = 800000_000;
+const EventTimeout = 30_000;
+const ClickTimeout = 2_000;
+const EventClickTimeout = 8_000;
 
 type GambitSessionBody = {
   BurnSlotsAvailable: number;
@@ -58,7 +58,7 @@ test.describe('TC-013 - Happy Path', () => {
     page,
     browser,
   }, TestInfo) => {
-    test.setTimeout(300000_000);
+    test.setTimeout(300_000);
 
     const Account = await CreateAccount(page);
     const StorageState = await page.context().storageState();
@@ -183,14 +183,14 @@ test.describe('TC-013 - Happy Path', () => {
                 Candidate.url().endsWith(
                   `/gambit/sessions/active/burn/${Index}`
                 ) && Candidate.request().method() === 'POST',
-              { timeout: 500000_000 }
+              { timeout: 5_000 }
             ),
             Canvas.click({
               position: GetGambitCardCenter(CanvasBox, Index),
               timeout: ClickTimeout,
             }),
           ]);
-        }).toPass({ timeout: 300000_000 });
+        }).toPass({ timeout: 30_000 });
 
         if (!BurnResponse) {
           throw new Error(`No burn response for card ${Index}`);
@@ -211,8 +211,8 @@ test.describe('TC-013 - Happy Path', () => {
             position: GetGambitCardCenter(CanvasBox, Index),
             timeout: ClickTimeout,
           });
-          await expect(Cinematic).toBeVisible({ timeout: 10000_000 });
-        }).toPass({ timeout: 300000_000 });
+          await expect(Cinematic).toBeVisible({ timeout: 1_000 });
+        }).toPass({ timeout: 30_000 });
         await DismissCinematic();
       };
 
@@ -245,7 +245,7 @@ test.describe('TC-013 - Happy Path', () => {
                     Candidate.url().endsWith(
                       '/gambit/sessions/active/resolve-effect'
                     ) && Candidate.request().method() === 'POST',
-                  { timeout: 50000_000 }
+                  { timeout: 5_000 }
                 ),
                 Canvas.click({
                   position: GetGambitCardCenter(CanvasBox, Position),
@@ -264,8 +264,8 @@ test.describe('TC-013 - Happy Path', () => {
                 `${Step + 1}/${Interaction.RequiredSelections}`,
                 { exact: true }
               )
-            ).toBeVisible({ timeout: 10000_000 });
-          }).toPass({ timeout: 30000_000 });
+            ).toBeVisible({ timeout: 1_000 });
+          }).toPass({ timeout: 30_000 });
         }
 
         if (!ResolveResponse) {
@@ -287,7 +287,7 @@ test.describe('TC-013 - Happy Path', () => {
           const ClosePeek = RecordedPage.getByRole('button', {
             name: 'Fechar espiada',
           });
-          await ClosePeek.click({ timeout: 10000_000 });
+          await ClosePeek.click({ timeout: 10_000 });
           await expect(ClosePeek).toBeHidden();
         }
 
