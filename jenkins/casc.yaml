@@ -23,10 +23,16 @@ credentials:
           - string:
               scope: GLOBAL
               id: smtp-password
-              description: 'Senha do SMTP (senha de app do Gmail)'
+              description: 'Senha do SMTP (vazia para o Mailpit)'
               secret: '${SMTP_PASSWORD:-}'
           - string:
               scope: GLOBAL
               id: e2e-admin-password
               description: 'Senha do admin usado nos testes E2E'
               secret: '${E2E_ADMIN_PASSWORD:-}'
+          - usernamePassword:
+              scope: GLOBAL
+              id: dockerhub
+              description: 'Usuario e access token do Docker Hub'
+              username: '${DOCKERHUB_USERNAME:-}'
+              password: '${DOCKERHUB_TOKEN:-}'

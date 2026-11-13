@@ -1,0 +1,16 @@
+.git
+.github
+.husky
+.vscode
+.idea
+.env*
+node_modules
+dist
+coverage
+reports
+playwright-report
+test-results
+_site
+blob-report
+redgreen-front-*.tar.gz
+*.log
