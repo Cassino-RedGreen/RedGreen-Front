@@ -104,7 +104,7 @@ pipeline {
             steps {
                 echo "Construindo a imagem ${env.APP_IMAGE}:${env.IMAGE_TAG}..."
                 sh '''
-                    docker build -f docker/Dockerfile.app --build-arg VITE_API_BASE_URL -t "$APP_IMAGE:$IMAGE_TAG" .
+                    docker build -f Dockerfile -t "$APP_IMAGE:$IMAGE_TAG" .
                     docker create --name "$CI_PREFIX-dist" "$APP_IMAGE:$IMAGE_TAG"
                     mkdir -p dist
                     docker cp "$CI_PREFIX-dist:/usr/share/nginx/html/." dist/
@@ -126,10 +126,10 @@ pipeline {
                 echo "Subindo ${env.APP_IMAGE}:${env.IMAGE_TAG} na rede ${env.CI_NETWORK}..."
                 sh '''
                     docker network create "$CI_NETWORK"
-                    docker run -d --name "$CI_PREFIX-app" --network "$CI_NETWORK" --network-alias redgreen-front-app "$APP_IMAGE:$IMAGE_TAG"
+                    docker run -d --name "$CI_PREFIX-app" --network "$CI_NETWORK" --network-alias redgreen-front-app -e API_UPSTREAM "$APP_IMAGE:$IMAGE_TAG"
                     docker network connect "$CI_NETWORK" redgreen-front-e2e-tests
                     for attempt in $(seq 1 30); do
-                        if docker exec redgreen-front-e2e-tests node -e "fetch('http://redgreen-front-app/').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"; then
+                        if docker exec redgreen-front-e2e-tests node -e "fetch('http://redgreen-front-app:8080/healthz').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"; then
                             exit 0
                         fi
                         sleep 1
@@ -137,9 +137,9 @@ pipeline {
                     echo "O redgreen-front-app não respondeu em 30 segundos."
                     exit 1
                 '''
-                echo "Executando testes E2E (Playwright) contra http://redgreen-front-app..."
+                echo "Executando testes E2E (Playwright) contra http://redgreen-front-app:8080..."
                 withCredentials([string(credentialsId: 'e2e-admin-password', variable: 'E2E_ADMIN_PASSWORD')]) {
-                    sh 'docker exec -u 1000:1000 -w "$WORKSPACE" -e CI=true -e E2E_BASE_URL=http://redgreen-front-app -e E2E_ADMIN_EMAIL -e E2E_ADMIN_PASSWORD redgreen-front-e2e-tests npx playwright test'
+                    sh 'docker exec -u 1000:1000 -w "$WORKSPACE" -e CI=true -e E2E_BASE_URL=http://redgreen-front-app:8080 -e E2E_ADMIN_EMAIL -e E2E_ADMIN_PASSWORD redgreen-front-e2e-tests npx playwright test'
                 }
             }
             post {
