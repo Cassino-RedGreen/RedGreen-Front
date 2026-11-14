@@ -6,7 +6,8 @@ for (const [Key, Value] of Object.entries(LoadedEnv)) {
   if (process.env[Key] === undefined) process.env[Key] = Value;
 }
 
-const BaseUrl = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+const ExternalBaseUrl = process.env.E2E_BASE_URL;
+const BaseUrl = ExternalBaseUrl ?? 'http://localhost:5173';
 const IsCi = Boolean(process.env.CI);
 
 export default defineConfig({
@@ -35,16 +36,18 @@ export default defineConfig({
     },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
-  webServer: {
-    command: IsCi
-      ? 'npm run build && npm run preview -- --port 5173'
-      : 'npm run dev -- --port 5173',
-    url: BaseUrl,
-    reuseExistingServer: !IsCi,
-    timeout: 120_000,
-    env: {
-      VITE_API_BASE_URL:
-        process.env.VITE_API_BASE_URL ?? 'http://localhost:3000',
-    },
-  },
+  webServer: ExternalBaseUrl
+    ? undefined
+    : {
+        command: IsCi
+          ? 'npm run build && npm run preview -- --port 5173'
+          : 'npm run dev -- --port 5173',
+        url: BaseUrl,
+        reuseExistingServer: !IsCi,
+        timeout: 120_000,
+        env: {
+          VITE_API_BASE_URL:
+            process.env.VITE_API_BASE_URL ?? 'http://localhost:3000',
+        },
+      },
 });
