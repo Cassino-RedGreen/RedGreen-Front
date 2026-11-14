@@ -230,7 +230,7 @@ pipeline {
             echo "Pipeline : ${env.PIPELINE_NAME}"
             echo "Build    : #${BUILD_NUMBER}"
             echo "Resultado: ${currentBuild.currentResult}"
-            echo "Duração  : ${currentBuild.durationString}"
+            echo "Duração  : ${currentBuild.durationString.replace(' and counting', '')}"
         }
     }
 
