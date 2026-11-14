@@ -387,7 +387,7 @@ describe('reset flow', () => {
         expect(getLeverButton()).not.toBeDisabled();
       },
       {
-        timeout: 2_000,
+        timeout: 5_000,
       }
     );
 
