@@ -247,6 +247,67 @@ Formatacao:
 npm run format
 ```
 
+### Containers Frontend e Performance (Docker)
+
+Execute na raiz do repositorio com Docker em modo Linux. O frontend usa Nginx e
+publica o site em `http://localhost:8081`; o job de performance usa Lighthouse e
+Playwright, grava os relatorios e encerra. Este fluxo e independente dos E2E e do
+pipeline existentes.
+
+Construa as duas imagens:
+
+```bash
+docker build --build-arg VITE_API_BASE_URL=/api -t redgreen-frontend:local .
+docker build -f Dockerfile.performance -t redgreen-performance:local .
+```
+
+Antes do cadastro, confira `docker ps -a --filter name=redgreen-` e
+`docker network ls`. Crie a rede e o frontend **somente se ainda nao existirem**:
+
+```bash
+docker network create redgreen-network
+docker run -d --name redgreen-frontend --network redgreen-network -p 127.0.0.1:8081:8080 -e API_UPSTREAM=http://backend:3000 redgreen-frontend:local
+```
+
+O frontend incorpora `/api` no build. O Nginx remove esse prefixo e encaminha a
+requisicao para `API_UPSTREAM`, configurado no runtime. Para a integracao real,
+a API deve estar acessivel na mesma rede pelo nome `backend`, porta 3000, ou a
+origem deve ser ajustada no cadastro do frontend. Sem API, o site e `/healthz`
+continuam disponiveis, mas as chamadas `/api/` retornam erro de upstream.
+
+Cadastre o job **uma unica vez**. Exemplo PowerShell, com relatorios pessoais em
+`auditoria/`; mantenha `/auditoria/` em `.git/info/exclude` no seu clone:
+
+```powershell
+$reports = Join-Path (Get-Location) 'auditoria\S07-NP2\performance-baseline'
+New-Item -ItemType Directory -Force -Path $reports | Out-Null
+docker create --init --name redgreen-performance --network redgreen-network --shm-size=1g --cpus=2 --memory=2g -e PERF_BASE_URL=http://redgreen-frontend:8080 --mount "type=bind,source=$reports,target=/reports" redgreen-performance:local
+```
+
+Nas proximas execucoes, reutilize os containers cadastrados:
+
+```bash
+docker start redgreen-frontend
+docker inspect --format '{{.State.Health.Status}}' redgreen-frontend
+docker start -a redgreen-performance
+docker inspect --format '{{.State.Status}}|ExitCode={{.State.ExitCode}}' redgreen-performance
+```
+
+O frontend deve ficar `healthy`; `/healthz` retorna `ok` e as rotas React usam
+fallback da SPA. O job de performance permanece cadastrado em `exited`; interprete
+seu ExitCode somente depois desse estado: 0 indica coleta concluida com as
+limitacoes da baseline, e valor diferente de 0 indica falha. Nao use `--rm` nem
+reinicio automatico para esse job. Cada execucao cria uma subpasta com timestamp
+no diretorio de relatorios, incluindo `summary.json`, `index.html` e os resultados
+Lighthouse/Playwright. O bind mount precisa existir no host do Docker.
+
+`PERF_RUNS` e `PERF_BROWSER_RUNS` usam cinco amostras por padrao. A coleta publica
+usa fontes fallback e WebGL headless; nao valida autenticacao, partidas reais,
+cobertura de codigo ou metas de performance. Essas integracoes dependem da API e
+de fixtures autorizadas. O teste sintetico `performance/proxy-contract.mjs` e
+separado da baseline e exige uma rede de validacao sem API real com alias
+`backend`; nao o execute na rede de uma API existente.
+
 ## 7. Variaveis de Ambiente
 
 Variaveis identificadas no codigo e na configuracao dos testes:
