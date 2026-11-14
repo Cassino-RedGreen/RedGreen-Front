@@ -39,19 +39,19 @@ Projeto desenvolvido pelas equipes de **Backend** (este repositório) e **Fronte
 
 ### Backend
 
-| Autor | GitHub |
-| ----- | ------ |
-| Patrick Augusto Lins de Oliveira Damião | [@Pack0042](https://github.com/Pack0042) |
-| Antonio Feliciano | [@AntonioFSN2](https://github.com/AntonioFSN2) |
+| Autor                                   | GitHub                                         |
+| --------------------------------------- | ---------------------------------------------- |
+| Patrick Augusto Lins de Oliveira Damião | [@Pack0042](https://github.com/Pack0042)       |
+| Antonio Feliciano                       | [@AntonioFSN2](https://github.com/AntonioFSN2) |
 
 ### Frontend
 
-| Autor | GitHub |
-| ----- | ------ |
-| Danilo Henrique Maia da Silva | [@DaniloSilva31](https://github.com/DaniloSilva31) |
-| Pedro Henrique Andrade | [@phandrad3](https://github.com/phandrad3) |
-| Pedro Armengol de Oliveira | [@Armengolz](https://github.com/Armengolz) |
-| Pedro R. Nogueira | [@PedroRNogueira](https://github.com/PedroRNogueira) |
+| Autor                         | GitHub                                               |
+| ----------------------------- | ---------------------------------------------------- |
+| Danilo Henrique Maia da Silva | [@DaniloSilva31](https://github.com/DaniloSilva31)   |
+| Pedro Henrique Andrade        | [@phandrad3](https://github.com/phandrad3)           |
+| Pedro Armengol de Oliveira    | [@Armengolz](https://github.com/Armengolz)           |
+| Pedro R. Nogueira             | [@PedroRNogueira](https://github.com/PedroRNogueira) |
 
 ## 1. Visao Geral do Projeto
 
@@ -97,20 +97,20 @@ Funcionalidades declaradas em rotas mas ainda nao implementadas de forma complet
 
 ## 3. Tecnologias e Ferramentas
 
-| Categoria | Ferramentas |
-| --------- | ----------- |
-| **Core** | React 19, React DOM, TypeScript 5.9 |
-| **Build e Desenvolvimento** | Vite 8 |
-| **Roteamento** | React Router DOM 6 |
-| **Comunicação HTTP e Cache** | Axios, SWR |
-| **Estilização e Ícones** | Tailwind CSS, lucide-react |
-| **Animações** | Framer Motion |
-| **Motor de Jogos** | PixiJS, `@pixi/react` |
-| **Formulários e Validação** | React Hook Form, Zod |
-| **Testes** | Jest, ts-jest, jsdom, React Testing Library |
-| **Testes E2E** | Playwright (Chromium, Firefox e WebKit) |
+| Categoria                    | Ferramentas                                      |
+| ---------------------------- | ------------------------------------------------ |
+| **Core**                     | React 19, React DOM, TypeScript 5.9              |
+| **Build e Desenvolvimento**  | Vite 8                                           |
+| **Roteamento**               | React Router DOM 6                               |
+| **Comunicação HTTP e Cache** | Axios, SWR                                       |
+| **Estilização e Ícones**     | Tailwind CSS, lucide-react                       |
+| **Animações**                | Framer Motion                                    |
+| **Motor de Jogos**           | PixiJS, `@pixi/react`                            |
+| **Formulários e Validação**  | React Hook Form, Zod                             |
+| **Testes**                   | Jest, ts-jest, jsdom, React Testing Library      |
+| **Testes E2E**               | Playwright (Chromium, Firefox e WebKit)          |
 | **Qualidade e Padronização** | ESLint, Prettier, Husky, Commitlint, lint-staged |
-| **CI/CD** | GitHub Actions |
+| **CI/CD**                    | GitHub Actions                                   |
 
 Observacao: embora `react-hook-form`, `@hookform/resolvers` e `zod` estejam instalados, os formularios atualmente implementados usam majoritariamente `useState` e validacoes manuais. Os schemas Zod existentes em `src/domain/schemas.ts` nao aparecem integrados aos formularios analisados.
 
@@ -733,7 +733,7 @@ Patrick Augusto Lins de Oliveira Damião
 Foi utilizado o Copilot, sempre com o contexto do README explicando a estrutura do projeto (com foco na stack) e apoio do documento com as orientações da tarefa. Durante todas as etapas de desenvolvimento dos testes com o Playwright o processo foi feito a partir de instruções detalhadas de cada etapa (incluindo os momentos onde deveriam ser salvas screenshots), com a maior parte do código sendo gerado diretamente pela IA. A IA ficou responsável apenas por criar o código dos testes, mas a idealização dos testes foi feita por conta própria.
 A IA também foi utilizada para desenvolver os testes de performance, tanto na elaboração do que poderia ser testado quanto na criação dos códigos de teste.
 
-Antonio Feliciano da Silveira Neto 
+Antonio Feliciano da Silveira Neto
 Durante o desenvolvimento da suíte de testes, utilizei o Claude (Anthropic) como apoio ao processo de criação dos casos de teste. Usei o Claude no navegador para pensar e estruturar os prompts a partir da minha ideia inicial de cada cenário descrevendo em linguagem natural o fluxo que eu queria testar, as telas envolvidas e o que deveria ser validado e o Claude ajudava a organizar e refinar essa descrição. Com o prompt já mais claro e estruturado, eu o utilizava na extensão do Claude no VSCode para apoiar a implementação do código de automação. A execução, validação e revisão final dos testes foram feitas por mim, com a IA atuando apenas como suporte ao raciocínio e à escrita do código, não como substituta da autoria do trabalho.
 
 ## 19. Metodologia de Desenvolvimento

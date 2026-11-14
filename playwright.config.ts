@@ -11,6 +11,8 @@ const IsCi = Boolean(process.env.CI);
 
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global-setup.ts',
+  expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: IsCi,
   retries: IsCi ? 1 : 0,
@@ -30,7 +32,10 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        headless: !IsCi,
+      },
       expect: { timeout: 20000 },
     },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
