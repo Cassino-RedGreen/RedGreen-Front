@@ -1,0 +1,38 @@
+jenkins:
+  systemMessage: 'RedGreen-Front CI: configurado por JCasC (jenkins/casc.yaml). Mudancas feitas pela interface sao sobrescritas no proximo restart.'
+  numExecutors: 1
+  mode: NORMAL
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: '${JENKINS_ADMIN_USER}'
+          password: '${JENKINS_ADMIN_PASSWORD}'
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+unclassified:
+  location:
+    url: '${JENKINS_PUBLIC_URL}'
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              scope: GLOBAL
+              id: smtp-password
+              description: 'Senha do SMTP (vazia para o Mailpit)'
+              secret: '${SMTP_PASSWORD:-}'
+          - string:
+              scope: GLOBAL
+              id: e2e-admin-password
+              description: 'Senha do admin usado nos testes E2E'
+              secret: '${E2E_ADMIN_PASSWORD:-}'
+          - usernamePassword:
+              scope: GLOBAL
+              id: dockerhub
+              description: 'Usuario e access token do Docker Hub'
+              username: '${DOCKERHUB_USERNAME:-}'
+              password: '${DOCKERHUB_TOKEN:-}'

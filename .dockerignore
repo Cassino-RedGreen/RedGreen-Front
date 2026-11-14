@@ -14,6 +14,8 @@
 !docker/
 !docker/nginx/
 !docker/nginx/**
+!jenkins/
+!jenkins/**
 !performance/
 !performance/**
 performance/node_modules
