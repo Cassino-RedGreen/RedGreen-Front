@@ -89,7 +89,8 @@ services:
       JENKINS_ADMIN_USER: ${JENKINS_ADMIN_USER:?defina JENKINS_ADMIN_USER no .env}
       JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?defina JENKINS_ADMIN_PASSWORD no .env}
       JENKINS_PUBLIC_URL: ${JENKINS_PUBLIC_URL:-http://localhost:8081/}
-      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:3000}
+      # Segue BACKEND_PORT: o app do estagio E2E chega na API pela porta publicada no host.
+      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:${BACKEND_PORT:-3000}}
       E2E_ADMIN_EMAIL: ${E2E_ADMIN_EMAIL:-}
       E2E_ADMIN_PASSWORD: ${E2E_ADMIN_PASSWORD:-}
       DOCKERHUB_USERNAME: ${DOCKERHUB_USERNAME:-}

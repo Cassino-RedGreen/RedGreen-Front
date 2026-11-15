@@ -392,20 +392,20 @@ O `.env.example` contem essas variaveis e tambem as do Docker Compose e do Jenki
 
 ### Variaveis do Docker Compose e do Jenkins
 
-| Variavel                                                                |   Obrigatoria | Uso                                                                                                        |
-| ----------------------------------------------------------------------- | ------------: | ---------------------------------------------------------------------------------------------------------- |
-| `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`                          |           Sim | Usuario administrador criado pelo JCasC.                                                                   |
-| `JENKINS_PORT`, `JENKINS_PUBLIC_URL`                                    |           Nao | Porta e URL publica do Jenkins (padrao `8081`).                                                            |
-| `DOCKER_SOCKET_GID`                                                     |           Nao | GID do dono de `/var/run/docker.sock` no host; `0` no Docker Desktop.                                      |
-| `API_UPSTREAM`                                                          |           Nao | API usada pelo frontend criado no estagio E2E do pipeline (padrao `http://host.docker.internal:3000`).     |
-| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `DOCKERHUB_REPO`               | Para publicar | Credenciais e repositorio do Docker Hub; `DOCKERHUB_REPO` tambem nomeia a imagem do `frontend` no Compose. |
-| `EMAIL_TO`, `EMAIL_FROM`                                                |    `EMAIL_TO` | Destinatarios e remetente do e-mail enviado ao final do pipeline.                                          |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_STARTTLS` |           Nao | Servidor de e-mail; por padrao, o Mailpit do Compose.                                                      |
-| `MAILPIT_UI_PORT`                                                       |           Nao | Porta da interface do Mailpit (padrao `8026`).                                                             |
-| `FRONT_TAG`, `FRONT_PORT`, `BACKEND_PORT`                               |           Nao | Tag da imagem do frontend e portas publicadas do site (`8080`) e da API (`3000`).                          |
-| `BACKEND_PATH`                                                          |           Nao | Caminho do repositorio RedGreen-Back (padrao `../RedGreen-Back`).                                          |
-| `JWT_SECRET`                                                            |           Sim | Segredo usado pelo backend para assinar os tokens.                                                         |
-| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                     |           Nao | Credenciais e nome do banco (padrao `postgres`/`postgres`/`redgreen`).                                     |
+| Variavel                                                                |   Obrigatoria | Uso                                                                                                                                                                          |
+| ----------------------------------------------------------------------- | ------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`                          |           Sim | Usuario administrador criado pelo JCasC.                                                                                                                                     |
+| `JENKINS_PORT`, `JENKINS_PUBLIC_URL`                                    |           Nao | Porta e URL publica do Jenkins (padrao `8081`).                                                                                                                              |
+| `DOCKER_SOCKET_GID`                                                     |           Nao | GID do dono de `/var/run/docker.sock` no host; `0` no Docker Desktop.                                                                                                        |
+| `API_UPSTREAM`                                                          |           Nao | API usada pelo frontend criado no estagio E2E do pipeline. Vazia, segue `BACKEND_PORT` (`http://host.docker.internal:<BACKEND_PORT>`); defina apenas para usar outra origem. |
+| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `DOCKERHUB_REPO`               | Para publicar | Credenciais e repositorio do Docker Hub; `DOCKERHUB_REPO` tambem nomeia a imagem do `frontend` no Compose.                                                                   |
+| `EMAIL_TO`, `EMAIL_FROM`                                                |    `EMAIL_TO` | Destinatarios e remetente do e-mail enviado ao final do pipeline.                                                                                                            |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_STARTTLS` |           Nao | Servidor de e-mail; por padrao, o Mailpit do Compose.                                                                                                                        |
+| `MAILPIT_UI_PORT`                                                       |           Nao | Porta da interface do Mailpit (padrao `8026`).                                                                                                                               |
+| `FRONT_TAG`, `FRONT_PORT`, `BACKEND_PORT`                               |           Nao | Tag da imagem do frontend e portas publicadas do site (`8080`) e da API (`3000`).                                                                                            |
+| `BACKEND_PATH`                                                          |           Nao | Caminho do repositorio RedGreen-Back (padrao `../RedGreen-Back`).                                                                                                            |
+| `JWT_SECRET`                                                            |           Sim | Segredo usado pelo backend para assinar os tokens.                                                                                                                           |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                     |           Nao | Credenciais e nome do banco (padrao `postgres`/`postgres`/`redgreen`).                                                                                                       |
 
 ## 8. Rotas da Aplicacao
 
@@ -778,7 +778,7 @@ Configuracoes identificadas:
 - Tempo limite de 30 minutos, historico de 5 builds e execucoes concorrentes desabilitadas.
 - Job do tipo Pipeline criado pela interface (Pipeline script from SCM); a `main` e identificada por `GIT_BRANCH == 'origin/main'`.
 - Credenciais `smtp-password`, `e2e-admin-password` e `dockerhub` criadas pelo JCasC.
-- O frontend do estagio E2E acessa a API por `API_UPSTREAM` (padrao `http://host.docker.internal:3000`, o backend publicado pelo Compose).
+- O frontend do estagio E2E acessa a API por `API_UPSTREAM`, que por padrao acompanha a porta publicada do backend no Compose (`http://host.docker.internal:<BACKEND_PORT>`). Ao mudar `BACKEND_PORT`, o pipeline passa a usar a nova porta sem outro ajuste.
 
 Lacunas identificadas:
 
