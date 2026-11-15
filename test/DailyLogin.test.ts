@@ -43,7 +43,6 @@ type DailyFetcher = (Key: readonly string[]) => Promise<unknown>;
 const MockUseSWR = useSWR as unknown as jest.MockedFunction<MockSWRHook>;
 const MockMutate = jest.fn(async () => undefined);
 
-// Só o Date é falso: timers reais mantêm as promises do renderHook funcionando.
 const UseFixedToday = () => {
   jest.useFakeTimers({
     now: new Date(2026, 2, 10, 12, 0, 0),

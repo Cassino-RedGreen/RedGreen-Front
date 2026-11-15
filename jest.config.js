@@ -24,9 +24,7 @@ export default {
     '^@ui/(.*)$': '<rootDir>/src/presentation/ui/$1',
     '^@games/(.*)$': '<rootDir>/src/presentation/games/$1',
   },
-  // Cobertura medida so sobre a regra de negocio (criterio do professor); telas e PixiJS ficam fora.
-  // useCardRewardController e RewardCardSelection nao entram: nenhuma tela os usa, o Gambit
-  // monta a recompensa pelo GambitPendingEventRewardAdapter a partir do backend.
+
   collectCoverageFrom: [
     'src/application/**/*.{ts,tsx}',
     'src/domain/**/*.ts',
