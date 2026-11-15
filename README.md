@@ -1,9 +1,6 @@
 # RedGreen Frontend
 
-[![CI/CD](https://github.com/Cassino-RedGreen/RedGreen-Front/actions/workflows/ci.yml/badge.svg)](https://github.com/Cassino-RedGreen/RedGreen-Front/actions/workflows/ci.yml)
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Relat%C3%B3rios-222222?logo=github)](https://cassino-redgreen.github.io/RedGreen-Front/)
-
-Frontend do projeto **RedGreen**, desenvolvido para a disciplina **C14 - Engenharia de Software**. A aplicacao implementa a interface web de um cassino com autenticação, carteira de fichas, ranking, bonus diario, administracao de mesas e dois jogos principais: **Slot Machine** e **Gambit**.
+Frontend do projeto **RedGreen**, desenvolvido para a disciplina **C14 - Engenharia de Software** e containerizado com pipeline em Jenkins na disciplina **S07**. A aplicacao implementa a interface web de um cassino com autenticação, carteira de fichas, ranking, bonus diario, administracao de mesas e dois jogos principais: **Slot Machine** e **Gambit**.
 
 Este documento foi elaborado a partir da analise do codigo-fonte existente neste repositorio. Funcionalidades, rotas, endpoints e testes descritos aqui correspondem ao que foi identificado no projeto.
 
@@ -27,7 +24,7 @@ Este documento foi elaborado a partir da analise do codigo-fonte existente neste
 - [15. Qualidade de Codigo](#15-qualidade-de-codigo)
 - [16. Pipeline CI/CD](#16-pipeline-cicd)
 - [17. Decisoes Tecnicas](#17-decisoes-tecnicas)
-- [18. Uso de IA](#18-uso-de-ia)
+- [18. Uso de IA](#18-uso-de-ia)S
 - [19. Metodologia de Desenvolvimento](#19-metodologia-de-desenvolvimento)
 - [20. Dinâmica de Desenvolvimento](#20-dinâmica-de-desenvolvimento)
 - [21. Historias de Usuario](#21-historias-de-usuario)
@@ -35,7 +32,7 @@ Este documento foi elaborado a partir da analise do codigo-fonte existente neste
 
 ## Autores
 
-Projeto desenvolvido pelas equipes de **Backend** (este repositório) e **Frontend** ([RedGreen-Front](https://github.com/Cassino-RedGreen/RedGreen-Front)).
+Projeto desenvolvido pelas equipes de **Backend** ([RedGreen-Back](https://github.com/Cassino-RedGreen/RedGreen-Back)) e **Frontend** (este repositório).
 
 ### Backend
 
@@ -109,8 +106,10 @@ Funcionalidades declaradas em rotas mas ainda nao implementadas de forma complet
 | **Formulários e Validação**  | React Hook Form, Zod                             |
 | **Testes**                   | Jest, ts-jest, jsdom, React Testing Library      |
 | **Testes E2E**               | Playwright (Chromium, Firefox e WebKit)          |
+| **Testes de Performance**    | Lighthouse CI, Playwright                        |
 | **Qualidade e Padronização** | ESLint, Prettier, Husky, Commitlint, lint-staged |
-| **CI/CD**                    | GitHub Actions                                   |
+| **Containers**               | Docker, Docker Compose, Nginx                    |
+| **CI/CD**                    | Jenkins (em container), Docker Hub               |
 
 Observacao: embora `react-hook-form`, `@hookform/resolvers` e `zod` estejam instalados, os formularios atualmente implementados usam majoritariamente `useState` e validacoes manuais. Os schemas Zod existentes em `src/domain/schemas.ts` nao aparecem integrados aos formularios analisados.
 
@@ -165,13 +164,28 @@ RedGreen-Front/
 |-- test/
 |-- e2e/
 |   |-- helpers/
-|   `-- TC-001.spec.ts ... TC-010.spec.ts
+|   `-- TC-001.spec.ts ... TC-020.spec.ts
+|-- docker/
+|   |-- nginx/
+|   |-- Dockerfile.e2e-tests
+|   |-- Dockerfile.jenkins
+|   `-- Dockerfile.unit-tests
+|-- jenkins/
+|   |-- casc.yaml
+|   `-- plugins.txt
+|-- performance/
+|-- scripts/
+|   |-- BuildReportSite.mjs
+|   `-- send-pipeline-email.py
 |-- .github/
-|   `-- workflows/
-|       `-- ci.yml
+|   `-- PULL_REQUEST_TEMPLATE
 |-- .husky/
 |-- .env.example
+|-- docker-compose.yml
+|-- Dockerfile
+|-- Dockerfile.performance
 |-- eslint.config.js
+|-- Jenkinsfile
 |-- jest.config.js
 |-- playwright.config.ts
 |-- package.json
@@ -188,14 +202,10 @@ Observacao tecnica: `src/App.tsx` e `src/App.css` mantem codigo residual do temp
 
 Pre-requisitos:
 
-- Node.js 22 atualizado, conforme a versao principal utilizada no GitHub Actions.
+- Node.js 22 atualizado, mesma versao principal do container de testes do pipeline.
 - npm.
 - Backend em execucao para os fluxos que consomem a API real.
-- k6, para os testes de performance. No Windows, instale com:
-
-```bash
-winget install k6 --source winget
-```
+- Docker (Docker Desktop no Windows), para a execucao com containers.
 
 Instalacao:
 
@@ -247,7 +257,53 @@ Formatacao:
 npm run format
 ```
 
+### Execucao com Docker Compose
+
+O `docker-compose.yml` sobe a aplicacao completa e o ambiente de CI com um unico comando. Execute na raiz do repositorio, com o Docker em execucao e o repositorio [RedGreen-Back](https://github.com/Cassino-RedGreen/RedGreen-Back) clonado na mesma pasta pai deste projeto, ou informe outro caminho em `BACKEND_PATH`.
+
+Copie `.env.example` para `.env` e preencha ao menos `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`, `EMAIL_TO` e `JWT_SECRET`; sem elas o Compose nao inicia. As demais variaveis estao descritas na secao [7. Variaveis de Ambiente](#7-variaveis-de-ambiente).
+
+```bash
+docker compose up -d --build
+docker compose ps
+```
+
+| Servico      | Funcao                                                                                                    | Acesso                  |
+| ------------ | --------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `frontend`   | Site servido pelo Nginx a partir do `Dockerfile`; encaminha `/api` para o backend.                        | `http://localhost:8080` |
+| `backend`    | API do RedGreen-Back, compilada dentro do container a partir de `BACKEND_PATH` (montado somente leitura). | `http://localhost:3000` |
+| `postgres`   | Banco de dados da API.                                                                                    | Interno                 |
+| `jenkins`    | Jenkins configurado por JCasC (`docker/Dockerfile.jenkins`) que executa o `Jenkinsfile`.                  | `http://localhost:8081` |
+| `mailpit`    | Servidor SMTP de teste que recebe os e-mails do pipeline.                                                 | `http://localhost:8026` |
+| `unit-tests` | Container `redgreen-front-unit-tests` (Node.js 22) usado pelo pipeline para dependencias, lint e Jest.    | Interno                 |
+| `e2e-tests`  | Container `redgreen-front-e2e-tests` (imagem do Playwright) usado pelo pipeline para os testes E2E.       | Interno                 |
+| `perf-tests` | Lighthouse CI e Playwright (`Dockerfile.performance`); executado sob demanda pelo profile `perf`.         | Interno                 |
+
+O `frontend` aguarda o `backend` ficar saudavel, e o `backend` aguarda o `postgres`. Os servicos de aplicacao usam a rede `app`; `jenkins` e `mailpit` usam a rede `ci`. O Jenkins controla o Docker do host pelo socket `/var/run/docker.sock` e executa os comandos de teste com `docker exec` nos containers `redgreen-front-unit-tests` e `redgreen-front-e2e-tests`, que compartilham o workspace pelo volume `jenkins_home`.
+
+Volumes:
+
+- `postgres_data`: dados do banco.
+- `jenkins_home`: configuracao, jobs, historico e workspace do Jenkins.
+- `mailpit_data`: e-mails recebidos pelo Mailpit.
+- `reports`: relatorios do teste de performance.
+- `backend_node_modules`: dependencias instaladas do backend.
+
+Para executar o pipeline, acesse o Jenkins com o usuario do `.env` e crie o job em **New Item** -> **Pipeline** -> **Pipeline script from SCM**, com o repositorio Git deste projeto, a branch `*/main` e o Script Path `Jenkinsfile`. O job e a unica configuracao feita pela interface; usuario, URL e credenciais sao definidos por `jenkins/casc.yaml`.
+
+Teste de performance contra o `frontend` do Compose:
+
+```bash
+docker compose --profile perf run --rm perf-tests
+```
+
+Os relatorios ficam no volume `reports`, em `/reports/performance/<timestamp>`.
+
+Para parar o ambiente, use `docker compose down`, que preserva os volumes. O comando `docker compose down -v` remove tambem os volumes, apagando banco, Jenkins e e-mails.
+
 ### Containers Frontend e Performance (Docker)
+
+Alternativa ao Compose para executar apenas os containers do frontend e de performance. A porta `8081` usada abaixo e a mesma do Jenkins no Compose; nao execute os dois fluxos ao mesmo tempo.
 
 Execute na raiz do repositorio com Docker em modo Linux. O frontend usa Nginx e
 publica o site em `http://localhost:8081`; o job de performance usa Lighthouse e
@@ -312,19 +368,19 @@ separado da baseline e exige uma rede de validacao sem API real com alias
 
 Variaveis identificadas no codigo e na configuracao dos testes:
 
-| Variavel             |                     Obrigatoria | Padrao                                     | Uso                                                                                                   |
-| -------------------- | ------------------------------: | ------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| `VITE_API_BASE_URL`  |                     Em producao | `http://localhost:3000` em desenvolvimento | Define a URL base usada pelo Axios em `apiClient`.                                                    |
-| `E2E_BASE_URL`       |                             Nao | `http://localhost:5173`                    | Endereco do frontend acessado pelo Playwright.                                                        |
-| `E2E_ADMIN_EMAIL`    | Para cenarios com administrador | Sem padrao                                 | E-mail de uma conta administradora existente na API.                                                  |
-| `E2E_ADMIN_PASSWORD` | Para cenarios com administrador | Sem padrao                                 | Senha da conta administradora usada nos testes.                                                       |
-| `CI`                 |                     No pipeline | Definida pelo GitHub Actions               | Ativa as configuracoes de CI do Playwright e desabilita a instalacao de navegadores no `postinstall`. |
+| Variavel             |                     Obrigatoria | Padrao                                     | Uso                                                                                                       |
+| -------------------- | ------------------------------: | ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`  |                     Em producao | `http://localhost:3000` em desenvolvimento | Define a URL base usada pelo Axios em `apiClient`.                                                        |
+| `E2E_BASE_URL`       |                             Nao | `http://localhost:5173`                    | Endereco do frontend acessado pelo Playwright. Quando definida, o Playwright nao inicia o servidor local. |
+| `E2E_ADMIN_EMAIL`    | Para cenarios com administrador | Sem padrao                                 | E-mail de uma conta administradora existente na API.                                                      |
+| `E2E_ADMIN_PASSWORD` | Para cenarios com administrador | Sem padrao                                 | Senha da conta administradora usada nos testes.                                                           |
+| `CI`                 |                     No pipeline | Definida pelo pipeline do Jenkins          | Ativa as configuracoes de CI do Playwright e desabilita a instalacao de navegadores no `postinstall`.     |
 
 A configuracao esta em `src/config.ts`, que remove espacos da URL e usa o fallback local em desenvolvimento. Em producao, a ausencia de `VITE_API_BASE_URL` provoca um erro ao carregar a aplicacao; configure a variavel antes do build.
 
 O arquivo `src/infrastructure/env.ts` tambem permite registrar e ler variaveis de ambiente em runtime por meio de `globalThis.__REDGREEN_VITE_ENV__`, mas o uso direto identificado ocorre em `src/main.tsx` com `setRuntimeEnv(import.meta.env)`.
 
-Exemplo de `.env`:
+Exemplo de `.env` para o desenvolvimento local:
 
 ```env
 VITE_API_BASE_URL=http://localhost:3000
@@ -332,7 +388,24 @@ E2E_ADMIN_EMAIL=
 E2E_ADMIN_PASSWORD=
 ```
 
-O exemplo corresponde a `.env.example`. O Playwright carrega `.env` e `.env.local` com `loadEnv` do Vite e preserva variaveis ja definidas no processo. `E2E_BASE_URL` pode ser adicionada se necessario; ela nao altera a porta `5173` dos comandos de inicializacao configurados. As credenciais de teste nao devem receber o prefixo `VITE_`, usado para expor variaveis ao frontend. O arquivo `.env` esta ignorado pelo Git.
+O `.env.example` contem essas variaveis e tambem as do Docker Compose e do Jenkins, descritas abaixo. O Playwright carrega `.env` e `.env.local` com `loadEnv` do Vite e preserva variaveis ja definidas no processo. Sem `E2E_BASE_URL`, o Playwright inicia o frontend na porta `5173`; com ela definida, usa o endereco informado sem iniciar servidor. As credenciais de teste nao devem receber o prefixo `VITE_`, usado para expor variaveis ao frontend. O arquivo `.env` esta ignorado pelo Git.
+
+### Variaveis do Docker Compose e do Jenkins
+
+| Variavel                                                                |   Obrigatoria | Uso                                                                                                        |
+| ----------------------------------------------------------------------- | ------------: | ---------------------------------------------------------------------------------------------------------- |
+| `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`                          |           Sim | Usuario administrador criado pelo JCasC.                                                                   |
+| `JENKINS_PORT`, `JENKINS_PUBLIC_URL`                                    |           Nao | Porta e URL publica do Jenkins (padrao `8081`).                                                            |
+| `DOCKER_SOCKET_GID`                                                     |           Nao | GID do dono de `/var/run/docker.sock` no host; `0` no Docker Desktop.                                      |
+| `API_UPSTREAM`                                                          |           Nao | API usada pelo frontend criado no estagio E2E do pipeline (padrao `http://host.docker.internal:3000`).     |
+| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `DOCKERHUB_REPO`               | Para publicar | Credenciais e repositorio do Docker Hub; `DOCKERHUB_REPO` tambem nomeia a imagem do `frontend` no Compose. |
+| `EMAIL_TO`, `EMAIL_FROM`                                                |    `EMAIL_TO` | Destinatarios e remetente do e-mail enviado ao final do pipeline.                                          |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_STARTTLS` |           Nao | Servidor de e-mail; por padrao, o Mailpit do Compose.                                                      |
+| `MAILPIT_UI_PORT`                                                       |           Nao | Porta da interface do Mailpit (padrao `8026`).                                                             |
+| `FRONT_TAG`, `FRONT_PORT`, `BACKEND_PORT`                               |           Nao | Tag da imagem do frontend e portas publicadas do site (`8080`) e da API (`3000`).                          |
+| `BACKEND_PATH`                                                          |           Nao | Caminho do repositorio RedGreen-Back (padrao `../RedGreen-Back`).                                          |
+| `JWT_SECRET`                                                            |           Sim | Segredo usado pelo backend para assinar os tokens.                                                         |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                     |           Nao | Credenciais e nome do banco (padrao `postgres`/`postgres`/`redgreen`).                                     |
 
 ## 8. Rotas da Aplicacao
 
@@ -601,17 +674,16 @@ npm run test:e2e:report
 npm run test:e2e -- --list
 ```
 
-Se os navegadores ainda nao estiverem instalados, execute `npx playwright install`. No Linux/CI, o pipeline usa `npx playwright install --with-deps` para instalar tambem as dependencias do sistema.
+Se os navegadores ainda nao estiverem instalados, execute `npx playwright install`. No pipeline, os navegadores ja vem na imagem `mcr.microsoft.com/playwright` do container `redgreen-front-e2e-tests`.
 
 Configuracoes de execucao:
 
 - Projetos `chromium`, `firefox` e `webkit`, com perfis desktop.
-- Um worker (`workers: 1`), mesmo com `fullyParallel: true` habilitado.
+- Tres workers (`workers: 3`), com `fullyParallel: true` habilitado.
 - Sem repeticao automatica local; uma nova tentativa em caso de falha no CI.
 - `test.only` proibido no CI por `forbidOnly`.
-- Localmente, inicia `npm run dev -- --port 5173` ou reutiliza um servidor existente no endereco configurado.
-- No CI, executa `npm run build && npm run preview -- --port 5173`, sem reutilizar servidor existente.
-- Tempo limite de 120 segundos para o servidor ficar disponivel.
+- Sem `E2E_BASE_URL`, inicia `npm run dev -- --port 5173` localmente, ou `npm run build && npm run preview -- --port 5173` com `CI` definida, com tempo limite de 120 segundos para o servidor ficar disponivel.
+- Com `E2E_BASE_URL` definida, nao inicia servidor e testa o endereco informado. E o modo usado no pipeline, que testa a imagem do frontend em `http://redgreen-front-app:8080`.
 
 O helper `e2e/helpers/CreateAccount.ts` cadastra e autentica novos jogadores pela interface. Os testes criam dados reais na API: as contas nao possuem limpeza automatica; TC-004, TC-005 e TC-009 removem as mesas no final do fluxo, mas uma falha anterior pode deixar registros. Use uma base destinada a testes.
 
@@ -687,28 +759,34 @@ Os scripts de lint, formatacao e testes estao documentados na secao [6. Instalac
 
 ## 16. Pipeline CI/CD
 
-O arquivo `.github/workflows/ci.yml` define o pipeline no **GitHub Actions**, disparado em pushes para `main` e em pull requests. Execucoes anteriores do mesmo workflow e referencia sao canceladas quando uma nova execucao comeca.
+O pipeline e definido no `Jenkinsfile` e executado por um **Jenkins em container**, o servico `jenkins` do Docker Compose. A imagem (`docker/Dockerfile.jenkins`) inclui Docker CLI, Python 3 e os plugins de `jenkins/plugins.txt`; usuario administrador, URL e credenciais sao configurados por JCasC (`jenkins/casc.yaml`) a partir do `.env`. O GitHub Actions nao e mais utilizado.
 
-1. `install`: instala dependencias com `npm install --legacy-peer-deps`.
-2. `lint`: executa `npm run lint:check` e `npm run format:check`.
-3. `test`: executa a suite Jest com `npm run test`.
-4. `build`: gera o bundle e publica `dist/` como artefato `application-dist`.
-5. `e2e`: instala os navegadores e dependencias do Playwright, faz build, executa `npm run test:e2e` e publica `playwright-report/` e `test-results/` como artefatos.
-6. `pages` (Publish E2E Report): apenas em push para `main`, baixa o relatorio e as evidencias do job `e2e`, gera o site do relatorio com `npm run report:site` e publica no **GitHub Pages**.
+Os comandos de Node.js e Playwright rodam nos containers `redgreen-front-unit-tests` e `redgreen-front-e2e-tests`, chamados com `docker exec` no workspace do Jenkins, compartilhado pelo volume `jenkins_home`.
+
+1. `Prepare`: define a tag `<build>-<commit>` da imagem e limpa relatorios e pacotes de builds anteriores.
+2. `Install Dependencies`: executa `npm ci --legacy-peer-deps` no container de testes unitarios.
+3. `Quality`: executa `Lint` (`npm run lint:check`) e `Format` (`npm run format:check`) em paralelo.
+4. `Unit Tests`: executa a suite Jest com cobertura, gravando os resultados em `reports/unit/`.
+5. `Build & Package`: constroi a imagem do `Dockerfile`, extrai o `dist/` e gera o pacote `redgreen-front-<tag>.tar.gz`.
+6. `E2E Tests`: sobe a imagem gerada em uma rede temporaria como `redgreen-front-app`, conecta o container de E2E, executa `xvfb-run -a npx playwright test` e gera o site do relatorio com `npm run report:site`.
+7. `Publish to Docker Hub`: na `main`, ou com o parametro `PUBLISH_IMAGE`, publica a imagem em `DOCKERHUB_REPO` com a tag do build e, na `main`, tambem como `latest`.
+
+Ao final de toda execucao (`post`), o pipeline remove os containers, a rede e as imagens temporarios, arquiva `reports/`, `playwright-report/`, `test-results/` e `_site/`, alem do pacote `.tar.gz` em caso de sucesso, e envia um e-mail com o resultado por `scripts/send-pipeline-email.py`, usando `EMAIL_TO` e o SMTP configurado (por padrao, o Mailpit).
 
 Configuracoes identificadas:
 
-- Jobs sequenciais por `needs`, em `ubuntu-latest`, com Node.js 22, cache do npm e limite de 15 minutos por job (10 minutos no job `pages`).
-- Cada job faz checkout e instala suas dependencias novamente.
-- Artefatos `application-dist`, `playwright-report` e `playwright-test-results` mantidos por 7 dias.
-- Upload de `playwright-report/` e `test-results/` com `if: always()`, inclusive quando os testes falham, se houver relatorio gerado.
-- O job `pages` roda apenas quando o job `e2e` nao foi cancelado nem ignorado e a execucao esta na branch `main`, publicando o relatorio Playwright em `https://cassino-redgreen.github.io/RedGreen-Front/`.
-- Nao ha `Jenkinsfile` no repositorio.
+- Tempo limite de 30 minutos, historico de 5 builds e execucoes concorrentes desabilitadas.
+- Job do tipo Pipeline criado pela interface (Pipeline script from SCM); a `main` e identificada por `GIT_BRANCH == 'origin/main'`.
+- Credenciais `smtp-password`, `e2e-admin-password` e `dockerhub` criadas pelo JCasC.
+- O frontend do estagio E2E acessa a API por `API_UPSTREAM` (padrao `http://host.docker.internal:3000`, o backend publicado pelo Compose).
 
 Lacunas identificadas:
 
-- O workflow ainda nao inicia backend/banco nem injeta `VITE_API_BASE_URL`, `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD`. Os casos que usam API real dependem dessa preparacao; os que exigem administrador sao ignorados sem credenciais.
-- O preview usado no CI e um build de producao e exige a URL da API configurada antes do build. A URL passada ao servidor de preview nao substitui a configuracao incorporada no bundle.
+- A cobertura dos testes unitarios e gerada, mas o pipeline nao exige um valor minimo.
+- Alguns cenarios E2E de jogo sao instaveis e podem falhar o estagio, impedindo a publicacao no Docker Hub.
+- Os relatorios nao sao mais publicados no GitHub Pages; ficam nos artefatos de cada build do Jenkins.
+- O teste de performance (`perf-tests`) nao faz parte do pipeline e e executado manualmente.
+- `host.docker.internal` esta disponivel no Docker Desktop; em hosts Linux sem esse nome, `API_UPSTREAM` precisa ser ajustada.
 
 ## 17. Decisoes Tecnicas
 
@@ -726,6 +804,9 @@ Decisoes identificadas no codigo:
 - Uso de Framer Motion para transicoes e feedback visual.
 - Uso de testes unitarios e de integracao de componentes para fluxos criticos.
 - Uso de Playwright em tres navegadores, com cenarios reais e simulados e evidencias anexadas aos relatorios.
+- Imagem do frontend com build multi-stage e Nginx sem root, com proxy reverso `/api` configurado em runtime por `API_UPSTREAM`.
+- Orquestracao da aplicacao, do Jenkins e dos containers de teste com Docker Compose, usando volumes para persistencia e para compartilhar o workspace do pipeline.
+- Pipeline em Jenkins com configuracao como codigo (JCasC) e segredos armazenados como credenciais.
 
 ## 18. Uso de IA
 
@@ -735,6 +816,9 @@ A IA também foi utilizada para desenvolver os testes de performance, tanto na e
 
 Antonio Feliciano da Silveira Neto
 Durante o desenvolvimento da suíte de testes, utilizei o Claude (Anthropic) como apoio ao processo de criação dos casos de teste. Usei o Claude no navegador para pensar e estruturar os prompts a partir da minha ideia inicial de cada cenário descrevendo em linguagem natural o fluxo que eu queria testar, as telas envolvidas e o que deveria ser validado e o Claude ajudava a organizar e refinar essa descrição. Com o prompt já mais claro e estruturado, eu o utilizava na extensão do Claude no VSCode para apoiar a implementação do código de automação. A execução, validação e revisão final dos testes foram feitas por mim, com a IA atuando apenas como suporte ao raciocínio e à escrita do código, não como substituta da autoria do trabalho.
+
+Pedro Armengol de Oliveira
+Na parte de containerização, utilizei o Claude Code (Anthropic), pela extensão no VSCode, como apoio na construção do `docker-compose.yml`. A IA foi usada para analisar as Pull Requests dos outros integrantes (containers do frontend e de performance, Jenkins e containers de teste), executar a stack completa em ambientes isolados para verificar se os containers funcionavam em conjunto, propor os ajustes no compose para seguir o que foi definido nessas PRs (nomes de containers, portas, variáveis e volumes) e atualizar este README. As decisões sobre aprovar ou pedir alterações nas PRs, os commits, os merges e os testes manuais finais foram feitos por mim, com a IA atuando como suporte na análise, na escrita da configuração e na validação, não como substituta da autoria do trabalho.
 
 ## 19. Metodologia de Desenvolvimento
 
@@ -810,4 +894,4 @@ Critérios de aceitação:
 
 O RedGreen Frontend apresenta uma aplicacao React com arquitetura organizada em camadas, integracao com API, cache com SWR, interface visual consistente e dois sistemas de jogo implementados. A base de testes cobre diversos fluxos relevantes, especialmente autenticação, ranking, modais, Slot Machine e Gambit.
 
-As principais lacunas identificadas para evolucao academica e tecnica sao a remocao ou conclusao de placeholders, a integracao real de schemas/formularios com as bibliotecas ja instaladas, a preparacao completa do ambiente E2E no pipeline CI/CD e a limpeza de arquivos residuais do template inicial. Jest e Playwright ja possuem etapas no GitHub Actions, e a suite de navegador registra evidencias dos fluxos de autenticacao, administracao de mesas e edicao de perfil.
+As principais lacunas identificadas para evolucao academica e tecnica sao a remocao ou conclusao de placeholders, a integracao real de schemas/formularios com as bibliotecas ja instaladas, o aumento da cobertura de testes unitarios, a estabilizacao dos cenarios E2E de jogo e a limpeza de arquivos residuais do template inicial. Jest e Playwright ja possuem etapas no pipeline do Jenkins, executado com o restante do ambiente pelo Docker Compose, e a suite de navegador registra evidencias dos fluxos de autenticacao, administracao de mesas e edicao de perfil.
