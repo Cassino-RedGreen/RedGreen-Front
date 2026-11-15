@@ -1,0 +1,2 @@
+# Entrypoint scripts must remain executable by /bin/sh after Windows checkouts.
+docker/nginx/*.sh text eol=lf
