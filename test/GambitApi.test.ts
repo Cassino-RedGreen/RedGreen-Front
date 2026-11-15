@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
+import { AxiosError, type AxiosResponse } from 'axios';
 import {
   burnActiveGambitCard,
   cashOutActiveGambitSession,
@@ -6,6 +7,9 @@ import {
   fetchActiveGambitSession,
   fetchGambitTableById,
   fetchGambitTables,
+  getGambitResolveEffectPeekResult,
+  getGambitResolveEffectSession,
+  normalizeGambitCashOutResponse,
   resolveActiveGambitEffect,
   resolveActiveGambitEvent,
 } from '../src/presentation/games/GambitGame/GambitApi';
@@ -159,5 +163,83 @@ describe('GambitApi', () => {
     expect(mockApiPost).toHaveBeenCalledWith(
       '/gambit/sessions/active/cash-out'
     );
+  });
+
+  it('keeps PascalCase cash-out fields over camelCase ones', () => {
+    const session = createGambitApiSession();
+
+    expect(
+      normalizeGambitCashOutResponse({
+        FinalBalance: 900,
+        Message: 'Sacado',
+        Result: 120,
+        Reward: 120,
+        Session: session,
+        finalBalance: 1,
+        message: 'ignorado',
+        reward: 1,
+      })
+    ).toEqual({
+      FinalBalance: 900,
+      Message: 'Sacado',
+      Result: 120,
+      Reward: 120,
+      Session: session,
+    });
+  });
+
+  it('returns null when the backend has no active Gambit session', async () => {
+    mockApiGet.mockResolvedValueOnce({ data: null });
+
+    await expect(fetchActiveGambitSession()).resolves.toBeNull();
+  });
+
+  it('returns null when the active Gambit session is not found', async () => {
+    mockApiGet.mockRejectedValueOnce(
+      new AxiosError('Not Found', 'ERR_BAD_REQUEST', undefined, undefined, {
+        status: 404,
+      } as AxiosResponse)
+    );
+
+    await expect(fetchActiveGambitSession()).resolves.toBeNull();
+  });
+
+  it('propagates other errors while fetching the active Gambit session', async () => {
+    const serverError = new AxiosError(
+      'Server Error',
+      'ERR_BAD_RESPONSE',
+      undefined,
+      undefined,
+      { status: 500 } as AxiosResponse
+    );
+    mockApiGet.mockRejectedValueOnce(serverError);
+
+    await expect(fetchActiveGambitSession()).rejects.toBe(serverError);
+  });
+
+  it('returns an empty table list when the response is not an array', async () => {
+    mockApiGet.mockResolvedValueOnce({ data: { message: 'unexpected' } });
+
+    await expect(fetchGambitTables()).resolves.toEqual([]);
+  });
+
+  it('reads the session from both resolve-effect response formats', () => {
+    const session = createGambitApiSession({ GambitSessionId: 55 });
+
+    expect(getGambitResolveEffectSession({ Session: session })).toBe(session);
+    expect(getGambitResolveEffectSession(session)).toBe(session);
+  });
+
+  it('reads the peek result of a resolved effect when present', () => {
+    const peekResult = { AtLeastOneBad: true };
+    const session = createGambitApiSession();
+
+    expect(
+      getGambitResolveEffectPeekResult({
+        PeekResult: peekResult,
+        Session: session,
+      })
+    ).toBe(peekResult);
+    expect(getGambitResolveEffectPeekResult({ Session: session })).toBeNull();
   });
 });
