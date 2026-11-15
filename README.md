@@ -13,6 +13,7 @@ Este documento foi elaborado a partir da analise do codigo-fonte existente neste
 - [4. Arquitetura Frontend](#4-arquitetura-frontend)
 - [5. Estrutura de Diretorios](#5-estrutura-de-diretorios)
 - [6. Instalacao e Execucao](#6-instalacao-e-execucao)
+- [Docker Hub e Containers](#docker-hub-e-containers)
 - [7. Variaveis de Ambiente](#7-variaveis-de-ambiente)
 - [8. Rotas da Aplicacao](#8-rotas-da-aplicacao)
 - [9. Integracao com API](#9-integracao-com-api)
@@ -363,6 +364,140 @@ cobertura de codigo ou metas de performance. Essas integracoes dependem da API e
 de fixtures autorizadas. O teste sintetico `performance/proxy-contract.mjs` e
 separado da baseline e exige uma rede de validacao sem API real com alias
 `backend`; nao o execute na rede de uma API existente.
+
+## Docker Hub e Containers
+
+As imagens desta entrega individual sao publicas e podem ser usadas sem baixar
+codigo-fonte ou executar builds:
+
+| Imagem                                    | Docker Hub                                                                                | Digest da versao v12                                                      |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `pedrornogueira/redgreen-frontend:v12`    | [Frontend](https://hub.docker.com/r/pedrornogueira/redgreen-frontend/tags?name=v12)       | `sha256:7140c4630f96b6122c800381efac03fba6c5fd2e13fd07a70c70ce1f08e499c1` |
+| `pedrornogueira/redgreen-performance:v12` | [Performance](https://hub.docker.com/r/pedrornogueira/redgreen-performance/tags?name=v12) | `sha256:c45d1443366d6d2efeef36ce446c59ebe6f22ca0539f26b9b0e3358544abd491` |
+
+Ambas foram publicadas a partir do commit
+`aa89aad44a0b6d81a5e3c04491f11d6342788289`, branch
+`ci/docker-frontend-performance`, para `linux/amd64`. A imagem Frontend contem
+React compilado e Nginx; a de Performance contem Lighthouse CI e Playwright.
+**Nenhuma delas inclui a API do Backend ou PostgreSQL.** A aplicacao completa
+precisa da API da equipe, do banco e das contas/fixtures apropriadas.
+
+### Download e Frontend com Backend existente
+
+Os comandos abaixo usam nomes dedicados. Antes de executa-los, confira
+`docker ps -a`, `docker network ls` e as portas em uso. Se os nomes ja existirem,
+inspecione e reutilize os recursos, ou escolha nomes livres.
+
+```bash
+docker pull pedrornogueira/redgreen-frontend:v12
+docker pull pedrornogueira/redgreen-performance:v12
+docker network create redgreen-delivery
+
+docker run -d --name redgreen-delivery-frontend --network redgreen-delivery --network-alias redgreen-frontend -p 127.0.0.1:18080:8080 -e API_UPSTREAM=http://host.docker.internal:3000 pedrornogueira/redgreen-frontend:v12
+
+docker inspect --format '{{.State.Health.Status}}' redgreen-delivery-frontend
+docker logs redgreen-delivery-frontend
+```
+
+Acesse **http://localhost:18080** e **http://localhost:18080/healthz**. A porta
+interna do Nginx e 8080; altere apenas a porta host 18080 se estiver ocupada.
+O exemplo espera uma API existente na porta 3000 do host com Docker Desktop.
+Em Linux sem Docker Desktop, acrescente
+`--add-host host.docker.internal:host-gateway` se a API estiver no host.
+Se a API estiver em outro container, conecte o frontend a rede apropriada e use
+a origem interna real, por exemplo `API_UPSTREAM=http://backend:3000`.
+
+`API_UPSTREAM` recebe uma origem `http(s)://hostname[:porta]`, sem barra final,
+path, query ou credenciais. Nginx encaminha `/api/...` a essa origem removendo
+`/api`. A configuracao e de runtime; nao exige rebuild. O healthcheck e a pagina
+podem funcionar mesmo com API indisponivel, o que nao comprova login ou jogos.
+
+### Performance e relatorios
+
+Com o Frontend acima em execucao, use PowerShell para criar a pasta local de
+resultados e iniciar o job na mesma rede:
+
+```powershell
+$reports = Join-Path (Get-Location) 'relatorios-redgreen-performance'
+New-Item -ItemType Directory -Force -Path $reports | Out-Null
+
+docker run --init --name redgreen-delivery-performance --network redgreen-delivery --shm-size=1g --cpus=2 --memory=2g -e PERF_BASE_URL=http://redgreen-frontend:8080 -e PERF_RUNS=1 -e PERF_BROWSER_RUNS=1 --mount "type=bind,source=$reports,target=/reports" pedrornogueira/redgreen-performance:v12
+
+$LASTEXITCODE
+docker inspect --format '{{.State.Status}} ExitCode={{.State.ExitCode}}' redgreen-delivery-performance
+```
+
+Em Bash, crie `mkdir -p relatorios-redgreen-performance` e use
+`--mount "type=bind,source=$(pwd)/relatorios-redgreen-performance,target=/reports"`
+no mesmo comando `docker run`.
+
+O esperado e exit 0 e `summary.json` com `passed-with-limitations`.
+`PERF_BASE_URL` deve ser uma origem privada ou loopback acessivel pelo runner;
+`localhost` dentro desse container aponta para ele mesmo. O runner aguarda
+`/healthz` e o index React antes de medir. Os parametros de amostragem aceitam
+1 a 10 e usam 5 por padrao; o exemplo usa 1 para verificacao curta.
+
+Em `<pasta-local>/<data-hora>/`, abra `index.html` ou
+`browser/html/index.html`; consulte `summary.json`, `summary.md`,
+`browser/results.json`, `lighthouse/.lighthouseci/` e os logs de cada etapa.
+Preserve a pasta inteira ao compartilhar os HTMLs. O job termina apos gerar os
+relatorios; para repetir o container existente, use
+`docker start -a redgreen-delivery-performance`.
+
+Lighthouse coleta `/` e `/login`; Playwright mede as interfaces publicas e
+registra diagnosticos de rotas protegidas como visitante. Nao ha meta minima
+de score. Chromium headless usa SwiftShader e recursos externos sao bloqueados
+conforme a configuracao da imagem. Isso nao comprova cobertura, desempenho de
+usuarios reais, ausencia de vazamentos ou sucesso de jogos autenticados.
+
+Depois de guardar os relatorios, encerre somente os recursos criados acima:
+
+```bash
+docker stop redgreen-delivery-frontend
+# Remova o runner somente depois de confirmar que terminou.
+docker rm redgreen-delivery-performance redgreen-delivery-frontend
+docker network rm redgreen-delivery
+```
+
+### Jenkins e responsabilidades do ambiente compartilhado
+
+A etapa `Performance Tests` consome a imagem publica v12 fixada pelo digest,
+sem build ou push da imagem de Performance. Ela cria frontend do build e runner
+em rede exclusiva, sem portas publicadas, e copia os resultados para
+`reports/performance/`, arquivado pelo `post` existente. Os recursos dessa
+etapa sao removidos inclusive em falha. Uma falha marca a pipeline como falha,
+permite executar E2E para diagnostico e impede publicar imagens.
+
+| Parametro          | Padrao  | Uso                                          |
+| ------------------ | ------- | -------------------------------------------- |
+| `RUN_PERFORMANCE`  | `true`  | Executa a validacao publica de Performance.  |
+| `PERFORMANCE_RUNS` | `1`     | Escolhe 1, 3 ou 5 amostras por rota/cenario. |
+| `PUBLISH_IMAGE`    | `false` | Mantenha falso ao revisar esta branch.       |
+
+Para revisar a entrega, configure o job SCM para
+`*/ci/dockerhub-jenkins-delivery`, Script Path `Jenkinsfile`,
+`PUBLISH_IMAGE=false`. A regra preexistente de publicacao automatica da `main`
+continua existindo: **nao execute a main como teste de publicacao**.
+`API_UPSTREAM` deve apontar para a API de testes existente. `EMAIL_TO` e as
+variaveis SMTP configuram a notificacao existente; Mailpit comprova recepcao
+local, nao entrega a uma caixa externa. O pacote do build e os relatorios Jest,
+E2E e Performance ficam nos artefatos Jenkins. API autenticada e fixtures sao
+necessarias para a suite E2E completa; o baseline Performance nao as substitui.
+
+O Compose deste repositorio e uma orquestracao integrada da equipe: seu servico
+`backend` copia uma arvore externa `RedGreen-Back` montada somente leitura e
+inicia uma API com PostgreSQL para integracao. Esse servico nao incorpora codigo
+Backend nas duas imagens publicadas acima e nao atribui sua autoria a esta
+entrega. Nao inicie esse ambiente junto de outra stack Backend sem planejamento:
+isso pode duplicar API/banco, conflitar nas portas 3000/8080/8081 e, quando os
+projetos Compose usam o mesmo nome, compartilhar volumes e recriar servicos.
+
+Confira `name:`, `COMPOSE_PROJECT_NAME`, `docker compose ls` e os recursos antes
+de subir uma stack. A nomenclatura compartilhada esta sendo coordenada pela
+equipe; esta entrega nao altera o Compose. O parametro `-p` tem precedencia
+sobre `name:` e permite separar projetos, mas nao resolve sozinho portas
+ocupadas nem `container_name` fixos. Para consumir uma API ja existente, prefira
+os comandos diretos desta secao, que nao iniciam Backend ou PostgreSQL.
 
 ## 7. Variaveis de Ambiente
 
@@ -768,8 +903,9 @@ Os comandos de Node.js e Playwright rodam nos containers `redgreen-front-unit-te
 3. `Quality`: executa `Lint` (`npm run lint:check`) e `Format` (`npm run format:check`) em paralelo.
 4. `Unit Tests`: executa a suite Jest com cobertura, gravando os resultados em `reports/unit/`.
 5. `Build & Package`: constroi a imagem do `Dockerfile`, extrai o `dist/` e gera o pacote `redgreen-front-<tag>.tar.gz`.
-6. `E2E Tests`: sobe a imagem gerada em uma rede temporaria como `redgreen-front-app`, conecta o container de E2E, executa `xvfb-run -a npx playwright test` e gera o site do relatorio com `npm run report:site`.
-7. `Publish to Docker Hub`: na `main`, ou com o parametro `PUBLISH_IMAGE`, publica a imagem em `DOCKERHUB_REPO` com a tag do build e, na `main`, tambem como `latest`.
+6. `Performance Tests`: consome a imagem publica v12 por digest, testa o frontend deste build em rede propria e coleta `reports/performance/`. Controlada por `RUN_PERFORMANCE` e `PERFORMANCE_RUNS`.
+7. `E2E Tests`: sobe a imagem gerada em uma rede temporaria como `redgreen-front-app`, conecta o container de E2E, executa `xvfb-run -a npx playwright test` e gera o site do relatorio com `npm run report:site`.
+8. `Publish to Docker Hub`: somente com resultado de sucesso, na `main`, ou com o parametro `PUBLISH_IMAGE`, publica a imagem em `DOCKERHUB_REPO` com a tag do build e, na `main`, tambem como `latest`.
 
 Ao final de toda execucao (`post`), o pipeline remove os containers, a rede e as imagens temporarios, arquiva `reports/`, `playwright-report/`, `test-results/` e `_site/`, alem do pacote `.tar.gz` em caso de sucesso, e envia um e-mail com o resultado por `scripts/send-pipeline-email.py`, usando `EMAIL_TO` e o SMTP configurado (por padrao, o Mailpit).
 
@@ -785,7 +921,7 @@ Lacunas identificadas:
 - A cobertura dos testes unitarios e gerada, mas o pipeline nao exige um valor minimo.
 - Alguns cenarios E2E de jogo sao instaveis e podem falhar o estagio, impedindo a publicacao no Docker Hub.
 - Os relatorios nao sao mais publicados no GitHub Pages; ficam nos artefatos de cada build do Jenkins.
-- O teste de performance (`perf-tests`) nao faz parte do pipeline e e executado manualmente.
+- O profile Compose `perf-tests` continua manual; o pipeline consome diretamente a imagem publica na etapa `Performance Tests`, com relatorios em `reports/performance/`.
 - `host.docker.internal` esta disponivel no Docker Desktop; em hosts Linux sem esse nome, `API_UPSTREAM` precisa ser ajustada.
 
 ## 17. Decisoes Tecnicas

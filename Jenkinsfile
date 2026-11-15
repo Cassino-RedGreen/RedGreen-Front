@@ -8,6 +8,16 @@ pipeline {
             defaultValue: false,
             description: 'Publica a imagem do front no Docker Hub a partir desta branch (na main a publicação é automática).'
         )
+        booleanParam(
+            name: 'RUN_PERFORMANCE',
+            defaultValue: true,
+            description: 'Valida a imagem pública de Performance v12 contra o frontend deste build, sem publicar imagens.'
+        )
+        choice(
+            name: 'PERFORMANCE_RUNS',
+            choices: ['1', '3', '5'],
+            description: 'Amostras por rota Lighthouse e por cenário Playwright (baseline, sem meta de score).'
+        )
     }
 
     options {
@@ -21,6 +31,7 @@ pipeline {
     environment {
         PIPELINE_NAME = 'RedGreen Front — CI/CD'
         APP_IMAGE = 'redgreen-front-app'
+        PERFORMANCE_IMAGE = 'pedrornogueira/redgreen-performance:v12@sha256:c45d1443366d6d2efeef36ce446c59ebe6f22ca0539f26b9b0e3358544abd491'
     }
 
     stages {
@@ -121,6 +132,45 @@ pipeline {
             }
         }
 
+        stage('Performance Tests') {
+            when { expression { params.RUN_PERFORMANCE } }
+            options { timeout(time: 10, unit: 'MINUTES') }
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                    script {
+                        def performanceExit = sh(returnStatus: true, script: '''
+                            mkdir -p reports/performance
+                            docker pull "$PERFORMANCE_IMAGE"
+                            docker network create "$CI_PREFIX-perf-net"
+                            docker run -d --name "$CI_PREFIX-perf-app" --network "$CI_PREFIX-perf-net" --network-alias redgreen-front-app -e API_UPSTREAM "$APP_IMAGE:$IMAGE_TAG"
+                            docker create --init --name "$CI_PREFIX-perf" --network "$CI_PREFIX-perf-net" --shm-size=1g --cpus=2 --memory=2g \\
+                                -e PERF_BASE_URL=http://redgreen-front-app:8080 \\
+                                -e PERF_RUNS="$PERFORMANCE_RUNS" -e PERF_BROWSER_RUNS="$PERFORMANCE_RUNS" "$PERFORMANCE_IMAGE"
+                            status=0
+                            docker start -a "$CI_PREFIX-perf" || status=$?
+                            docker cp "$CI_PREFIX-perf:/reports/." reports/performance/
+                            printf '%s\\n' "$status" > reports/performance/exit-code.txt
+                            exit "$status"
+                        ''')
+                        if (performanceExit != 0) {
+                            markFailedStage()
+                            error("Performance falhou (exit ${performanceExit}); consulte reports/performance.")
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    sh '''
+                        mkdir -p reports/performance
+                        docker logs "$CI_PREFIX-perf" > reports/performance/container.log 2>&1 || true
+                        docker rm -f "$CI_PREFIX-perf" "$CI_PREFIX-perf-app" >/dev/null 2>&1 || true
+                        docker network rm "$CI_PREFIX-perf-net" >/dev/null 2>&1 || true
+                    '''
+                }
+            }
+        }
+
         stage('E2E Tests') {
             steps {
                 echo "Subindo ${env.APP_IMAGE}:${env.IMAGE_TAG} na rede ${env.CI_NETWORK}..."
@@ -157,9 +207,12 @@ pipeline {
 
         stage('Publish to Docker Hub') {
             when {
-                anyOf {
-                    expression { env.GIT_BRANCH == 'origin/main' }
-                    expression { params.PUBLISH_IMAGE }
+                allOf {
+                    expression { currentBuild.currentResult == 'SUCCESS' }
+                    anyOf {
+                        expression { env.GIT_BRANCH == 'origin/main' }
+                        expression { params.PUBLISH_IMAGE }
+                    }
                 }
             }
             steps {
