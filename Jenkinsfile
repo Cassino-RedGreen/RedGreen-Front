@@ -6,7 +6,7 @@ pipeline {
         booleanParam(
             name: 'PUBLISH_IMAGE',
             defaultValue: false,
-            description: 'Publica a imagem do front no Docker Hub a partir desta branch (na main a publicação é automática).'
+            description: 'Publica a imagem do Jenkins da pipeline no Docker Hub a partir desta branch (na main a publicação é automática).'
         )
     }
 
@@ -21,6 +21,7 @@ pipeline {
     environment {
         PIPELINE_NAME = 'RedGreen Front — CI/CD'
         APP_IMAGE = 'redgreen-front-app'
+        JENKINS_IMAGE = 'redgreen-front-jenkins'
     }
 
     stages {
@@ -165,13 +166,14 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_TOKEN')]) {
                     sh '''
-                        : "${DOCKERHUB_REPO:?Defina DOCKERHUB_REPO no .env do Jenkins (ex.: usuario/redgreen-front)}"
+                        : "${DOCKERHUB_REPO:?Defina DOCKERHUB_REPO no .env do Jenkins (ex.: usuario/redgreen-front-jenkins)}"
+                        docker build -f docker/Dockerfile.jenkins -t "$JENKINS_IMAGE:$IMAGE_TAG" .
                         echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
                         trap 'docker logout >/dev/null 2>&1 || true' EXIT
-                        docker tag "$APP_IMAGE:$IMAGE_TAG" "$DOCKERHUB_REPO:$IMAGE_TAG"
+                        docker tag "$JENKINS_IMAGE:$IMAGE_TAG" "$DOCKERHUB_REPO:$IMAGE_TAG"
                         docker push "$DOCKERHUB_REPO:$IMAGE_TAG"
                         if [ "${GIT_BRANCH:-}" = "origin/main" ]; then
-                            docker tag "$APP_IMAGE:$IMAGE_TAG" "$DOCKERHUB_REPO:latest"
+                            docker tag "$JENKINS_IMAGE:$IMAGE_TAG" "$DOCKERHUB_REPO:latest"
                             docker push "$DOCKERHUB_REPO:latest"
                         fi
                     '''
@@ -206,7 +208,7 @@ pipeline {
                     docker network disconnect "$CI_NETWORK" redgreen-front-e2e-tests >/dev/null 2>&1 || true
                     docker rm -f "$CI_PREFIX-app" "$CI_PREFIX-dist" >/dev/null 2>&1 || true
                     docker network rm "$CI_NETWORK" >/dev/null 2>&1 || true
-                    docker image rm "$APP_IMAGE:$IMAGE_TAG" >/dev/null 2>&1 || true
+                    docker image rm "$APP_IMAGE:$IMAGE_TAG" "$JENKINS_IMAGE:$IMAGE_TAG" >/dev/null 2>&1 || true
                     if [ -n "${DOCKERHUB_REPO:-}" ]; then
                         docker image rm "$DOCKERHUB_REPO:$IMAGE_TAG" "$DOCKERHUB_REPO:latest" >/dev/null 2>&1 || true
                     fi
