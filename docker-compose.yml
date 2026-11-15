@@ -125,7 +125,6 @@ services:
       - ci
 
   # container_name fixo: o Jenkinsfile faz docker exec por esse nome, no workspace do jenkins_home.
-  # Profile "tests" ate as PRs #12 e #13 (Dockerfiles do Danilo) entrarem na main.
   unit-tests:
     build:
       context: .
@@ -133,8 +132,6 @@ services:
     image: redgreen-front-unit-tests:local
     container_name: redgreen-front-unit-tests
     restart: unless-stopped
-    profiles:
-      - tests
     volumes:
       - jenkins_home:/var/jenkins_home
 
@@ -145,15 +142,8 @@ services:
     image: redgreen-front-e2e-tests:local
     container_name: redgreen-front-e2e-tests
     restart: unless-stopped
-    profiles:
-      - tests
-    environment:
-      # Usado pelos helpers que criam conta direto na API (ex.: TC-020); o docker exec do Jenkins herda.
-      VITE_API_BASE_URL: http://backend:3000
     volumes:
       - jenkins_home:/var/jenkins_home
-    networks:
-      - app
 
   perf-tests:
     build:
