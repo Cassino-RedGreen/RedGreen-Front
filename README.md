@@ -793,7 +793,7 @@ Os comandos de Node.js e Playwright rodam nos containers `redgreen-front-unit-te
 1. `Prepare`: define a tag `<build>-<commit>` da imagem e limpa relatorios e pacotes de builds anteriores.
 2. `Install Dependencies`: executa `npm ci --legacy-peer-deps` no container de testes unitarios.
 3. `Quality`: executa `Lint` (`npm run lint:check`) e `Format` (`npm run format:check`) em paralelo.
-4. `Unit Tests`: executa a suite Jest com cobertura, gravando os resultados em `reports/unit/`.
+4. `Unit Tests`: executa a suite Jest com cobertura, gravando os resultados em `reports/unit/`. O estagio falha se a cobertura da regra de negocio ficar abaixo de 90% (ver [Cobertura da regra de negocio](#cobertura-da-regra-de-negocio)).
 5. `Build & Package`: constroi a imagem do `Dockerfile`, extrai o `dist/` e gera o pacote `redgreen-front-<tag>.tar.gz`.
 6. `E2E Tests`: sobe a imagem gerada em uma rede temporaria como `redgreen-front-app`, conecta o container de E2E, executa `xvfb-run -a npx playwright test` e gera o site do relatorio com `npm run report:site`.
 7. `Build & Publish Jenkins Image`: na `main`, ou com o parametro `PUBLISH_IMAGE`, constroi a imagem do Jenkins a partir de `docker/Dockerfile.jenkins` e a publica em `JENKINS_IMAGE_REPO` com a tag do build e, na `main`, tambem como `latest`. A imagem do site gerada no `Build & Package` e usada apenas no pacote e nos testes E2E.
@@ -829,7 +829,6 @@ Configuracoes identificadas:
 
 Lacunas identificadas:
 
-- A cobertura dos testes unitarios e gerada, mas o pipeline nao exige um valor minimo.
 - Alguns cenarios E2E de jogo sao instaveis e podem falhar o estagio, impedindo a publicacao no Docker Hub.
 - A imagem e publicada na conta pessoal `phandradd`; uma organizacao no Docker Hub tornaria a publicacao independente de um integrante.
 - Os relatorios nao sao mais publicados no GitHub Pages; ficam nos artefatos de cada build do Jenkins.
