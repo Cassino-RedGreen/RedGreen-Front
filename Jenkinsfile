@@ -21,7 +21,6 @@ pipeline {
     environment {
         PIPELINE_NAME = 'RedGreen Front — CI/CD'
         APP_IMAGE = 'redgreen-front-app'
-        JENKINS_IMAGE = 'redgreen-front-jenkins'
     }
 
     stages {
@@ -156,7 +155,7 @@ pipeline {
             }
         }
 
-        stage('Publish to Docker Hub') {
+        stage('Build & Publish Jenkins Image') {
             when {
                 anyOf {
                     expression { env.GIT_BRANCH == 'origin/main' }
@@ -164,29 +163,73 @@ pipeline {
                 }
             }
             steps {
+                script {
+                    if (!env.JENKINS_IMAGE_REPO?.trim()) {
+                        error('JENKINS_IMAGE_REPO precisa estar definida no .env do Jenkins.')
+                    }
+                }
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_TOKEN')]) {
                     sh '''
-                        : "${DOCKERHUB_REPO:?Defina DOCKERHUB_REPO no .env do Jenkins (ex.: usuario/redgreen-front-jenkins)}"
-                        docker build -f docker/Dockerfile.jenkins -t "$JENKINS_IMAGE:$IMAGE_TAG" .
+                        set -eu
+                        docker build -f docker/Dockerfile.jenkins -t "$JENKINS_IMAGE_REPO:$IMAGE_TAG" .
                         echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
                         trap 'docker logout >/dev/null 2>&1 || true' EXIT
-                        docker tag "$JENKINS_IMAGE:$IMAGE_TAG" "$DOCKERHUB_REPO:$IMAGE_TAG"
-                        docker push "$DOCKERHUB_REPO:$IMAGE_TAG"
+                        docker push "$JENKINS_IMAGE_REPO:$IMAGE_TAG"
                         if [ "${GIT_BRANCH:-}" = "origin/main" ]; then
-                            docker tag "$JENKINS_IMAGE:$IMAGE_TAG" "$DOCKERHUB_REPO:latest"
-                            docker push "$DOCKERHUB_REPO:latest"
+                            docker tag "$JENKINS_IMAGE_REPO:$IMAGE_TAG" "$JENKINS_IMAGE_REPO:latest"
+                            docker push "$JENKINS_IMAGE_REPO:latest"
                         fi
                     '''
                 }
                 script {
                     def LatestSuffix = env.GIT_BRANCH == 'origin/main' ? ' (and latest)' : ''
-                    env.PUBLISHED_IMAGE = "${env.DOCKERHUB_REPO}:${env.IMAGE_TAG}${LatestSuffix}"
+                    env.PUBLISHED_IMAGE = "${env.JENKINS_IMAGE_REPO}:${env.IMAGE_TAG}${LatestSuffix}"
                 }
             }
             post {
                 success { echo "Docker Hub: IMAGEM PUBLICADA (${env.PUBLISHED_IMAGE})" }
                 failure {
                     echo "Docker Hub: FALHA AO PUBLICAR A IMAGEM"
+                    markFailedStage()
+                }
+            }
+        }
+
+        stage('Verify Jenkins Image from Docker Hub') {
+            when {
+                anyOf {
+                    expression { env.GIT_BRANCH == 'origin/main' }
+                    expression { params.PUBLISH_IMAGE }
+                }
+            }
+            steps {
+                sh '''
+                    set -eu
+                    SMOKE_CONTAINER="$CI_PREFIX-jenkins-image-smoke"
+                    trap 'docker rm -f "$SMOKE_CONTAINER" >/dev/null 2>&1 || true' EXIT
+                    docker image rm "$JENKINS_IMAGE_REPO:$IMAGE_TAG" >/dev/null 2>&1 || true
+                    docker pull "$JENKINS_IMAGE_REPO:$IMAGE_TAG"
+                    docker run -d --name "$SMOKE_CONTAINER" --network none \
+                        -e JENKINS_ADMIN_USER=jenkins-smoke \
+                        -e "JENKINS_ADMIN_PASSWORD=smoke-$CI_PREFIX" \
+                        -e JENKINS_PUBLIC_URL=http://localhost:8080/ \
+                        "$JENKINS_IMAGE_REPO:$IMAGE_TAG"
+                    for attempt in $(seq 1 60); do
+                        if docker exec "$SMOKE_CONTAINER" curl -fsS http://127.0.0.1:8080/login >/dev/null 2>&1; then
+                            echo "Imagem do Docker Hub saudável: $JENKINS_IMAGE_REPO:$IMAGE_TAG"
+                            exit 0
+                        fi
+                        sleep 5
+                    done
+                    docker logs --tail 200 "$SMOKE_CONTAINER" || true
+                    echo "A imagem do Docker Hub não ficou saudável." >&2
+                    exit 1
+                '''
+            }
+            post {
+                success { echo "Docker Hub: IMAGEM VERIFICADA" }
+                failure {
+                    echo "Docker Hub: A IMAGEM PUBLICADA NÃO SUBIU"
                     markFailedStage()
                 }
             }
@@ -206,16 +249,20 @@ pipeline {
             sh '''
                 if [ -n "${CI_PREFIX:-}" ]; then
                     docker network disconnect "$CI_NETWORK" redgreen-front-e2e-tests >/dev/null 2>&1 || true
-                    docker rm -f "$CI_PREFIX-app" "$CI_PREFIX-dist" >/dev/null 2>&1 || true
+                    docker rm -f "$CI_PREFIX-app" "$CI_PREFIX-dist" "$CI_PREFIX-jenkins-image-smoke" >/dev/null 2>&1 || true
                     docker network rm "$CI_NETWORK" >/dev/null 2>&1 || true
-                    docker image rm "$APP_IMAGE:$IMAGE_TAG" "$JENKINS_IMAGE:$IMAGE_TAG" >/dev/null 2>&1 || true
-                    if [ -n "${DOCKERHUB_REPO:-}" ]; then
-                        docker image rm "$DOCKERHUB_REPO:$IMAGE_TAG" "$DOCKERHUB_REPO:latest" >/dev/null 2>&1 || true
+                    docker image rm "$APP_IMAGE:$IMAGE_TAG" >/dev/null 2>&1 || true
+                    if [ -n "${JENKINS_IMAGE_REPO:-}" ]; then
+                        docker image rm "$JENKINS_IMAGE_REPO:$IMAGE_TAG" >/dev/null 2>&1 || true
                     fi
                 fi
             '''
             archiveArtifacts artifacts: 'reports/**, playwright-report/**, test-results/**, _site/**',
                              allowEmptyArchive: true
+            echo "Pipeline : ${env.PIPELINE_NAME}"
+            echo "Build    : #${BUILD_NUMBER}"
+            echo "Resultado: ${currentBuild.currentResult}"
+            echo "Duração  : ${currentBuild.durationString.replace(' and counting', '')}"
             withCredentials([string(credentialsId: 'smtp-password', variable: 'SMTP_PASSWORD')]) {
                 script {
                     withEnv([
@@ -224,15 +271,11 @@ pipeline {
                     ]) {
                         def EmailExitCode = sh(returnStatus: true, script: 'python3 scripts/send-pipeline-email.py')
                         if (EmailExitCode != 0) {
-                            echo "Aviso: o e-mail de notificação não foi enviado (código ${EmailExitCode}). O resultado do build não foi alterado."
+                            error("O e-mail de notificação obrigatório não foi enviado (código ${EmailExitCode}).")
                         }
                     }
                 }
             }
-            echo "Pipeline : ${env.PIPELINE_NAME}"
-            echo "Build    : #${BUILD_NUMBER}"
-            echo "Resultado: ${currentBuild.currentResult}"
-            echo "Duração  : ${currentBuild.durationString.replace(' and counting', '')}"
         }
     }
 
