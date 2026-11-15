@@ -1,0 +1,8 @@
+FROM mcr.microsoft.com/playwright:v1.63.0-noble
+
+WORKDIR /var/jenkins_home
+
+ENV CI=true
+ENV HUSKY=0
+
+CMD ["sleep", "infinity"]
