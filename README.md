@@ -613,7 +613,7 @@ Configuracao:
 - Setup: `src/setupTests.ts` com `@testing-library/jest-dom`.
 - Mapeamento de aliases configurado em `jest.config.js`.
 
-Foram identificados **26 arquivos de teste** em `test/`.
+Foram identificados **35 arquivos de teste** em `test/`.
 
 Areas cobertas:
 
@@ -622,16 +622,31 @@ Areas cobertas:
 - `GuestRoute`.
 - Ranking e `RankingPanel`.
 - Validador de data de nascimento.
+- Hooks de saldo de fichas, perfil e bonus diario (progresso de 7 dias, sequencia e resgate).
+- Schemas Zod de usuario e carteira.
 - Modais de resultado e aviso de sessao.
 - Criacao e edicao de mesas de Slot Machine.
 - Criacao de mesas de Gambit.
 - Cards de mesas de Slot e Gambit.
 - Cores de mesa.
-- API e fluxo visual da Slot Machine.
+- API, tabela de premios, simbolos e fluxo visual da Slot Machine.
 - Entrada/aproximacao da Slot Machine.
 - Fluxo de jogo da Slot Machine com sessao ativa, reroll, cash-out e bloqueio de input.
-- API, mapeadores, cartas, auto cash-out, sala e fluxo de jogo do Gambit.
+- API, mapeadores e validacao do contrato, cartas, efeitos, natureza da revelacao, tema da mesa, auto cash-out, sala e fluxo de jogo do Gambit.
 - Controller de recompensa por cartas.
+
+### Cobertura da regra de negocio
+
+A cobertura e medida apenas sobre a regra de negocio, conforme o criterio da disciplina, com limite minimo de **90%** em comandos, ramificacoes, funcoes e linhas (`coverageThreshold` em `jest.config.js`). Abaixo disso, `npm test -- --coverage` falha, e o estagio de testes unitarios do Jenkins tambem.
+
+| Entra na metrica                                                    | Fica fora                                                   |
+| ------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `src/application/` (hooks de saldo, perfil, ranking e bonus diario) | Paginas, componentes de UI e modais                         |
+| `src/domain/` e `src/validators.ts`                                 | Componentes PixiJS, texturas e animacoes                    |
+| API, mapeador, efeitos, revelacao, mesa e auto cash-out do Gambit   | `src/infrastructure/` (cliente HTTP, cookies e env)         |
+| API, configuracao de simbolos e tabela de premios da Slot Machine   | `useCardRewardController` e `RewardCardSelection` (sem uso) |
+
+`useCardRewardController` e `RewardCardSelection` ficam fora porque nenhuma tela os utiliza: o Gambit monta a escolha de cartas pelo `GambitPendingEventRewardAdapter`, a partir do `PendingEvent` enviado pelo backend. A lista exata de arquivos esta em `collectCoverageFrom`.
 
 Comando:
 

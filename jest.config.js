@@ -24,9 +24,33 @@ export default {
     '^@ui/(.*)$': '<rootDir>/src/presentation/ui/$1',
     '^@games/(.*)$': '<rootDir>/src/presentation/games/$1',
   },
+  // Cobertura medida so sobre a regra de negocio (criterio do professor); telas e PixiJS ficam fora.
+  // useCardRewardController e RewardCardSelection nao entram: nenhuma tela os usa, o Gambit
+  // monta a recompensa pelo GambitPendingEventRewardAdapter a partir do backend.
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/main.tsx',
-    '!src/vite-env.d.ts',
+    'src/application/**/*.{ts,tsx}',
+    'src/domain/**/*.ts',
+    'src/validators.ts',
+    'src/presentation/games/GambitGame/GambitApi.ts',
+    'src/presentation/games/GambitGame/GambitAutoCashOut.ts',
+    'src/presentation/games/GambitGame/GambitEffectCardAssets.ts',
+    'src/presentation/games/GambitGame/GambitEffectPresentation.ts',
+    'src/presentation/games/GambitGame/GambitGameConfig.ts',
+    'src/presentation/games/GambitGame/GambitGameplayClient.ts',
+    'src/presentation/games/GambitGame/GambitMapper.ts',
+    'src/presentation/games/GambitGame/GambitPendingEventRewardAdapter.ts',
+    'src/presentation/games/GambitGame/GambitRevealNature.ts',
+    'src/presentation/games/GambitGame/GambitTableConfig.ts',
+    'src/presentation/games/SlotMachineGame/SlotMachineApi.ts',
+    'src/presentation/games/SlotMachineGame/SlotMachineGameConfig.ts',
+    'src/presentation/games/SlotMachineGame/SlotPaytable.ts',
   ],
+  coverageThreshold: {
+    global: {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
+    },
+  },
 };
