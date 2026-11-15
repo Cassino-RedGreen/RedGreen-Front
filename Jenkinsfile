@@ -139,7 +139,7 @@ pipeline {
                 '''
                 echo "Executando testes E2E (Playwright) contra http://redgreen-front-app:8080..."
                 withCredentials([string(credentialsId: 'e2e-admin-password', variable: 'E2E_ADMIN_PASSWORD')]) {
-                    sh 'docker exec -u 1000:1000 -w "$WORKSPACE" -e CI=true -e E2E_BASE_URL=http://redgreen-front-app:8080 -e E2E_ADMIN_EMAIL -e E2E_ADMIN_PASSWORD redgreen-front-e2e-tests npx playwright test'
+                    sh 'docker exec -u 1000:1000 -w "$WORKSPACE" -e CI=true -e E2E_BASE_URL=http://redgreen-front-app:8080 -e VITE_API_BASE_URL=http://redgreen-front-app:8080/api -e E2E_ADMIN_EMAIL -e E2E_ADMIN_PASSWORD redgreen-front-e2e-tests xvfb-run -a npx playwright test'
                 }
             }
             post {
