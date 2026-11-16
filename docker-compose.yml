@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${DOCKERHUB_REPO:-redgreen-front}:${FRONT_TAG:-latest}
+    image: redgreen-front:${FRONT_TAG:-latest}
     restart: unless-stopped
     environment:
       API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:${BACKEND_PORT:-3000}}
@@ -15,10 +15,8 @@ services:
       - app
 
   jenkins:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.jenkins
-    image: redgreen-front-jenkins:local
+    image: ${JENKINS_IMAGE:-phandradd/redgreen-front-jenkins:latest}
+    pull_policy: always
     restart: unless-stopped
     group_add:
       - '${DOCKER_SOCKET_GID:-0}'
@@ -31,7 +29,7 @@ services:
       E2E_ADMIN_PASSWORD: ${E2E_ADMIN_PASSWORD:?defina E2E_ADMIN_PASSWORD no .env}
       DOCKERHUB_USERNAME: ${DOCKERHUB_USERNAME:-}
       DOCKERHUB_TOKEN: ${DOCKERHUB_TOKEN:-}
-      DOCKERHUB_REPO: ${DOCKERHUB_REPO:-}
+      JENKINS_IMAGE_REPO: ${JENKINS_IMAGE_REPO:-phandradd/redgreen-front-jenkins}
       EMAIL_TO: ${EMAIL_TO:?defina EMAIL_TO no .env}
       EMAIL_FROM: ${EMAIL_FROM:-jenkins@redgreen.local}
       SMTP_HOST: ${SMTP_HOST:-mailpit}

@@ -2,6 +2,8 @@
 
 Frontend do projeto **RedGreen**, desenvolvido para a disciplina **C14 - Engenharia de Software** e containerizado com pipeline em Jenkins na disciplina **S07**. A aplicacao implementa a interface web de um cassino com autenticação, carteira de fichas, ranking, bonus diario, administracao de mesas e dois jogos principais: **Slot Machine** e **Gambit**.
 
+**Imagem no Docker Hub:** [phandradd/redgreen-front-jenkins](https://hub.docker.com/r/phandradd/redgreen-front-jenkins), construida a partir de `docker/Dockerfile.jenkins` e publicada pelo pipeline. Detalhes na secao [16. Pipeline CI/CD](#imagem-no-docker-hub).
+
 Este documento foi elaborado a partir da analise do codigo-fonte existente neste repositorio. Funcionalidades, rotas, endpoints e testes descritos aqui correspondem ao que foi identificado no projeto.
 
 ## Indice
@@ -24,7 +26,7 @@ Este documento foi elaborado a partir da analise do codigo-fonte existente neste
 - [15. Qualidade de Codigo](#15-qualidade-de-codigo)
 - [16. Pipeline CI/CD](#16-pipeline-cicd)
 - [17. Decisoes Tecnicas](#17-decisoes-tecnicas)
-- [18. Uso de IA](#18-uso-de-ia)S
+- [18. Uso de IA](#18-uso-de-ia)
 - [19. Metodologia de Desenvolvimento](#19-metodologia-de-desenvolvimento)
 - [20. Dinâmica de Desenvolvimento](#20-dinâmica-de-desenvolvimento)
 - [21. Historias de Usuario](#21-historias-de-usuario)
@@ -277,7 +279,7 @@ Se a API do backend for publicada em outra porta (variavel `PORT` do `.env` do R
 | Servico      | Funcao                                                                                                  | Acesso                  |
 | ------------ | ------------------------------------------------------------------------------------------------------- | ----------------------- |
 | `frontend`   | Site servido pelo Nginx a partir do `Dockerfile`; encaminha `/api` para a API do RedGreen-Back no host. | `http://localhost:8090` |
-| `jenkins`    | Jenkins configurado por JCasC (`docker/Dockerfile.jenkins`) que executa o `Jenkinsfile`.                | `http://localhost:8081` |
+| `jenkins`    | Jenkins baixado do Docker Hub (`JENKINS_IMAGE`), configurado por JCasC, que executa o `Jenkinsfile`.    | `http://localhost:8081` |
 | `mailpit`    | Servidor SMTP de teste que recebe os e-mails do pipeline.                                               | `http://localhost:8026` |
 | `unit-tests` | Container `redgreen-front-unit-tests` (Node.js 22) usado pelo pipeline para dependencias, lint e Jest.  | Interno                 |
 | `e2e-tests`  | Container `redgreen-front-e2e-tests` (imagem do Playwright) usado pelo pipeline para os testes E2E.     | Interno                 |
@@ -292,6 +294,14 @@ Volumes:
 - `reports`: relatorios do teste de performance.
 
 O projeto do Compose se chama `redgreen-front`, e as portas padrao (`8090`, `8081` e `8026`) nao coincidem com as do Compose do RedGreen-Back (`3000`, `8080`, `8025`, `8088` e `5433`). Assim as duas stacks rodam juntas sem que uma recrie os containers ou compartilhe os volumes da outra. Quem subiu a stack antes dessa mudanca, quando o projeto tambem se chamava `redgreen` e incluia uma copia da API, deve remover os containers antigos uma vez com `docker compose -p redgreen down` (os volumes antigos ficam preservados; com `-v` sao apagados) e criar o job do Jenkins novamente.
+
+O servico `jenkins` sempre baixa a imagem publicada no Docker Hub (`JENKINS_IMAGE`, por padrao `phandradd/redgreen-front-jenkins:latest`), entao o pipeline roda na mesma imagem que ele publica. Se a imagem ainda nao existir no Docker Hub, use uma unica vez o override de bootstrap, que constroi o Jenkins localmente a partir de `docker/Dockerfile.jenkins`:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.bootstrap.yml up -d --build
+```
+
+Depois da primeira publicacao, volte ao Compose normal com `docker compose pull jenkins` e `docker compose up -d`.
 
 Para executar o pipeline, acesse o Jenkins com o usuario do `.env` e crie o job em **New Item** -> **Pipeline** -> **Pipeline script from SCM**, com o repositorio Git deste projeto, a branch `*/main` e o Script Path `Jenkinsfile`. O job e a unica configuracao feita pela interface; usuario, URL e credenciais sao definidos por `jenkins/casc.yaml`.
 
@@ -402,7 +412,9 @@ O `.env.example` contem essas variaveis e tambem as do Docker Compose e do Jenki
 | `JENKINS_PORT`, `JENKINS_PUBLIC_URL`                                    |           Nao | Porta e URL publica do Jenkins (padrao `8081`).                                                                                                                                                           |
 | `DOCKER_SOCKET_GID`                                                     |           Nao | GID do dono de `/var/run/docker.sock` no host; `0` no Docker Desktop.                                                                                                                                     |
 | `API_UPSTREAM`                                                          |           Nao | API usada pelo `frontend` do Compose e pelo frontend criado no estagio E2E do pipeline. Vazia, segue `BACKEND_PORT` (`http://host.docker.internal:<BACKEND_PORT>`); defina apenas para usar outra origem. |
-| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `DOCKERHUB_REPO`               | Para publicar | Credenciais e repositorio do Docker Hub; `DOCKERHUB_REPO` tambem nomeia a imagem do `frontend` no Compose.                                                                                                |
+| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`                                 | Para publicar | Usuario e access token do Docker Hub usados pelo Jenkins oficial para publicar a imagem. Nunca compartilhe o token.                                                                                       |
+| `JENKINS_IMAGE_REPO`                                                    | Para publicar | Repositorio onde o pipeline publica a imagem do Jenkins (padrao `phandradd/redgreen-front-jenkins`).                                                                                                      |
+| `JENKINS_IMAGE`                                                         |           Nao | Imagem e tag que o Compose baixa para iniciar o Jenkins (padrao `phandradd/redgreen-front-jenkins:latest`).                                                                                               |
 | `EMAIL_TO`, `EMAIL_FROM`                                                |    `EMAIL_TO` | Destinatarios e remetente do e-mail enviado ao final do pipeline.                                                                                                                                         |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_STARTTLS` |           Nao | Servidor de e-mail; por padrao, o Mailpit do Compose.                                                                                                                                                     |
 | `MAILPIT_UI_PORT`                                                       |           Nao | Porta da interface do Mailpit (padrao `8026`).                                                                                                                                                            |
@@ -783,12 +795,32 @@ Os comandos de Node.js e Playwright rodam nos containers `redgreen-front-unit-te
 1. `Prepare`: define a tag `<build>-<commit>` da imagem e limpa relatorios e pacotes de builds anteriores.
 2. `Install Dependencies`: executa `npm ci --legacy-peer-deps` no container de testes unitarios.
 3. `Quality`: executa `Lint` (`npm run lint:check`) e `Format` (`npm run format:check`) em paralelo.
-4. `Unit Tests`: executa a suite Jest com cobertura, gravando os resultados em `reports/unit/`.
+4. `Unit Tests`: executa a suite Jest com cobertura, gravando os resultados em `reports/unit/`. O estagio falha se a cobertura da regra de negocio ficar abaixo de 90% (ver [Cobertura da regra de negocio](#cobertura-da-regra-de-negocio)).
 5. `Build & Package`: constroi a imagem do `Dockerfile`, extrai o `dist/` e gera o pacote `redgreen-front-<tag>.tar.gz`.
 6. `E2E Tests`: sobe a imagem gerada em uma rede temporaria como `redgreen-front-app`, conecta o container de E2E, executa `xvfb-run -a npx playwright test` e gera o site do relatorio com `npm run report:site`.
-7. `Publish to Docker Hub`: na `main`, ou com o parametro `PUBLISH_IMAGE`, publica a imagem em `DOCKERHUB_REPO` com a tag do build e, na `main`, tambem como `latest`.
+7. `Build & Publish Jenkins Image`: na `main`, ou com o parametro `PUBLISH_IMAGE`, constroi a imagem do Jenkins a partir de `docker/Dockerfile.jenkins` e a publica em `JENKINS_IMAGE_REPO` com a tag do build e, na `main`, tambem como `latest`. A imagem do site gerada no `Build & Package` e usada apenas no pacote e nos testes E2E.
+8. `Verify Jenkins Image from Docker Hub`: remove a copia local, baixa do Docker Hub a tag recem-publicada, inicia um Jenkins isolado (`--network none`) com usuario temporario e aguarda o `/login` responder, comprovando que a imagem publicada funciona.
 
-Ao final de toda execucao (`post`), o pipeline remove os containers, a rede e as imagens temporarios, arquiva `reports/`, `playwright-report/`, `test-results/` e `_site/`, alem do pacote `.tar.gz` em caso de sucesso, e envia um e-mail com o resultado por `scripts/send-pipeline-email.py`, usando `EMAIL_TO` e o SMTP configurado (por padrao, o Mailpit).
+Ao final de toda execucao (`post`), o pipeline remove os containers, a rede e as imagens temporarios, arquiva `reports/`, `playwright-report/`, `test-results/` e `_site/`, alem do pacote `.tar.gz` em caso de sucesso, e envia um e-mail com o resultado por `scripts/send-pipeline-email.py`, usando `EMAIL_TO` e o SMTP configurado (por padrao, o Mailpit). O e-mail e obrigatorio: se o envio falhar, o build e marcado como falho.
+
+### Jenkins oficial e credenciais do Docker Hub
+
+O Jenkins oficial do grupo, responsavel por publicar a imagem, e o que possui `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` da conta dona de `JENKINS_IMAGE_REPO`. Nos builds da `main`, as etapas de publicacao e verificacao sempre executam; sem essas credenciais, o `docker login` falha e o build e marcado como falho. Esse comportamento e intencional: no Jenkins oficial, a falta de credencial precisa aparecer como erro, e nao ser ignorada.
+
+Quem executa o pipeline em outra maquina sem as credenciais vera todas as etapas anteriores executarem normalmente e a falha apenas na publicacao. Para validar uma alteracao sem publicar, execute o job a partir de uma branch diferente da `main`, onde a publicacao so ocorre com `PUBLISH_IMAGE` marcado. O token nunca deve ser compartilhado entre os integrantes.
+
+### Imagem no Docker Hub
+
+A imagem do Jenkins do pipeline esta publicada em **[phandradd/redgreen-front-jenkins](https://hub.docker.com/r/phandradd/redgreen-front-jenkins)**. Ela contem o Jenkins, o Docker CLI, o Python 3, os plugins de `jenkins/plugins.txt` e o `jenkins/casc.yaml`; nenhum segredo faz parte da imagem, pois usuario, senha e credenciais sao lidos do `.env` quando o container inicia.
+
+Para baixar e executar a imagem publicada, com o `.env` preenchido conforme a secao [7. Variaveis de Ambiente](#7-variaveis-de-ambiente):
+
+```bash
+docker pull phandradd/redgreen-front-jenkins:latest
+docker run -d --name redgreen-front-jenkins -p 127.0.0.1:8081:8080 --group-add 0 -v redgreen_front_jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --env-file .env phandradd/redgreen-front-jenkins:latest
+```
+
+O Jenkins fica disponivel em `http://localhost:8081`, com o usuario de `JENKINS_ADMIN_USER`. Para executar o pipeline completo, com os containers de teste, o backend e o Mailpit, use o Docker Compose descrito em [Execucao com Docker Compose](#execucao-com-docker-compose).
 
 Configuracoes identificadas:
 
@@ -799,8 +831,8 @@ Configuracoes identificadas:
 
 Lacunas identificadas:
 
-- A cobertura dos testes unitarios e gerada, mas o pipeline nao exige um valor minimo.
 - Alguns cenarios E2E de jogo sao instaveis e podem falhar o estagio, impedindo a publicacao no Docker Hub.
+- A imagem e publicada na conta pessoal `phandradd`; uma organizacao no Docker Hub tornaria a publicacao independente de um integrante.
 - Os relatorios nao sao mais publicados no GitHub Pages; ficam nos artefatos de cada build do Jenkins.
 - O teste de performance (`perf-tests`) nao faz parte do pipeline e e executado manualmente.
 - `host.docker.internal` esta disponivel no Docker Desktop; em hosts Linux sem esse nome, `API_UPSTREAM` precisa ser ajustada.
