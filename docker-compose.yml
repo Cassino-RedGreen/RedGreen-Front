@@ -1,4 +1,4 @@
-name: redgreen
+name: redgreen-front
 
 services:
   frontend:
@@ -8,71 +8,9 @@ services:
     image: redgreen-front:${FRONT_TAG:-latest}
     restart: unless-stopped
     environment:
-      API_UPSTREAM: http://backend:3000
+      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:${BACKEND_PORT:-3000}}
     ports:
-      - '${FRONT_PORT:-8080}:8080'
-    depends_on:
-      backend:
-        condition: service_healthy
-    networks:
-      - app
-
-  backend:
-    image: node:24-alpine
-    restart: unless-stopped
-    working_dir: /app
-    command: sh -c "tar -C /src --exclude=./node_modules --exclude=./dist -cf - . | tar -C /app -xf - && npm ci && npm run build && npm run start:prod"
-    environment:
-      PORT: 3000
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-redgreen}
-      POSTGRES_SSL: 'false'
-      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET no .env}
-    volumes:
-      # Somente leitura: o codigo e copiado para /app e compilado dentro do container, sem alterar o RedGreen-Back.
-      - ${BACKEND_PATH:-../RedGreen-Back}:/src:ro
-      - backend_node_modules:/app/node_modules
-    ports:
-      - '${BACKEND_PORT:-3000}:3000'
-    depends_on:
-      postgres:
-        condition: service_healthy
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 300s
-    networks:
-      - app
-
-  postgres:
-    image: postgres:15
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-redgreen}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-redgreen}',
-        ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - '${FRONT_PORT:-8090}:8080'
     networks:
       - app
 
@@ -80,17 +18,15 @@ services:
     image: ${JENKINS_IMAGE:-phandradd/redgreen-front-jenkins:latest}
     pull_policy: always
     restart: unless-stopped
-    # GID do dono do /var/run/docker.sock no host (0 no Docker Desktop); sem ele o pipeline nao acessa o Docker.
     group_add:
       - '${DOCKER_SOCKET_GID:-0}'
     environment:
       JENKINS_ADMIN_USER: ${JENKINS_ADMIN_USER:?defina JENKINS_ADMIN_USER no .env}
       JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?defina JENKINS_ADMIN_PASSWORD no .env}
       JENKINS_PUBLIC_URL: ${JENKINS_PUBLIC_URL:-http://localhost:8081/}
-      # Segue BACKEND_PORT: o app do estagio E2E chega na API pela porta publicada no host.
       API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:${BACKEND_PORT:-3000}}
-      E2E_ADMIN_EMAIL: ${E2E_ADMIN_EMAIL:-}
-      E2E_ADMIN_PASSWORD: ${E2E_ADMIN_PASSWORD:-}
+      E2E_ADMIN_EMAIL: ${E2E_ADMIN_EMAIL:?defina E2E_ADMIN_EMAIL no .env}
+      E2E_ADMIN_PASSWORD: ${E2E_ADMIN_PASSWORD:?defina E2E_ADMIN_PASSWORD no .env}
       DOCKERHUB_USERNAME: ${DOCKERHUB_USERNAME:-}
       DOCKERHUB_TOKEN: ${DOCKERHUB_TOKEN:-}
       JENKINS_IMAGE_REPO: ${JENKINS_IMAGE_REPO:-phandradd/redgreen-front-jenkins}
@@ -106,8 +42,19 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - '127.0.0.1:${JENKINS_PORT:-8081}:8080'
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:8080/login']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
     depends_on:
-      - mailpit
+      mailpit:
+        condition: service_started
+      unit-tests:
+        condition: service_started
+      e2e-tests:
+        condition: service_started
     networks:
       - ci
 
@@ -123,7 +70,6 @@ services:
     networks:
       - ci
 
-  # container_name fixo: o Jenkinsfile faz docker exec por esse nome, no workspace do jenkins_home.
   unit-tests:
     build:
       context: .
@@ -152,7 +98,6 @@ services:
     profiles:
       - perf
     init: true
-    # Chromium headless trava com o /dev/shm padrao de 64 MB.
     shm_size: 1g
     environment:
       PERF_BASE_URL: http://frontend:8080
@@ -170,8 +115,6 @@ networks:
   ci:
 
 volumes:
-  postgres_data:
   jenkins_home:
   mailpit_data:
   reports:
-  backend_node_modules:
