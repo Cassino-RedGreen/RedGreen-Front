@@ -259,35 +259,39 @@ npm run format
 
 ### Execucao com Docker Compose
 
-O `docker-compose.yml` sobe a aplicacao completa e o ambiente de CI com um unico comando. Execute na raiz do repositorio, com o Docker em execucao e o repositorio [RedGreen-Back](https://github.com/Cassino-RedGreen/RedGreen-Back) clonado na mesma pasta pai deste projeto, ou informe outro caminho em `BACKEND_PATH`.
+O `docker-compose.yml` sobe o frontend e o ambiente de CI deste repositorio. A API e o banco nao fazem parte desta stack: eles sao do Compose do [RedGreen-Back](https://github.com/Cassino-RedGreen/RedGreen-Back), que deve ser iniciado antes, no proprio repositorio. As duas stacks sao independentes e se comunicam apenas pela porta da API publicada no host (`3000` por padrao).
 
-Copie `.env.example` para `.env` e preencha ao menos `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`, `EMAIL_TO` e `JWT_SECRET`; sem elas o Compose nao inicia. As demais variaveis estao descritas na secao [7. Variaveis de Ambiente](#7-variaveis-de-ambiente).
+Copie `.env.example` para `.env` e preencha ao menos `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`, `EMAIL_TO`, `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD`; sem elas o Compose nao inicia. O `.env.example` ja traz a conta administradora criada pelo seed do backend (`admin@admin.com`). As demais variaveis estao descritas na secao [7. Variaveis de Ambiente](#7-variaveis-de-ambiente).
 
 ```bash
+# 1. No repositorio RedGreen-Back: banco e API (porta 3000)
+docker compose up -d postgres api
+
+# 2. Neste repositorio: frontend, Jenkins, Mailpit e containers de teste
 docker compose up -d --build
 docker compose ps
 ```
 
-| Servico      | Funcao                                                                                                    | Acesso                  |
-| ------------ | --------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `frontend`   | Site servido pelo Nginx a partir do `Dockerfile`; encaminha `/api` para o backend.                        | `http://localhost:8080` |
-| `backend`    | API do RedGreen-Back, compilada dentro do container a partir de `BACKEND_PATH` (montado somente leitura). | `http://localhost:3000` |
-| `postgres`   | Banco de dados da API.                                                                                    | Interno                 |
-| `jenkins`    | Jenkins configurado por JCasC (`docker/Dockerfile.jenkins`) que executa o `Jenkinsfile`.                  | `http://localhost:8081` |
-| `mailpit`    | Servidor SMTP de teste que recebe os e-mails do pipeline.                                                 | `http://localhost:8026` |
-| `unit-tests` | Container `redgreen-front-unit-tests` (Node.js 22) usado pelo pipeline para dependencias, lint e Jest.    | Interno                 |
-| `e2e-tests`  | Container `redgreen-front-e2e-tests` (imagem do Playwright) usado pelo pipeline para os testes E2E.       | Interno                 |
-| `perf-tests` | Lighthouse CI e Playwright (`Dockerfile.performance`); executado sob demanda pelo profile `perf`.         | Interno                 |
+Se a API do backend for publicada em outra porta (variavel `PORT` do `.env` do RedGreen-Back), informe a mesma porta em `BACKEND_PORT`.
 
-O `frontend` aguarda o `backend` ficar saudavel, e o `backend` aguarda o `postgres`. Os servicos de aplicacao usam a rede `app`; `jenkins` e `mailpit` usam a rede `ci`. O Jenkins controla o Docker do host pelo socket `/var/run/docker.sock` e executa os comandos de teste com `docker exec` nos containers `redgreen-front-unit-tests` e `redgreen-front-e2e-tests`, que compartilham o workspace pelo volume `jenkins_home`.
+| Servico      | Funcao                                                                                                  | Acesso                  |
+| ------------ | ------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `frontend`   | Site servido pelo Nginx a partir do `Dockerfile`; encaminha `/api` para a API do RedGreen-Back no host. | `http://localhost:8090` |
+| `jenkins`    | Jenkins configurado por JCasC (`docker/Dockerfile.jenkins`) que executa o `Jenkinsfile`.                | `http://localhost:8081` |
+| `mailpit`    | Servidor SMTP de teste que recebe os e-mails do pipeline.                                               | `http://localhost:8026` |
+| `unit-tests` | Container `redgreen-front-unit-tests` (Node.js 22) usado pelo pipeline para dependencias, lint e Jest.  | Interno                 |
+| `e2e-tests`  | Container `redgreen-front-e2e-tests` (imagem do Playwright) usado pelo pipeline para os testes E2E.     | Interno                 |
+| `perf-tests` | Lighthouse CI e Playwright (`Dockerfile.performance`); executado sob demanda pelo profile `perf`.       | Interno                 |
+
+O `frontend` e o app criado no estagio E2E do pipeline acessam a API por `API_UPSTREAM`, que por padrao e `http://host.docker.internal:<BACKEND_PORT>`. Sem a stack do backend no ar, o site abre, mas login, saldo e jogos retornam erro, e o estagio E2E falha no setup. Os servicos de aplicacao usam a rede `app`; `jenkins` e `mailpit` usam a rede `ci`. O Jenkins controla o Docker do host pelo socket `/var/run/docker.sock` e executa os comandos de teste com `docker exec` nos containers `redgreen-front-unit-tests` e `redgreen-front-e2e-tests`, que compartilham o workspace pelo volume `jenkins_home`.
 
 Volumes:
 
-- `postgres_data`: dados do banco.
 - `jenkins_home`: configuracao, jobs, historico e workspace do Jenkins.
 - `mailpit_data`: e-mails recebidos pelo Mailpit.
 - `reports`: relatorios do teste de performance.
-- `backend_node_modules`: dependencias instaladas do backend.
+
+O projeto do Compose se chama `redgreen-front`, e as portas padrao (`8090`, `8081` e `8026`) nao coincidem com as do Compose do RedGreen-Back (`3000`, `8080`, `8025`, `8088` e `5433`). Assim as duas stacks rodam juntas sem que uma recrie os containers ou compartilhe os volumes da outra. Quem subiu a stack antes dessa mudanca, quando o projeto tambem se chamava `redgreen` e incluia uma copia da API, deve remover os containers antigos uma vez com `docker compose -p redgreen down` (os volumes antigos ficam preservados; com `-v` sao apagados) e criar o job do Jenkins novamente.
 
 Para executar o pipeline, acesse o Jenkins com o usuario do `.env` e crie o job em **New Item** -> **Pipeline** -> **Pipeline script from SCM**, com o repositorio Git deste projeto, a branch `*/main` e o Script Path `Jenkinsfile`. O job e a unica configuracao feita pela interface; usuario, URL e credenciais sao definidos por `jenkins/casc.yaml`.
 
@@ -299,7 +303,7 @@ docker compose --profile perf run --rm perf-tests
 
 Os relatorios ficam no volume `reports`, em `/reports/performance/<timestamp>`.
 
-Para parar o ambiente, use `docker compose down`, que preserva os volumes. O comando `docker compose down -v` remove tambem os volumes, apagando banco, Jenkins e e-mails.
+Para parar o ambiente, use `docker compose down`, que preserva os volumes. O comando `docker compose down -v` remove tambem os volumes, apagando Jenkins, e-mails e relatorios. O banco pertence a stack do RedGreen-Back e nao e afetado.
 
 ### Containers Frontend e Performance (Docker)
 
@@ -368,13 +372,13 @@ separado da baseline e exige uma rede de validacao sem API real com alias
 
 Variaveis identificadas no codigo e na configuracao dos testes:
 
-| Variavel             |                     Obrigatoria | Padrao                                     | Uso                                                                                                       |
-| -------------------- | ------------------------------: | ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `VITE_API_BASE_URL`  |                     Em producao | `http://localhost:3000` em desenvolvimento | Define a URL base usada pelo Axios em `apiClient`.                                                        |
-| `E2E_BASE_URL`       |                             Nao | `http://localhost:5173`                    | Endereco do frontend acessado pelo Playwright. Quando definida, o Playwright nao inicia o servidor local. |
-| `E2E_ADMIN_EMAIL`    | Para cenarios com administrador | Sem padrao                                 | E-mail de uma conta administradora existente na API.                                                      |
-| `E2E_ADMIN_PASSWORD` | Para cenarios com administrador | Sem padrao                                 | Senha da conta administradora usada nos testes.                                                           |
-| `CI`                 |                     No pipeline | Definida pelo pipeline do Jenkins          | Ativa as configuracoes de CI do Playwright e desabilita a instalacao de navegadores no `postinstall`.     |
+| Variavel             |              Obrigatoria | Padrao                                     | Uso                                                                                                       |
+| -------------------- | -----------------------: | ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`  |              Em producao | `http://localhost:3000` em desenvolvimento | Define a URL base usada pelo Axios em `apiClient`.                                                        |
+| `E2E_BASE_URL`       |                      Nao | `http://localhost:5173`                    | Endereco do frontend acessado pelo Playwright. Quando definida, o Playwright nao inicia o servidor local. |
+| `E2E_ADMIN_EMAIL`    | No pipeline e no Compose | `admin@admin.com` no `.env.example`        | E-mail de uma conta administradora existente na API; o seed do backend cria `admin@admin.com`.            |
+| `E2E_ADMIN_PASSWORD` | No pipeline e no Compose | `admin123` no `.env.example`               | Senha da conta administradora usada nos testes.                                                           |
+| `CI`                 |              No pipeline | Definida pelo pipeline do Jenkins          | Ativa as configuracoes de CI do Playwright e desabilita a instalacao de navegadores no `postinstall`.     |
 
 A configuracao esta em `src/config.ts`, que remove espacos da URL e usa o fallback local em desenvolvimento. Em producao, a ausencia de `VITE_API_BASE_URL` provoca um erro ao carregar a aplicacao; configure a variavel antes do build.
 
@@ -384,28 +388,26 @@ Exemplo de `.env` para o desenvolvimento local:
 
 ```env
 VITE_API_BASE_URL=http://localhost:3000
-E2E_ADMIN_EMAIL=
-E2E_ADMIN_PASSWORD=
+E2E_ADMIN_EMAIL=admin@admin.com
+E2E_ADMIN_PASSWORD=admin123
 ```
 
 O `.env.example` contem essas variaveis e tambem as do Docker Compose e do Jenkins, descritas abaixo. O Playwright carrega `.env` e `.env.local` com `loadEnv` do Vite e preserva variaveis ja definidas no processo. Sem `E2E_BASE_URL`, o Playwright inicia o frontend na porta `5173`; com ela definida, usa o endereco informado sem iniciar servidor. As credenciais de teste nao devem receber o prefixo `VITE_`, usado para expor variaveis ao frontend. O arquivo `.env` esta ignorado pelo Git.
 
 ### Variaveis do Docker Compose e do Jenkins
 
-| Variavel                                                                |   Obrigatoria | Uso                                                                                                                                                                          |
-| ----------------------------------------------------------------------- | ------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`                          |           Sim | Usuario administrador criado pelo JCasC.                                                                                                                                     |
-| `JENKINS_PORT`, `JENKINS_PUBLIC_URL`                                    |           Nao | Porta e URL publica do Jenkins (padrao `8081`).                                                                                                                              |
-| `DOCKER_SOCKET_GID`                                                     |           Nao | GID do dono de `/var/run/docker.sock` no host; `0` no Docker Desktop.                                                                                                        |
-| `API_UPSTREAM`                                                          |           Nao | API usada pelo frontend criado no estagio E2E do pipeline. Vazia, segue `BACKEND_PORT` (`http://host.docker.internal:<BACKEND_PORT>`); defina apenas para usar outra origem. |
-| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `DOCKERHUB_REPO`               | Para publicar | Credenciais e repositorio do Docker Hub; `DOCKERHUB_REPO` tambem nomeia a imagem do `frontend` no Compose.                                                                   |
-| `EMAIL_TO`, `EMAIL_FROM`                                                |    `EMAIL_TO` | Destinatarios e remetente do e-mail enviado ao final do pipeline.                                                                                                            |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_STARTTLS` |           Nao | Servidor de e-mail; por padrao, o Mailpit do Compose.                                                                                                                        |
-| `MAILPIT_UI_PORT`                                                       |           Nao | Porta da interface do Mailpit (padrao `8026`).                                                                                                                               |
-| `FRONT_TAG`, `FRONT_PORT`, `BACKEND_PORT`                               |           Nao | Tag da imagem do frontend e portas publicadas do site (`8080`) e da API (`3000`).                                                                                            |
-| `BACKEND_PATH`                                                          |           Nao | Caminho do repositorio RedGreen-Back (padrao `../RedGreen-Back`).                                                                                                            |
-| `JWT_SECRET`                                                            |           Sim | Segredo usado pelo backend para assinar os tokens.                                                                                                                           |
-| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`                     |           Nao | Credenciais e nome do banco (padrao `postgres`/`postgres`/`redgreen`).                                                                                                       |
+| Variavel                                                                |   Obrigatoria | Uso                                                                                                                                                                                                       |
+| ----------------------------------------------------------------------- | ------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`                          |           Sim | Usuario administrador criado pelo JCasC.                                                                                                                                                                  |
+| `JENKINS_PORT`, `JENKINS_PUBLIC_URL`                                    |           Nao | Porta e URL publica do Jenkins (padrao `8081`).                                                                                                                                                           |
+| `DOCKER_SOCKET_GID`                                                     |           Nao | GID do dono de `/var/run/docker.sock` no host; `0` no Docker Desktop.                                                                                                                                     |
+| `API_UPSTREAM`                                                          |           Nao | API usada pelo `frontend` do Compose e pelo frontend criado no estagio E2E do pipeline. Vazia, segue `BACKEND_PORT` (`http://host.docker.internal:<BACKEND_PORT>`); defina apenas para usar outra origem. |
+| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `DOCKERHUB_REPO`               | Para publicar | Credenciais e repositorio do Docker Hub; `DOCKERHUB_REPO` tambem nomeia a imagem do `frontend` no Compose.                                                                                                |
+| `EMAIL_TO`, `EMAIL_FROM`                                                |    `EMAIL_TO` | Destinatarios e remetente do e-mail enviado ao final do pipeline.                                                                                                                                         |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_STARTTLS` |           Nao | Servidor de e-mail; por padrao, o Mailpit do Compose.                                                                                                                                                     |
+| `MAILPIT_UI_PORT`                                                       |           Nao | Porta da interface do Mailpit (padrao `8026`).                                                                                                                                                            |
+| `FRONT_TAG`, `FRONT_PORT`                                               |           Nao | Tag da imagem do frontend e porta publicada do site (padrao `8090`).                                                                                                                                      |
+| `BACKEND_PORT`                                                          |           Nao | Porta em que a stack do RedGreen-Back publica a API no host (padrao `3000`, a variavel `PORT` do backend).                                                                                                |
 
 ## 8. Rotas da Aplicacao
 
@@ -664,7 +666,7 @@ npm test -- --coverage
 
 1. Instale as dependencias conforme a secao 6 e configure `.env`.
 2. Inicie o backend e seu banco de dados conforme as instrucoes do repositorio da API. O Playwright deste projeto inicia somente o frontend.
-3. Para TC-004, TC-005, TC-006, TC-007 e TC-009, configure `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD` com uma conta administradora previamente cadastrada. Sem essas variaveis, esses casos sao ignorados.
+3. Para TC-004, TC-005, TC-006, TC-007 e TC-009, configure `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD` com uma conta administradora previamente cadastrada (o seed do backend cria `admin@admin.com`, ja preenchida no `.env.example`). Localmente, sem essas variaveis, esses casos sao ignorados; no pipeline (`CI=true`), o global setup do Playwright interrompe a execucao.
 4. Execute a suite ou selecione um arquivo e navegador pelos comandos abaixo.
 
 ```bash
@@ -793,7 +795,7 @@ Configuracoes identificadas:
 - Tempo limite de 30 minutos, historico de 5 builds e execucoes concorrentes desabilitadas.
 - Job do tipo Pipeline criado pela interface (Pipeline script from SCM); a `main` e identificada por `GIT_BRANCH == 'origin/main'`.
 - Credenciais `smtp-password`, `e2e-admin-password` e `dockerhub` criadas pelo JCasC.
-- O frontend do estagio E2E acessa a API por `API_UPSTREAM`, que por padrao acompanha a porta publicada do backend no Compose (`http://host.docker.internal:<BACKEND_PORT>`). Ao mudar `BACKEND_PORT`, o pipeline passa a usar a nova porta sem outro ajuste.
+- O frontend do estagio E2E acessa a API da stack do RedGreen-Back por `API_UPSTREAM`, que por padrao acompanha a porta publicada no host (`http://host.docker.internal:<BACKEND_PORT>`). A stack do backend precisa estar no ar durante o pipeline.
 
 Lacunas identificadas:
 

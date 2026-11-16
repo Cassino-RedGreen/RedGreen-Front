@@ -18,7 +18,7 @@ COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY docker/nginx/default.conf.template /opt/redgreen/default.conf.template
 COPY --chmod=755 docker/nginx/start.sh /opt/redgreen/start.sh
 COPY --from=build /app/dist /usr/share/nginx/html
-ENV API_UPSTREAM=http://backend:3000
+ENV API_UPSTREAM=http://host.docker.internal:3000
 USER nginx
 EXPOSE 8080
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
