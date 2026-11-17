@@ -183,6 +183,7 @@ RedGreen-Front/
 |   `-- PULL_REQUEST_TEMPLATE
 |-- .husky/
 |-- .env.example
+|-- docker-compose.bootstrap.yml
 |-- docker-compose.yml
 |-- Dockerfile
 |-- Dockerfile.performance
@@ -264,6 +265,8 @@ npm run format
 O `docker-compose.yml` sobe o frontend e o ambiente de CI deste repositorio. A API e o banco nao fazem parte desta stack: eles sao do Compose do [RedGreen-Back](https://github.com/Cassino-RedGreen/RedGreen-Back), que deve ser iniciado antes, no proprio repositorio. As duas stacks sao independentes e se comunicam apenas pela porta da API publicada no host (`3000` por padrao).
 
 Copie `.env.example` para `.env` e preencha ao menos `JENKINS_ADMIN_USER`, `JENKINS_ADMIN_PASSWORD`, `EMAIL_TO`, `E2E_ADMIN_EMAIL` e `E2E_ADMIN_PASSWORD`; sem elas o Compose nao inicia. O `.env.example` ja traz a conta administradora criada pelo seed do backend (`admin@admin.com`). As demais variaveis estao descritas na secao [7. Variaveis de Ambiente](#7-variaveis-de-ambiente).
+
+No repositorio RedGreen-Back, preencha o `.env` com `JWT_SECRET`, `JENKINS_ADMIN_USER` e `JENKINS_ADMIN_PASSWORD` antes de executar o comando, mesmo ao subir apenas o banco e a API; consulte o [README do RedGreen-Back](https://github.com/Cassino-RedGreen/RedGreen-Back).
 
 ```bash
 # 1. No repositorio RedGreen-Back: banco e API (porta 3000)
@@ -811,7 +814,14 @@ Quem executa o pipeline em outra maquina sem as credenciais vera todas as etapas
 
 ### Imagem no Docker Hub
 
-A imagem do Jenkins do pipeline esta publicada em **[phandradd/redgreen-front-jenkins](https://hub.docker.com/r/phandradd/redgreen-front-jenkins)**. Ela contem o Jenkins, o Docker CLI, o Python 3, os plugins de `jenkins/plugins.txt` e o `jenkins/casc.yaml`; nenhum segredo faz parte da imagem, pois usuario, senha e credenciais sao lidos do `.env` quando o container inicia.
+A imagem publicada e a do Jenkins utilizado pelo pipeline do Front, construida a partir de `docker/Dockerfile.jenkins` e publicada no repositorio **[phandradd/redgreen-front-jenkins](https://hub.docker.com/r/phandradd/redgreen-front-jenkins)**. Ela contem o Jenkins, o Docker CLI, o Python 3, os plugins de `jenkins/plugins.txt` e o `jenkins/casc.yaml`; nenhum segredo faz parte da imagem, pois usuario, senha e credenciais sao lidos do `.env` quando o container inicia.
+
+O pipeline publica as seguintes tags:
+
+| Tag | Quando e publicada |
+| --- | --- |
+| `<BUILD_NUMBER>-<7-char-commit>` | Em builds de `main` e em builds de outras branches com o parametro `PUBLISH_IMAGE` habilitado. |
+| `latest` | Apenas em builds da branch `main`. |
 
 Para baixar e executar a imagem publicada, com o `.env` preenchido conforme a secao [7. Variaveis de Ambiente](#7-variaveis-de-ambiente):
 
@@ -859,6 +869,9 @@ Decisoes identificadas no codigo:
 
 ## 18. Uso de IA
 
+Danilo Henrique Maia da Silva
+O Copilot foi utilizado como apoio na criação dos containers para os testes unitários e E2E do Front. A primeira solução não atendeu plenamente aos requisitos, sendo necessários ajustes significativos, pois algumas configurações geradas e os relatórios produzidos não eram compatíveis com o solicitado. Posteriormente, após a inclusão do Jenkins no projeto, a IA também foi utilizada para auxiliar na conexão e inicialização dos containers necessários à execução da pipeline, etapa concluída com sucesso.
+
 Patrick Augusto Lins de Oliveira Damião
 Foi utilizado o Copilot, sempre com o contexto do README explicando a estrutura do projeto (com foco na stack) e apoio do documento com as orientações da tarefa. Durante todas as etapas de desenvolvimento dos testes com o Playwright o processo foi feito a partir de instruções detalhadas de cada etapa (incluindo os momentos onde deveriam ser salvas screenshots), com a maior parte do código sendo gerado diretamente pela IA. A IA ficou responsável apenas por criar o código dos testes, mas a idealização dos testes foi feita por conta própria.
 A IA também foi utilizada para desenvolver os testes de performance, tanto na elaboração do que poderia ser testado quanto na criação dos códigos de teste.
@@ -866,8 +879,14 @@ A IA também foi utilizada para desenvolver os testes de performance, tanto na e
 Antonio Feliciano da Silveira Neto
 Durante o desenvolvimento da suíte de testes, utilizei o Claude (Anthropic) como apoio ao processo de criação dos casos de teste. Usei o Claude no navegador para pensar e estruturar os prompts a partir da minha ideia inicial de cada cenário descrevendo em linguagem natural o fluxo que eu queria testar, as telas envolvidas e o que deveria ser validado e o Claude ajudava a organizar e refinar essa descrição. Com o prompt já mais claro e estruturado, eu o utilizava na extensão do Claude no VSCode para apoiar a implementação do código de automação. A execução, validação e revisão final dos testes foram feitas por mim, com a IA atuando apenas como suporte ao raciocínio e à escrita do código, não como substituta da autoria do trabalho.
 
+Pedro Henrique Andrade
+Foi utilizado o Claude Code, pela extensão no VSCode, sempre com o contexto do enunciado, do repositório de exemplo do professor e dos slides de aula. Durante a migração do GitHub Actions para o Jenkins em container, o processo foi feito a partir de instruções detalhadas de cada etapa da pipeline (testes, build e empacotamento, artefatos, envio de e-mail e publicação da imagem no Docker Hub), com a maior parte da configuração sendo gerada diretamente pela IA. Ela ficou responsável por escrever o código da pipeline e auxiliar na correção dos erros encontrados, mas a definição do que a pipeline deveria fazer e a validação de cada etapa foram feitas por conta própria. A IA também foi utilizada para revisar as Pull Requests.
+
 Pedro Armengol de Oliveira
 Na parte de containerização, utilizei o Claude Code (Anthropic), pela extensão no VSCode, como apoio na construção do `docker-compose.yml`. A IA foi usada para analisar as Pull Requests dos outros integrantes (containers do frontend e de performance, Jenkins e containers de teste), executar a stack completa em ambientes isolados para verificar se os containers funcionavam em conjunto, propor os ajustes no compose para seguir o que foi definido nessas PRs (nomes de containers, portas, variáveis e volumes) e atualizar este README. As decisões sobre aprovar ou pedir alterações nas PRs, os commits, os merges e os testes manuais finais foram feitos por mim, com a IA atuando como suporte na análise, na escrita da configuração e na validação, não como substituta da autoria do trabalho.
+
+Pedro Ribeiro Nogueira
+ChatGPT e Codex foram utilizados como ferramentas de apoio no desenvolvimento de sua parte do projeto, principalmente na criação e configuração dos Dockerfiles, na integração dos containers e na publicação das imagens do frontend e dos testes de performance no Docker Hub; na configuração e nos ajustes da pipeline de CI/CD do Jenkins e na análise de erros de execução; na execução, análise e diagnóstico dos testes com Jest, Playwright e Lighthouse; e na organização dos READMEs, relatórios técnicos e instruções de execução. As ferramentas também auxiliaram na geração e revisão de código, na investigação de falhas e na otimização das configurações. As implementações foram acompanhadas de verificações e testes práticos, sem depender exclusivamente das respostas geradas pela IA.
 
 ## 19. Metodologia de Desenvolvimento
 
